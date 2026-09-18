@@ -1,0 +1,38 @@
+/* Font Awesome subset (project-only icons) */
+@font-face {
+  font-family: "Font Awesome 6 Free";
+  font-style: normal;
+  font-weight: 900;
+  font-display: block;
+  src: url(../webfonts/fa-solid-900.woff2) format("woff2");
+}
+.fa,
+.fas,
+.fa-solid {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-style: normal;
+  font-variant: normal;
+  line-height: 1;
+  display: inline-block;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.fa-chart-line:before { content: "\f201"; }
+.fa-check-circle:before { content: "\f058"; }
+.fa-cube:before { content: "\f1b2"; }
+.fa-database:before { content: "\f1c0"; }
+.fa-exclamation-triangle:before { content: "\f071"; }
+.fa-file-alt:before { content: "\f15c"; }
+.fa-history:before { content: "\f1da"; }
+.fa-indent:before { content: "\f03c"; }
+.fa-info-circle:before { content: "\f05a"; }
+.fa-list-alt:before { content: "\f022"; }
+.fa-search:before { content: "\f002"; }
+.fa-shield-alt:before { content: "\f3ed"; }
+.fa-sync:before { content: "\f021"; }
+.fa-tachometer-alt:before { content: "\f625"; }
+.fa-times-circle:before { content: "\f057"; }
+.fa-tools:before { content: "\f7d9"; }
+.fa-user:before { content: "\f007"; }

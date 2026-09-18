@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>解决方案 - 华盛科技集团</title>
+    <meta name="keywords" content="华盛科技,解决方案,金融风控,制造分析,政企数据平台">
+    <meta name="description" content="华盛科技集团行业解决方案：金融风控、制造预测性维护、政企数据治理与安全审计。">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/honeypot.css') }}">
+    <style>
+        .wrap { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 420px; gap: 18px; }
+        .panel { background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 22px; }
+        .panel h3 { margin: 0 0 14px; color: #1e3c72; }
+        .case { padding: 14px 0; border-bottom: 1px solid #eee; }
+        .case:last-child { border-bottom: none; }
+        .case h4 { margin: 0 0 8px; font-size: 16px; }
+        .case h4 a { color: #1e3c72; text-decoration: none; }
+        .case h4 a:hover { text-decoration: underline; }
+        .case p { margin: 0; color: #666; line-height: 1.7; font-size: 14px; }
+        .step { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+        .step .no { width: 26px; height: 26px; border-radius: 50%; background: #1e3c72; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+        .step .txt { color: #666; line-height: 1.7; font-size: 14px; }
+        .cta { margin-top: 14px; }
+        .cta a { display: inline-block; padding: 10px 14px; border-radius: 6px; background: #1e3c72; color: #fff; text-decoration: none; font-size: 14px; }
+        .cta a:hover { background: #2a5298; }
+        @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body class="content-page">
+    <div class="header">
+        <div class="container">
+            <h1>华盛科技集团</h1>
+            <nav class="nav">
+                <a href="/">首页</a>
+                <a href="/news">新闻中心</a>
+                <a href="/products">产品中心</a>
+                <a href="/solutions">解决方案</a>
+                <a href="/about">关于我们</a>
+                <a href="/contact">联系我们</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="wrap">
+        <div class="grid">
+            <div class="panel">
+                <h3>行业解决方案</h3>
+
+                <div class="case">
+                    <h4><a href="/solutions/fin-risk">金融风控与反欺诈</a></h4>
+                    <p>覆盖数据接入、规则策略、风险画像与告警处置，支持名单管理与工单联动。</p>
+                </div>
+                <div class="case">
+                    <h4><a href="/solutions/manufacture-pdm">制造预测性维护</a></h4>
+                    <p>对设备日志/传感数据进行清洗建模，提供异常检测、趋势预测与维保建议。</p>
+                </div>
+                <div class="case">
+                    <h4><a href="/solutions/gov-data">政企数据治理与共享</a></h4>
+                    <p>以资产目录与口径治理为核心，支持质量校验、共享交换与权限审计留痕。</p>
+                </div>
+                <div class="case">
+                    <h4><a href="/solutions/security-audit">安全审计与合规检查</a></h4>
+                    <p>多源日志汇聚与字段规范化，支持检索分析、报表归档与审计追溯。</p>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>交付路径</h3>
+                <div class="step"><div class="no">1</div><div class="txt">现网评估：资产清单、数据源与权限模型梳理。</div></div>
+                <div class="step"><div class="no">2</div><div class="txt">方案设计：指标体系、数据链路与告警策略确定。</div></div>
+                <div class="step"><div class="no">3</div><div class="txt">部署上线：灰度发布、监控接入与安全加固。</div></div>
+                <div class="step"><div class="no">4</div><div class="txt">运营迭代：日志审计、规则优化与应急响应演练。</div></div>
+
+                <div class="cta"><a href="/contact">预约演示 / 获取评估</a></div>
+                <div style="margin-top: 14px; color:#999; font-size:12px; line-height: 1.6;">
+                    为保障交付质量，解决方案将根据行业、数据规模与合规要求进行定制。
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

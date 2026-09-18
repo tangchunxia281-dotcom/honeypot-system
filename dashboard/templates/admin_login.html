@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>身份验证 | 态势感知平台</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard_login.css') }}">
+</head>
+<body>
+    <div class="login-box">
+        <div class="corner tl"></div>
+        <div class="corner tr"></div>
+        <div class="corner bl"></div>
+        <div class="corner br"></div>
+
+        <div class="header">
+            <h2>威胁感知控制台</h2>
+            <p>THREAT INTELLIGENCE DASHBOARD V2.0</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="error-msg" style="color: {{ '#2ed573' if category == 'success' else '#ff6b6b' }};">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% if error %}
+            <div class="error-msg">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label>管理员账号 / ADMIN ID</label>
+                <input type="text" name="username" placeholder="请输入账号" required autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>安全密钥 / SECRET KEY</label>
+                <input type="password" name="password" placeholder="请输入密钥" required>
+            </div>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="login-btn">
+                立即进入系统
+            </button>
+        </form>
+
+        <div class="footer">
+            态势感知防御系统已启动 | SYSTEM SECURED
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络威胁态势感知大屏</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css', v=ASSET_VERSION) }}">
+    <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
+    <style>
+        html, body { height: 100%; overflow: hidden; margin: 0; padding: 0; }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr 360px;
+            grid-template-rows: 62px 1fr 1fr;
+            gap: 8px;
+            padding: 8px;
+            height: calc(100vh - 42px);
+        }
+        .stats-bar {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            position: relative;
+        }
+        .window-switch {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 44px;
+            width: 220px;
+            box-sizing: border-box;
+            padding: 0 8px;
+            border: 1px solid rgba(0,150,255,0.25);
+            border-radius: 6px;
+            background: rgba(10,20,40,0.75);
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        .window-btn {
+            border: 1px solid rgba(0,150,255,0.35);
+            background: rgba(10,20,40,0.9);
+            color: #9fc6e7;
+            font-size: 11px;
+            line-height: 1;
+            height: 30px;
+            padding: 0 6px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 0;
+        }
+        .window-btn.active {
+            color: #ffffff;
+            border-color: rgba(0,212,255,0.9);
+            background: rgba(0,150,255,0.35);
+        }
+        .window-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            filter: grayscale(0.15);
+        }
+        .window-state {
+            position: absolute;
+            top: 3px;
+            right: 6px;
+            color: #8fb8dd;
+            font-size: 10px;
+            line-height: 1;
+            background: rgba(6, 28, 56, 0.9);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 10px;
+            padding: 2px 6px;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+        .stat-card {
+            background: rgba(10,20,40,0.9);
+            border: 1px solid rgba(0,150,255,0.3);
+            border-radius: 6px;
+            box-sizing: border-box;
+            width: 220px;
+            height: 44px;
+            padding: 0 18px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            overflow: hidden;
+        }
+        .stat-card .value {
+            font-size: 26px;
+            color: #00d4ff;
+            font-weight: bold;
+            line-height: 1;
+            min-width: 56px;
+            text-align: center;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0;
+            position: relative;
+            top: 0;
+        }
+        .stat-card .label { font-size: 16px; color: #a8c2dc; white-space: nowrap; letter-spacing: 1px; line-height: 1; position: relative; top: -3px; }
+        .stat-card.danger .value { color: #ff4757; }
+        .stat-card.warning .value { color: #ffa502; }
+        .panel {
+            background: rgba(10,20,40,0.85);
+            border: 1px solid rgba(0,150,255,0.2);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel-title {
+            font-size: 13px;
+            color: #00d4ff;
+            border-bottom: 1px solid rgba(0,150,255,0.2);
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+        }
+        .left-col { grid-row: 2 / 4; display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+        .map-panel { grid-column: 2; grid-row: 2 / 4; margin-top: 12px; }
+        .map-panel #worldMap { flex: 1; min-height: 0; padding: 6px; }
+        .right-col { grid-row: 2 / 4; display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+        .log-scroll { flex: 1; overflow-y: auto; min-height: 0; }
+        .log-scroll::-webkit-scrollbar { width: 4px; }
+        .log-scroll::-webkit-scrollbar-thumb { background: rgba(0,150,255,0.3); border-radius: 2px; }
+        .log-item {
+            padding: 6px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 11px;
+        }
+        .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .chart-box { height: 160px; }
+        #pieChart { height: 160px !important; }
+        .sys-box { margin-top: 14px; padding-bottom: 6px; }
+        .sys-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #a8c2dc; margin: 8px 0 6px; }
+        .progress-outer { height: 8px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
+        .progress-inner { height: 8px; width: 0%; background: #2ed573; border-radius: 999px; transition: width 0.3s ease; }
+        .progress-inner.warning { background: #ffa502; }
+        .progress-inner.danger { background: #ff4757; }
+        .top-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 30px;
+            box-sizing: border-box;
+            padding: 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 12px;
+        }
+        .top-item .ip { color: #00d4ff; }
+        .top-item .count { color: #ff4757; }
+        #topList { flex: 0 0 auto; height: 150px; overflow: hidden; }
+        .audit-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 11px;
+            gap: 8px;
+        }
+        .audit-item .ip { color: #00d4ff; }
+        .audit-item .ok { color: #2ed573; }
+        .audit-item .fail { color: #ff4757; }
+        .audit-subtitle { font-size: 11px; color: #6a8caf; margin: 2px 0 6px; }
+        .header-mini {
+            text-align: center;
+            padding: 8px 0;
+            background: linear-gradient(90deg, transparent, rgba(0,150,255,0.1), transparent);
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .header-mini h1 {
+            font-size: 20px;
+            letter-spacing: 5px;
+            background: linear-gradient(90deg, #00d4ff, #0096ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            margin: 0;
+        }
+        .header-mini .demo-badge {
+            background: #f39c12;
+            color: #0a1428;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            font-weight: 600;
+            letter-spacing: 0;
+            -webkit-text-fill-color: #0a1428;
+        }
+        .status-indicator {
+            position: fixed;
+            top: 8px;
+            right: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #6a8caf;
+            z-index: 100;
+        }
+        .logout-form {
+            margin: 0;
+            padding: 0;
+        }
+        .logout-btn {
+            border: 1px solid rgba(0, 212, 255, 0.45);
+            background: rgba(10, 20, 40, 0.9);
+            color: #cfe8ff;
+            font-size: 11px;
+            line-height: 1;
+            padding: 5px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .logout-btn:hover {
+            border-color: rgba(0, 212, 255, 0.8);
+            color: #ffffff;
+        }
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #2ed573;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+        .attack-flash {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(255,0,0,0.1);
+            pointer-events: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="attack-flash" id="attackFlash"></div>
+    <div class="status-indicator">
+        <div class="status-dot"></div>
+        <span>监控中</span>
+        <span id="serverIP"></span>
+        <span id="serverLocation"></span>
+        <span id="currentTime"></span>
+        <form class="logout-form" method="post" action="{{ url_for('logout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="logout-btn" type="submit">安全退出</button>
+        </form>
+    </div>
+
+    <div class="header-mini">
+        <h1>网络威胁态势感知平台 <span id="demoBadge" class="demo-badge" style="background:#f39c12;color:#0a1428;display:none;">演示模式</span></h1>
+    </div>
+
+    <div class="main-grid">
+        <!-- 顶部统计栏 -->
+        <div class="stats-bar">
+            <div class="stat-card danger"><span class="label">总攻击</span><span class="value" id="totalAttacks">0</span></div>
+            <div class="stat-card warning"><span class="label">SSH</span><span class="value" id="sshAttacks">0</span></div>
+            <div class="stat-card"><span class="label">Web</span><span class="value" id="webAttacks">0</span></div>
+            <div class="stat-card"><span class="label">攻击源</span><span class="value" id="uniqueIPs">0</span></div>
+            <div class="window-switch">
+                <button class="window-btn active" data-hours="24" type="button">近24小时</button>
+                <button class="window-btn" data-hours="168" type="button">近7天</button>
+                <button class="window-btn" data-hours="720" type="button">近30天</button>
+                <span class="window-state" id="windowState">实时</span>
+            </div>
+        </div>
+
+        <!-- 左列：攻击来源 + 可疑请求 -->
+        <div class="left-col">
+            <div class="panel" style="flex:0 0 350px;">
+                <div class="panel-title">📊 概览</div>
+                <div class="overview-grid" style="grid-template-columns: 1fr;">
+                    <div>
+                        <div style="font-size:12px;color:#6a8caf;margin-bottom:6px;">攻击类型分布</div>
+                        <div id="pieChart" class="chart-box"></div>
+                    </div>
+                </div>
+
+                <div class="sys-box">
+                    <div style="font-size:12px;color:#6a8caf;margin-bottom:2px;">系统状态</div>
+                    <div class="sys-row"><span>CPU</span><span><span id="cpuUsage">0</span>%</span></div>
+                    <div class="progress-outer"><div id="cpuProgress" class="progress-inner"></div></div>
+
+                    <div class="sys-row"><span>内存</span><span><span id="memoryUsage">0</span>% <span id="memoryDetail" style="margin-left:6px;color:#6a8caf;font-size:11px;"></span></span></div>
+                    <div class="progress-outer"><div id="memoryProgress" class="progress-inner"></div></div>
+                </div>
+
+            </div>
+            <div class="panel" style="flex:0 0 auto;">
+                <div class="panel-title">🎯 攻击来源 TOP</div>
+                <div class="log-scroll" id="topList"></div>
+            </div>
+            <div class="panel" style="flex:1;">
+                <div class="panel-title">🔍 可疑行为分析</div>
+                <div class="log-scroll" id="suspiciousScroll"></div>
+            </div>
+        </div>
+
+        <!-- 中间：地图 -->
+        <div class="panel map-panel">
+            <div class="panel-title">🌍 全球攻击态势</div>
+            <div id="worldMap"></div>
+        </div>
+
+        <!-- 右列：实时日志 + 会话追踪 -->
+        <div class="right-col">
+            <div class="panel" style="flex:1;">
+                <div class="panel-title">📋 实时攻击日志</div>
+                <div class="log-scroll" id="logScroll"></div>
+            </div>
+            <div class="panel" style="flex:1;">
+                <div class="panel-title">🔗 攻击链追踪</div>
+                <div class="log-scroll" id="sessionScroll"></div>
+            </div>
+        </div>
+    </div>
+
+<script src="{{ url_for('static', filename='js/dashboard.js', v=ASSET_VERSION) }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard_data_flow.js', v=ASSET_VERSION) }}"></script>
+</body>
+</html>

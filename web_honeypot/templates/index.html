@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>华盛科技集团 - 官方网站</title>
+    <meta name="keywords" content="华盛科技,人工智能,大数据,云计算,解决方案">
+    <meta name="description" content="华盛科技集团官方网站，提供企业信息、产品介绍、解决方案与技术支持。">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/honeypot.css') }}">
+    <style>
+        body { background: #f5f5f5; color: #333; }
+        .hero {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #fff;
+            padding: 70px 0;
+        }
+        .hero .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+            align-items: center;
+        }
+        .hero h2 { font-size: 40px; font-weight: 300; margin-bottom: 12px; }
+        .hero p { opacity: 0.92; line-height: 1.8; font-size: 16px; }
+        .hero-actions { margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            border: 1px solid rgba(255,255,255,0.25);
+            color: #fff;
+        }
+        .btn.primary { background: rgba(255,255,255,0.12); }
+        .btn.secondary { background: rgba(0,0,0,0.12); }
+        .card-grid {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 22px;
+        }
+        .card h3 { margin: 0 0 10px; color: #1e3c72; }
+        .card p { margin: 0; color: #666; line-height: 1.7; font-size: 14px; }
+        .section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 16px;
+        }
+        .panel {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            padding: 22px;
+        }
+        .panel h3 { margin: 0 0 14px; color: #1e3c72; }
+        .news-list { list-style: none; padding: 0; margin: 0; }
+        .news-list li { padding: 12px 0; border-bottom: 1px solid #eee; }
+        .news-list li:last-child { border-bottom: none; }
+        .news-list a { color: #333; text-decoration: none; }
+        .news-list a:hover { color: #1e3c72; }
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        .search-box input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .search-box button {
+            padding: 10px 14px;
+            background: #1e3c72;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .meta {
+            color: #999;
+            font-size: 12px;
+            margin-top: 10px;
+            line-height: 1.6;
+        }
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            padding: 18px 0 30px;
+        }
+        @media (max-width: 980px) {
+            .hero .container { grid-template-columns: 1fr; }
+            .card-grid { grid-template-columns: 1fr; }
+            .section { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body class="content-page">
+    <div class="header">
+        <div class="container">
+            <h1>华盛科技集团</h1>
+            <nav class="nav">
+                <a href="/">首页</a>
+                <a href="/news">新闻中心</a>
+                <a href="/products">产品中心</a>
+                <a href="/solutions">解决方案</a>
+                <a href="/about">关于我们</a>
+                <a href="/contact">联系我们</a>
+            </nav>
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="container">
+            <div>
+                <h2>让数据更可信，让决策更智能</h2>
+                <p>华盛科技集团专注于人工智能、大数据分析与云计算平台建设，为金融、制造、政企客户提供一体化的数字化转型解决方案。我们坚持安全合规与工程化落地，帮助客户把业务跑得更稳、更快、更安全。</p>
+                <div class="hero-actions">
+                    <a class="btn primary" href="/solutions">查看解决方案</a>
+                    <a class="btn secondary" href="/products">浏览产品中心</a>
+                </div>
+            </div>
+            <div>
+                <div class="panel">
+                    <h3 style="margin-top:0;">站内搜索</h3>
+                    <form action="/search" method="GET" class="search-box">
+                        <input type="text" name="q" placeholder="搜索产品、方案、新闻...">
+                        <button type="submit">搜索</button>
+                    </form>
+                    <div class="meta">提示：为提升服务质量，部分请求可能用于统计分析与故障排查。</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="card-grid">
+        <div class="card">
+            <h3>AI 数据分析平台</h3>
+            <p>支持分布式计算、实时风控、指标体系与可视化大屏。适用于金融反欺诈、工业预测性维护等场景。</p>
+        </div>
+        <div class="card">
+            <h3>云原生交付体系</h3>
+            <p>提供容器化改造、微服务治理与全链路监控，提升交付效率与系统韧性，保障关键业务连续性。</p>
+        </div>
+        <div class="card">
+            <h3>安全合规与审计</h3>
+            <p>结合资产盘点、日志审计与告警响应，支持企业级安全运营与合规检查，提高风险发现效率。</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="panel">
+            <h3>公司动态</h3>
+            <ul class="news-list">
+                {% if news_items and news_items|length > 0 %}
+                    {% for item in news_items %}
+                    <li>
+                        <a href="/news?id={{ item.id }}">{{ item.title }}</a>
+                        <div class="meta">{{ item.publish_time }} · {{ item.category_name }}</div>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <li><span class="meta">暂无动态</span></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="panel">
+            <h3>客户服务</h3>
+            <p style="margin:0 0 10px; color:#666; line-height:1.7;">如需产品试用、技术咨询或商务合作，请通过联系我们提交需求，我们的工程团队会尽快处理。</p>
+            <div class="meta">服务时间：工作日 9:00-18:00<br>电话：400-888-9999<br>邮箱：info@huasheng.com</div>
+        </div>
+    </div>
+
+    <div class="footer">© 2026 华盛科技集团 · 京ICP备 10000000 号</div>
+</body>
+</html>
