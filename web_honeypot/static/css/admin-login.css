@@ -1,0 +1,91 @@
+/* admin-login.css - 企业级 SaaS 风格 */
+body {
+    background: #f0f2f5 url('../img/login-bg.svg');
+    background-size: cover;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-container {
+    width: 380px;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+h2 {
+    text-align: center;
+    font-size: 33px;
+    color: rgba(0, 0, 0, 0.85);
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-family: Avenir, 'Helvetica Neue', Arial, Helvetica, sans-serif;
+}
+h2 i { color: #1890ff; margin-right: 10px; }
+
+p {
+    text-align: center;
+    color: rgba(0,0,0,0.45);
+    margin-bottom: 40px;
+    font-size: 14px;
+}
+
+.form-group { margin-bottom: 24px; }
+
+.form-group label { display: none; }
+
+.form-group input {
+    width: 100%;
+    height: 40px;
+    padding: 10px 15px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    transition: all 0.3s;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.form-group input:hover { border-color: #40a9ff; }
+.form-group input:focus { border-color: #40a9ff; box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2); outline: none; }
+
+button {
+    width: 100%;
+    height: 40px;
+    background: #1890ff;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.045);
+    transition: all 0.3s;
+}
+
+button:hover { background: #40a9ff; }
+
+.error {
+    background: #fff1f0;
+    border: 1px solid #ffccc7;
+    color: #ff4d4f;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 13px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+}
+.error::before {
+    content: 'ⓧ';
+    margin-right: 8px;
+    font-weight: bold;
+}
+
+.login-container div[style*="font-size: 12px"] {
+    margin-top: 40px !important;
+    border: none !important;
+    background: transparent !important;
+}

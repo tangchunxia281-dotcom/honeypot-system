@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d</ProjectGuid>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId>Global|VisualStudio|Scripts</InterpreterId>
+    <Name>honeypot-system</Name>
+    <RootNamespace>honeypot-system</RootNamespace>
+    <IsWindowsApplication>false</IsWindowsApplication>
+    <StartupFile>main.py</StartupFile>
+    <WorkingDirectory>.</WorkingDirectory>
+    <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
+    <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="main.py" />
+    <Compile Include="app_config.py" />
+    <Compile Include="env_utils.py" />
+    <Compile Include="db\__init__.py" />
+    <Compile Include="db\connection.py" />
+    <Compile Include="db\event_logs.py" />
+    <Compile Include="db\event_activity.py" />
+    <Compile Include="db\http_requests.py" />
+    <Compile Include="db\archive.py" />
+    <Compile Include="db\geo.py" />
+    <Compile Include="db\demo_data.py" />
+    <Compile Include="ssh_honeypot\server.py" />
+    <Compile Include="ssh_honeypot\commands.py" />
+    <Compile Include="ssh_honeypot\vfs.py" />
+    <Compile Include="ssh_honeypot\session.py" />
+    <Compile Include="ssh_honeypot\ssh_config.py" />
+    <Compile Include="ssh_honeypot\auth_utils.py" />
+    <Compile Include="web_honeypot\server.py" />
+    <Compile Include="web_honeypot\routes_public.py" />
+    <Compile Include="web_honeypot\routes_traps.py" />
+    <Compile Include="web_honeypot\admin_views.py" />
+    <Compile Include="web_honeypot\admin_api.py" />
+    <Compile Include="web_honeypot\errors.py" />
+    <Compile Include="dashboard\server.py" />
+    <Compile Include="dashboard\system_info.py" />
+    <Compile Include="utils\logger.py" />
+    <Compile Include="utils\alerting.py" />
+    <Compile Include="utils\ip_location.py" />
+    <Compile Include="utils\http_fingerprint.py" />
+    <Compile Include="utils\net.py" />
+    <Compile Include="utils\__init__.py" />
+    <Compile Include="scripts\demo\defense_demo.py" />
+    <Compile Include="scripts\system_test\__init__.py" />
+    <Compile Include="scripts\system_test\common_utils.py" />
+    <Compile Include="scripts\system_test\full_test.py" />
+    <Compile Include="risk_mark\__init__.py" />
+    <Compile Include="risk_mark\constants.py" />
+    <Compile Include="risk_mark\config.py" />
+    <Compile Include="risk_mark\log.py" />
+    <Compile Include="risk_mark\models.py" />
+    <Compile Include="risk_mark\store.py" />
+    <Compile Include="risk_mark\detectors.py" />
+    <Compile Include="risk_mark\service.py" />
+    <Compile Include="risk_mark\dashboard_api.py" />
+    <Compile Include="risk_mark\selftest.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="dashboard\" />
+    <Folder Include="db\" />
+    <Folder Include="scripts" />
+    <Folder Include="scripts\demo" />
+    <Folder Include="scripts\system_test" />
+    <Folder Include="database" />
+    <Folder Include="logs" />
+    <Folder Include="ssh_honeypot\" />
+    <Folder Include="utils\" />
+    <Folder Include="web_honeypot\" />
+    <Folder Include="risk_mark\" />
+    <Folder Include="risk_mark\static\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="requirements.txt" />
+    <Content Include="honeypot.ini" />
+    <Content Include="risk_mark\README.md" />
+    <Content Include="risk_mark\static\risk_mark.css" />
+    <Content Include="risk_mark\static\risk_mark.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|VisualStudio|Scripts" />
+  </ItemGroup>
+</Project>

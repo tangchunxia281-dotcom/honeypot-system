@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我们 - 华盛科技集团</title>
+    <meta name="keywords" content="华盛科技,关于我们,企业介绍,研发团队">
+    <meta name="description" content="了解华盛科技集团的企业介绍、发展历程、技术团队与合规体系。">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/honeypot.css') }}">
+    <style>
+        .wrap { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 360px; gap: 18px; }
+        .panel { background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 22px; }
+        .panel h3 { margin: 0 0 14px; color: #1e3c72; }
+        .kpi { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+        .kpi .box { background: #f8f9fa; border-radius: 10px; padding: 14px; text-align: center; }
+        .kpi .num { font-size: 20px; font-weight: 700; color: #1e3c72; }
+        .kpi .lab { font-size: 12px; color: #666; margin-top: 6px; }
+        .timeline { list-style: none; padding: 0; margin: 0; }
+        .timeline li { padding: 12px 0; border-bottom: 1px solid #eee; }
+        .timeline li:last-child { border-bottom: none; }
+        .timeline .year { font-weight: 700; color: #1e3c72; }
+        .timeline .desc { color: #666; margin-top: 6px; line-height: 1.7; font-size: 14px; }
+        .tag { display: inline-block; padding: 5px 12px; border-radius: 999px; background: #f0f0f0; color: #666; font-size: 12px; margin-right: 8px; margin-bottom: 8px; text-decoration: none; }
+        @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } .kpi { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body class="content-page">
+    <div class="header">
+        <div class="container">
+            <h1>华盛科技集团</h1>
+            <nav class="nav">
+                <a href="/">首页</a>
+                <a href="/news">新闻中心</a>
+                <a href="/products">产品中心</a>
+                <a href="/solutions">解决方案</a>
+                <a href="/about">关于我们</a>
+                <a href="/contact">联系我们</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="wrap">
+        <div class="grid">
+            <div class="panel">
+                <h3>企业简介</h3>
+                <div class="kpi">
+                    <div class="box"><div class="num">2010</div><div class="lab">成立年份</div></div>
+                    <div class="box"><div class="num">500+</div><div class="lab">研发与交付团队</div></div>
+                    <div class="box"><div class="num">30+</div><div class="lab">覆盖省市</div></div>
+                    <div class="box"><div class="num">ISO27001</div><div class="lab">安全管理体系</div></div>
+                </div>
+
+                <p style="color:#666; line-height:1.8; font-size:15px; margin:0;">
+                    华盛科技集团专注于人工智能、大数据分析与云计算平台建设，面向金融、制造、政企客户提供数据治理、智能分析、可视化态势与安全审计等产品与服务。
+                    我们强调工程化落地与合规体系建设，帮助客户在复杂业务环境下实现可持续的数字化转型。
+                </p>
+
+                <h3 style="margin-top:18px;">发展历程</h3>
+                <ul class="timeline">
+                    <li><div class="year">2010</div><div class="desc">公司成立，启动企业数据平台与业务系统集成服务。</div></li>
+                    <li><div class="year">2015</div><div class="desc">成立数据分析研发中心，推出分布式计算与实时指标体系。</div></li>
+                    <li><div class="year">2018</div><div class="desc">发布 AI 平台 2.0，落地金融反欺诈与工业预测性维护项目。</div></li>
+                    <li><div class="year">2022</div><div class="desc">云原生交付体系升级，完善日志审计与安全运营能力。</div></li>
+                    <li><div class="year">2024</div><div class="desc">获得“年度创新企业奖”，持续推进产学研协同创新。</div></li>
+                </ul>
+            </div>
+
+            <div class="panel">
+                <h3>合规与安全</h3>
+                <div style="color:#666; line-height:1.8; font-size:14px;">
+                    我们建立了覆盖研发、交付与运维的安全管理流程，包括：
+                    <ul style="margin:10px 0 0; padding-left: 18px;">
+                        <li>账号权限与审计</li>
+                        <li>变更管理与发布审核</li>
+                        <li>数据分级与脱敏处理</li>
+                        <li>应急响应与追溯机制</li>
+                    </ul>
+                </div>
+
+                <h3 style="margin-top:18px;">技术方向</h3>
+                <div>
+                    <span class="tag">数据治理</span>
+                    <span class="tag">实时风控</span>
+                    <span class="tag">态势可视化</span>
+                    <span class="tag">审计合规</span>
+                    <span class="tag">云原生交付</span>
+                </div>
+
+                <div style="margin-top:18px; color:#999; font-size:12px; line-height:1.6;">
+                    需要商务资料或完整案例，请前往 <a href="/contact" style="color:#1e3c72; text-decoration:none;">联系我们</a> 提交申请。
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

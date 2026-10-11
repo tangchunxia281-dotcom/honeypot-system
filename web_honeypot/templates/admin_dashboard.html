@@ -1,0 +1,2716 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ site_name|default('华盛内容管理') }} - 工作台</title>
+    <link
+      href="{{ url_for('static', filename='css/bootstrap.min.css') }}"
+      rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='css/fontawesome.min.css') }}"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #f0f2f5;
+        font-family: -apple-system, "Microsoft YaHei", sans-serif;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      .app-wrapper {
+        display: flex;
+        height: 100vh;
+        width: 100vw;
+      }
+      .sidebar {
+        width: 240px;
+        flex-shrink: 0;
+        background: #001529;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        z-index: 100;
+        box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+      }
+      .main-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        background: #f0f2f5;
+        min-width: 0;
+      }
+      .logo {
+        height: 64px;
+        line-height: 64px;
+        padding-left: 24px;
+        background: #002140;
+        font-size: 20px;
+        font-weight: bold;
+        color: white;
+      }
+      .logo i {
+        color: #1890ff;
+        margin-right: 12px;
+      }
+      .menu {
+        list-style: none;
+        padding: 0;
+        margin-top: 10px;
+        width: 100%;
+      }
+      .menu-item {
+        height: 50px;
+        line-height: 50px;
+        padding-left: 24px;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.65);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s;
+      }
+      .menu-item:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .menu-item.active {
+        background: #1890ff;
+        color: #fff;
+      }
+      .menu-item i {
+        margin-right: 12px;
+        width: 16px;
+        text-align: center;
+      }
+      .menu .menu-item[data-target]:not([data-target="dashboard"]) {
+        display: none;
+      }
+      .header {
+        height: 64px;
+        background: #fff;
+        padding: 0 24px;
+        box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .scroll-body {
+        padding: 24px;
+        flex-grow: 1;
+        overflow-y: auto;
+      }
+      .card {
+        background: #fff;
+        border: none;
+        margin-bottom: 24px;
+        border-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+      .card-body {
+        padding: 24px;
+      }
+      .stat-value {
+        font-size: 28px;
+        font-weight: bold;
+        margin-top: 5px;
+        color: #333;
+      }
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #1890ff;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logout-link {
+        color: #666;
+        font-size: 13px;
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+      }
+      .logout-link:hover {
+        color: #1890ff;
+        background: rgba(24, 144, 255, 0.08);
+      }
+      .alert {
+        border-radius: 4px;
+      }
+
+      .hp-toast-container {
+        position: fixed;
+        top: 14px;
+        right: 14px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        pointer-events: none;
+      }
+      .hp-toast {
+        pointer-events: auto;
+        min-width: 280px;
+        max-width: 420px;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        border-radius: 8px;
+        padding: 10px 12px;
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .hp-toast .icon {
+        width: 20px;
+        line-height: 20px;
+        text-align: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .hp-toast .content {
+        flex: 1;
+        min-width: 0;
+      }
+      .hp-toast .title {
+        font-size: 13px;
+        color: #222;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+      .hp-toast .message {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.4;
+      }
+      .hp-toast.success .icon {
+        color: #52c41a;
+      }
+      .hp-toast.warning .icon {
+        color: #faad14;
+      }
+      .hp-toast.danger .icon {
+        color: #ff4d4f;
+      }
+      .hp-toast.info .icon {
+        color: #1890ff;
+      }
+
+      .hp-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 9998;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
+      }
+      .hp-modal {
+        width: 100%;
+        max-width: 560px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+        overflow: hidden;
+      }
+      .hp-modal .header {
+        height: auto;
+        padding: 14px 16px;
+        box-shadow: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .hp-modal .header .title {
+        font-weight: 700;
+        color: #111;
+        font-size: 14px;
+      }
+      .hp-modal .body {
+        padding: 14px 16px;
+        max-height: 60vh;
+        overflow: auto;
+      }
+      .hp-modal .footer {
+        padding: 12px 16px;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+      .hp-modal .close-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        color: #888;
+      }
+      .hp-modal .close-btn:hover {
+        background: rgba(0, 0, 0, 0.06);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-wrapper">
+      <div class="sidebar">
+        <div class="logo"><i class="fas fa-cube"></i>{{ site_name|default('华盛内容管理') }}</div>
+        <ul class="menu">
+          <li
+            class="menu-item active"
+            data-title="工作台"
+            data-type="view"
+            data-target="dashboard"
+          >
+            <i class="fas fa-tachometer-alt"></i>工作台
+          </li>
+          <li
+            class="menu-item"
+            data-title="内容管理"
+            data-type="view"
+            data-target="content"
+          >
+            <i class="fas fa-file-alt"></i>内容管理
+          </li>
+          <li
+            class="menu-item"
+            data-title="用户中心"
+            data-type="view"
+            data-target="users"
+          >
+            <i class="fas fa-user"></i>用户中心
+          </li>
+          <li
+            class="menu-item"
+            data-title="系统维护"
+            data-type="view"
+            data-target="maintenance"
+          >
+            <i class="fas fa-tools"></i>系统维护
+          </li>
+          <li
+            class="menu-item"
+            data-title="访问日志"
+            data-type="view"
+            data-target="logs"
+          >
+            <i class="fas fa-list-alt"></i>访问日志
+          </li>
+        </ul>
+      </div>
+
+      <div class="main-content">
+        <div class="header">
+          <i
+            class="fas fa-indent"
+            style="font-size: 20px; color: #666; cursor: pointer"
+          ></i>
+          <div class="header-actions">
+            <a class="logout-link" href="/admin/logout" id="adminLogoutLink"
+              ><i class="fas fa-sign-out-alt" style="margin-right: 6px"></i>退出</a
+            >
+            <span
+              style="margin-right: 15px; font-size: 14px; color: #666"
+              id="currentUserLabel"
+              >加载中</span
+            >
+            <div class="user-avatar" id="currentUserAvatar">?</div>
+          </div>
+        </div>
+
+        <div class="scroll-body" id="main-content">
+          <div style="margin-bottom: 24px">
+            <span style="color: #999">首页 / </span>
+            <span style="font-weight: bold; color: #333" id="bread-current"
+              >工作台</span
+            >
+            <h3 style="margin-top: 10px; font-weight: bold" id="page-title">
+              工作台
+            </h3>
+          </div>
+
+          <div class="row">
+            <div class="col-md-3">
+              <div class="card">
+                <div class="card-body">
+                  <div style="color: #999">今日访问</div>
+                  <div class="stat-value">{{ stats.today_visits|default('12,450') }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card">
+                <div class="card-body">
+                  <div style="color: #999">待办工单</div>
+                  <div class="stat-value text-warning">{{ stats.pending_tickets|default('8') }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card">
+                <div class="card-body">
+                  <div style="color: #999">系统负载</div>
+                  <div class="stat-value text-success">{{ stats.system_load|default('12') }}%</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card">
+                <div class="card-body">
+                  <div style="color: #999">数据库容量</div>
+                  <div class="stat-value">{{ stats.db_size|default('4.2') }} GB</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body" style="padding: 18px 20px">
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  margin-bottom: 10px;
+                  color: #666;
+                  font-size: 13px;
+                "
+              >
+                <div style="display: flex; align-items: center; gap: 12px">
+                  <div>
+                    <i class="fas fa-chart-line" style="margin-right: 8px"></i
+                    >站点运营趋势
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 12px;
+                      color: #999;
+                      font-size: 12px;
+                    "
+                  >
+                    <span
+                      ><span
+                        style="
+                          display: inline-block;
+                          width: 10px;
+                          height: 10px;
+                          background: #1890ff;
+                          border-radius: 2px;
+                          margin-right: 6px;
+                        "
+                      ></span
+                      >PV</span
+                    >
+                    <span
+                      ><span
+                        style="
+                          display: inline-block;
+                          width: 10px;
+                          height: 10px;
+                          background: #52c41a;
+                          border-radius: 2px;
+                          margin-right: 6px;
+                        "
+                      ></span
+                      >UV</span
+                    >
+                  </div>
+                </div>
+                <div id="rtChartMeta" style="color: #999; font-size: 12px">
+                  近 60 分钟
+                </div>
+              </div>
+              <div
+                style="
+                  background: #fff;
+                  border: 1px solid #eee;
+                  border-radius: 6px;
+                  padding: 12px;
+                  height: 320px;
+                "
+              >
+                <canvas id="rtChart" style="width: 100%; height: 100%"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hp-toast-container" id="hpToastContainer"></div>
+    <div class="hp-modal-backdrop" id="hpModalBackdrop" aria-hidden="true">
+      <div class="hp-modal" role="dialog" aria-modal="true">
+        <div class="header">
+          <div class="title" id="hpModalTitle">提示</div>
+          <button
+            class="close-btn"
+            id="hpModalClose"
+            type="button"
+            aria-label="关闭"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="body" id="hpModalBody"></div>
+        <div class="footer" id="hpModalFooter"></div>
+      </div>
+    </div>
+
+    <script>
+      const ADMIN_CSRF_TOKEN = {{ admin_csrf_token|default('', true)|tojson }};
+      const TOAST_LIMIT = 3;
+      let lastToastKey = "";
+      let lastToastAt = 0;
+
+      const pageContents = {
+        content: `
+                <div class="card">
+                    <div class="card-body">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:12px;flex-wrap:wrap;">
+                            <div>
+                                <h5 style="margin:0;">内容列表</h5>
+                                <div style="color:#999;font-size:12px;margin-top:6px;">展示最新内容条目与基础信息。</div>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-primary" data-admin-action="show-create-content">添加内容</button>
+                            </div>
+                        </div>
+                        <table class="table table-hover">
+                            <thead><tr><th>ID</th><th>标题</th><th>作者</th><th>状态</th><th>发布时间</th><th>操作</th></tr></thead>
+                            <tbody id="contentTbody"></tbody>
+                        </table>
+                    </div>
+                </div>`,
+        maintenance: `
+                <div class="card">
+                    <div class="card-body">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap;">
+                            <div>
+                                <h5 style="margin:0;">数据备份</h5>
+                                <div id="maintenanceBackupHint" style="color:#999;font-size:12px;margin-top:6px;">支持全量备份与增量备份（仅管理员可执行）</div>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-secondary btn-sm" type="button" data-admin-action="reload-backup-page"><i class="fas fa-sync"></i> 刷新</button>
+                                <button class="btn btn-primary btn-sm" id="backupGenerateFullBtn" type="button" data-admin-action="trigger-backup" data-backup-type="full"><i class="fas fa-database"></i> 生成全量</button>
+                                <button class="btn btn-outline-primary btn-sm" id="backupGenerateIncBtn" type="button" data-admin-action="trigger-backup" data-backup-type="inc"><i class="fas fa-history"></i> 生成增量</button>
+                            </div>
+                        </div>
+                        <table class="table table-sm">
+                            <thead><tr><th>任务ID</th><th>类型</th><th>状态</th><th>创建时间</th><th>操作</th></tr></thead>
+                            <tbody id="backupTbody">
+                                <tr><td colspan="5" style="text-align:center;color:#999;padding:16px;">加载中...</td></tr>
+                            </tbody>
+                        </table>
+
+                        <div class="d-flex justify-content-end align-items-center" style="margin-top: 10px; gap: 10px; flex-wrap: wrap;">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-sm justify-content-end" style="margin-bottom:0;" id="backupPagination"></ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="maintenanceUploadCard">
+                    <div class="card-body">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                            <div>
+                                <h5 style="margin:0;">系统配置</h5>
+                                <div style="color:#999;font-size:12px;margin-top:6px;">导入配置包、更新规则库与证书（仅管理员可操作）</div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" role="alert" style="margin-bottom: 12px;">
+                            推荐使用签名后的配置包（.zip/.tar.gz），导入后系统将自动校验并应用。
+                        </div>
+
+                        <div id="upload-alert"></div>
+
+                        <form id="uploadForm" data-admin-form="upload">
+                            <div class="mb-3">
+                                <label class="form-label">配置包</label>
+                                <input type="file" class="form-control" id="cfgFile" name="file">
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="submit" class="btn btn-primary">确认导入</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                `,
+        upload: `
+                <div class="card">
+                    <div class="card-body">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                            <div>
+                                <h5 style="margin:0;">系统配置</h5>
+                                <div style="color:#999;font-size:12px;margin-top:6px;">导入配置包、更新规则库与证书（仅管理员可操作）</div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" role="alert" style="margin-bottom: 12px;">
+                            推荐使用签名后的配置包（.zip/.tar.gz），导入后系统将自动校验并应用。
+                        </div>
+
+                        <div id="upload-alert"></div>
+
+                        <form id="uploadForm" data-admin-form="upload">
+                            <div class="mb-3">
+                                <label class="form-label">配置包</label>
+                                <input type="file" class="form-control" id="cfgFile" name="file">
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="submit" class="btn btn-primary">确认导入</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>`,
+        users: `
+                <div class="card">
+                    <div class="card-body">
+                        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:12px;flex-wrap:wrap;">
+                            <div>
+                                <h5 style="margin:0;">用户列表</h5>
+                                <div style="color:#999;font-size:12px;margin-top:6px;">展示账号基础信息与角色。</div>
+                            </div>
+                        </div>
+                        <table class="table table-hover">
+                            <thead><tr><th>UID</th><th>用户名</th><th>邮箱</th><th>角色</th><th>最后登录</th><th>操作</th></tr></thead>
+                            <tbody id="userTbody"></tbody>
+                        </table>
+                    </div>
+                </div>`,
+        logs: `
+                <div class="card">
+                    <div class="card-body">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap;">
+                            <div>
+                                <h5 style="margin:0;">访问日志</h5>
+                                <div style="color:#999;font-size:12px;margin-top:6px;">展示后台访问记录（管理页面访问行为），支持筛选与分页。</div>
+                            </div>
+                            <div class="d-flex" style="gap:8px;align-items:center;">
+                                <div class="input-group input-group-sm" style="width: 260px;">
+                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <input type="text" class="form-control" id="secLogKeyword" placeholder="用户 / IP / 操作 关键字">
+                                </div>
+                                <button class="btn btn-outline-secondary btn-sm" type="button" data-admin-action="reload-security-logs" data-page="1"><i class="fas fa-sync"></i> 查询</button>
+                            </div>
+                        </div>
+                        <div id="secLogAlert"></div>
+
+                        <div style="border:1px solid #eee;border-radius:8px;overflow:hidden;">
+                            <table class="table table-sm" style="margin-bottom:0;">
+                                <thead>
+                                    <tr>
+                                        <th style="width:160px;">时间</th>
+                                        <th style="width:120px;">用户</th>
+                                        <th style="width:140px;">IP地址</th>
+                                        <th>操作</th>
+                                        <th style="width:120px;">结果</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="secLogTbody">
+                                    <tr><td colspan="5" style="text-align:center;color:#999;padding:16px;">加载中...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex align-items-center" style="margin-top: 10px; gap: 10px; flex-wrap: wrap;">
+                            <div id="secLogSummary" style="color:#999;font-size:12px; white-space:nowrap; margin-right:auto;"></div>
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination pagination-sm justify-content-end" style="margin-bottom:0;" id="secLogPagination"></ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>`,
+      };
+
+      function _escapeHtml(s) {
+        if (s === null || s === undefined) return "";
+        return String(s)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function _buildDataAttrString(attrs) {
+        const entries =
+          attrs && typeof attrs === "object" ? Object.entries(attrs) : [];
+        return entries
+          .map(([key, value]) => {
+            return ` data-${String(key || "").toLowerCase()}="${_escapeHtml(value)}"`;
+          })
+          .join("");
+      }
+
+      function _buildActionLink(label, action, attrs) {
+        const safeLabel = _escapeHtml(label);
+        const safeAction = _escapeHtml(action);
+        const dataAttrs = _buildDataAttrString(attrs);
+        return `<a href="#" data-admin-action="${safeAction}"${dataAttrs}>${safeLabel}</a>`;
+      }
+
+      function _buildModalButton(label, action, className, attrs) {
+        const safeLabel = _escapeHtml(label);
+        const safeAction = _escapeHtml(action);
+        const safeClass = _escapeHtml(className || "btn btn-light");
+        const dataAttrs = _buildDataAttrString(attrs);
+        return `<button type="button" class="${safeClass}" data-modal-action="${safeAction}"${dataAttrs}>${safeLabel}</button>`;
+      }
+
+      const _SANITIZE_BLOCKED_TAGS = new Set([
+        "script",
+        "style",
+        "iframe",
+        "object",
+        "embed",
+        "link",
+        "meta",
+        "base",
+      ]);
+      const _SANITIZE_URL_ATTRS = new Set([
+        "href",
+        "src",
+        "action",
+        "formaction",
+      ]);
+
+      function _sanitizeNodeTree(root) {
+        if (!root || typeof root.querySelectorAll !== "function") return;
+
+        _SANITIZE_BLOCKED_TAGS.forEach((tagName) => {
+          root.querySelectorAll(tagName).forEach((node) => node.remove());
+        });
+
+        root.querySelectorAll("*").forEach((node) => {
+          Array.from(node.attributes || []).forEach((attr) => {
+            const attrName = String(attr.name || "");
+            const lowerName = attrName.toLowerCase();
+            const attrValue = String(attr.value || "");
+            if (lowerName.startsWith("on")) {
+              node.removeAttribute(attrName);
+              return;
+            }
+            if (_SANITIZE_URL_ATTRS.has(lowerName)) {
+              const normalized = attrValue
+                .replace(/[\u0000-\u001F\u007F\s]+/g, "")
+                .toLowerCase();
+              if (
+                normalized.startsWith("javascript:") ||
+                normalized.startsWith("data:text/html")
+              ) {
+                node.removeAttribute(attrName);
+              }
+            }
+          });
+        });
+      }
+
+      function _setSanitizedHtml(target, html) {
+        if (!target) return;
+        target.replaceChildren();
+
+        const markup = String(html || "");
+        if (!markup) return;
+
+        const template = document.createElement("template");
+        template.innerHTML = markup;
+        _sanitizeNodeTree(template.content);
+        target.appendChild(template.content);
+      }
+
+      function copyTextToClipboard(text) {
+        const v = String(text || "").trim();
+        if (!v) {
+          showToast("warning", "复制失败", "无可复制内容");
+          return;
+        }
+        try {
+          if (
+            navigator &&
+            navigator.clipboard &&
+            navigator.clipboard.writeText
+          ) {
+            navigator.clipboard
+              .writeText(v)
+              .then(() => {
+                showToast("success", "已复制", "路径已复制到剪贴板");
+              })
+              .catch(() => {
+                showToast("danger", "复制失败", "浏览器阻止访问剪贴板");
+              });
+            return;
+          }
+        } catch (e) {}
+        try {
+          const el = document.createElement("textarea");
+          el.value = v;
+          el.setAttribute("readonly", "readonly");
+          el.style.position = "fixed";
+          el.style.left = "-9999px";
+          document.body.appendChild(el);
+          el.select();
+          const ok = document.execCommand("copy");
+          document.body.removeChild(el);
+          if (ok) showToast("success", "已复制", "路径已复制到剪贴板");
+          else showToast("danger", "复制失败", "无法复制到剪贴板");
+        } catch (e) {
+          showToast("danger", "复制失败", "无法复制到剪贴板");
+        }
+      }
+
+      let CURRENT_USER = "admin";
+      let CURRENT_ROLE = "";
+      const ROLE_MENUS = {
+        超级管理员: ["dashboard", "content", "users", "maintenance", "logs"],
+        管理员: ["dashboard", "content", "users", "maintenance", "logs"],
+        编辑: ["dashboard", "content"],
+        运维: ["dashboard", "maintenance", "logs"],
+        审计: ["dashboard", "users", "logs"],
+      };
+
+      function syncHeaderUser() {
+        try {
+          const labelEl = document.getElementById("currentUserLabel");
+          const avatarEl = document.getElementById("currentUserAvatar");
+          const u = String(CURRENT_USER || "").trim() || "加载中";
+          if (labelEl) labelEl.textContent = u;
+          if (avatarEl) avatarEl.textContent = u === "加载中" ? "?" : (u[0] || "?").toUpperCase();
+        } catch (e) {}
+      }
+
+      async function fetchCurrentUser() {
+        try {
+          const resp = await fetch("/admin/api/me", {
+            method: "GET",
+            headers: { Accept: "application/json" },
+            credentials: "same-origin",
+          });
+          const data = await resp.json();
+          if (data && data.code === 0 && data.data) {
+            CURRENT_USER = String(data.data.username || "admin").trim() || "admin";
+            CURRENT_ROLE = String(data.data.role || "管理员").trim() || "管理员";
+          }
+        } catch (e) {}
+        syncHeaderUser();
+        try {
+          applyMenuPermissions();
+        } catch (e) {}
+      }
+
+      syncHeaderUser();
+
+      let CURRENT_SITE_NAME = "";
+      try {
+        CURRENT_SITE_NAME = String(
+          localStorage.getItem("hp_site_name") || "",
+        ).trim();
+      } catch (e) {
+        CURRENT_SITE_NAME = "";
+      }
+
+      function isSuperAdmin() {
+        return CURRENT_ROLE === "超级管理员";
+      }
+
+      function isAdmin() {
+        return CURRENT_ROLE === "管理员" || CURRENT_ROLE === "超级管理员";
+      }
+
+      function canAccessModule(moduleKey) {
+        const allowed = ROLE_MENUS[CURRENT_ROLE] || ["dashboard"];
+        return allowed.includes(String(moduleKey || "").trim());
+      }
+
+      function canManageContent() {
+        return canAccessModule("content");
+      }
+
+      function canViewUsers() {
+        return canAccessModule("users");
+      }
+
+      function canUseMaintenance() {
+        return canAccessModule("maintenance");
+      }
+
+      function canViewLogs() {
+        return canAccessModule("logs");
+      }
+
+      function applyMaintenancePermissions() {
+        const canGenerateBackup = isAdmin();
+        const fullBtn = document.getElementById("backupGenerateFullBtn");
+        const incBtn = document.getElementById("backupGenerateIncBtn");
+        const uploadCard = document.getElementById("maintenanceUploadCard");
+        const backupHint = document.getElementById("maintenanceBackupHint");
+
+        if (backupHint) {
+          backupHint.textContent = canGenerateBackup
+            ? "支持全量备份与增量备份（仅管理员可执行）"
+            : "当前角色可查看备份任务并下载已生成产物。";
+        }
+        if (fullBtn) fullBtn.style.display = canGenerateBackup ? "" : "none";
+        if (incBtn) incBtn.style.display = canGenerateBackup ? "" : "none";
+
+        if (uploadCard) {
+          if (canGenerateBackup) {
+            uploadCard.style.display = "";
+          } else {
+            uploadCard.style.display = "none";
+          }
+        }
+      }
+
+      let adminContentCache = [];
+      let adminUsersCache = [];
+      let backupJobsCache = [];
+
+      async function _fetchJson(url, options) {
+        try {
+          const opts =
+            options && typeof options === "object"
+              ? options
+              : { method: "GET", headers: { Accept: "application/json" } };
+          if (!opts.credentials) opts.credentials = "same-origin";
+          let finalUrl = url;
+          try {
+            const u = String(url || "").trim();
+            if (
+              u &&
+              !u.startsWith("/") &&
+              !u.startsWith("http://") &&
+              !u.startsWith("https://")
+            ) {
+              if (u.startsWith("admin/api/")) finalUrl = "/" + u;
+              else if (u.startsWith("users?") || u.startsWith("content?"))
+                finalUrl = "/admin/api/" + u;
+            }
+          } catch (e) {}
+          const controller =
+            typeof AbortController !== "undefined"
+              ? new AbortController()
+              : null;
+          const timeoutId = setTimeout(() => {
+            try {
+              if (controller) controller.abort();
+            } catch (e) {}
+          }, 8000);
+          if (controller) opts.signal = controller.signal;
+
+          const resp = await fetch(finalUrl, opts);
+          clearTimeout(timeoutId);
+          let ct = "";
+          try {
+            ct = String(resp.headers.get("content-type") || "");
+          } catch (e) {
+            ct = "";
+          }
+          const isJson = ct.toLowerCase().includes("application/json");
+          const data = isJson ? await resp.json().catch(() => null) : null;
+          return {
+            ok: resp.ok && isJson,
+            status: resp.status,
+            data: data,
+            timeout: false,
+            contentType: ct,
+            respUrl: String(resp.url || ""),
+            redirected: !!resp.redirected,
+            finalUrl: String(finalUrl || ""),
+          };
+        } catch (e) {
+          const isTimeout = String((e && (e.name || e.message)) || "")
+            .toLowerCase()
+            .includes("abort");
+          return {
+            ok: false,
+            status: 0,
+            data: null,
+            timeout: isTimeout,
+            contentType: "",
+            respUrl: "",
+            redirected: false,
+            finalUrl: String(url || ""),
+          };
+        }
+      }
+
+      function _renderContentRows(items) {
+        const tbody = document.getElementById("contentTbody");
+        if (!tbody) return;
+        const rows = Array.isArray(items) ? items : [];
+        if (!rows.length) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#999;padding:16px;">暂无数据</td></tr>`;
+          return;
+        }
+        let html = "";
+        rows.forEach((it) => {
+          const st = String(it.status || "草稿");
+          const reviewState = String(it.review_state || "").trim();
+          const badge =
+            st === "已发布"
+              ? "bg-success"
+              : st === "草稿"
+                ? "bg-warning"
+                : st === "待发布" || st === "待下线"
+                  ? "bg-info"
+                  : "bg-secondary";
+          const internalPreview = `<a href="/admin/preview?id=${encodeURIComponent(String(it.id))}" target="_blank" rel="noopener">后台预览</a>`;
+          const editAction = canManageContent()
+            ? _buildActionLink("编辑", "show-edit", {
+                "item-type": "文章",
+                "item-id": String(it.id || ""),
+              })
+            : "";
+          html += `<tr>
+                    <td>${_escapeHtml(it.id)}</td>
+                    <td>${_escapeHtml(it.title)}</td>
+                    <td>${_escapeHtml(it.author)}</td>
+                    <td><span class="badge ${badge}">${_escapeHtml(st)}</span>${reviewState ? `<div style="font-size:12px;color:#999;margin-top:4px;">${_escapeHtml(reviewState)}</div>` : ""}</td>
+                    <td>${_escapeHtml(it.publish_time)}</td>
+                    <td>${internalPreview}${editAction ? ` <span style="color:#ddd;">|</span> ${editAction}` : ""}</td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+      }
+
+      function _renderUserRows(items) {
+        const tbody = document.getElementById("userTbody");
+        if (!tbody) return;
+        const rows = Array.isArray(items) ? items : [];
+        if (!rows.length) {
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#999;padding:16px;">暂无数据</td></tr>`;
+          return;
+        }
+        let html = "";
+          rows.forEach((u) => {
+            const isDecoy = !!u.is_virtual;
+            const isRootUser =
+              String(u.username || "").toLowerCase() === "root" ||
+              String(u.id || "") === "0";
+          const reviewState = String(u.review_state || "").trim();
+          const role = String(u.role || "编辑");
+          const badge =
+            role === "超级管理员"
+              ? "bg-danger"
+              : role === "管理员"
+                ? "bg-primary"
+                : role === "编辑"
+                  ? "bg-info"
+                  : "bg-secondary";
+          const isCore =
+            !isRootUser &&
+            (role === "超级管理员" ||
+              role === "管理员" ||
+              String(u.username || "").toLowerCase() === "admin");
+          const isSelf =
+            String(u.username || "").toLowerCase() ===
+            String(CURRENT_USER || "").toLowerCase();
+            let ops = "";
+            if (isRootUser) {
+              ops = "";
+            } else if (isSuperAdmin()) {
+              ops = _buildActionLink("编辑", "show-edit", {
+                "item-type": "用户",
+                "item-id": String(u.id || ""),
+              });
+            } else if (isAdmin() && !isCore) {
+              ops = _buildActionLink("编辑", "show-edit", {
+                "item-type": "用户",
+                "item-id": String(u.id || ""),
+              });
+            } else if (isAdmin() && isSelf) {
+              ops = _buildActionLink("编辑", "show-edit", {
+                "item-type": "用户",
+                "item-id": String(u.id || ""),
+              });
+            } else {
+              ops = _buildActionLink("查看", "show-edit", {
+                "item-type": "用户",
+                "item-id": String(u.id || ""),
+              });
+            }
+          html += `<tr>
+                    <td>${_escapeHtml(u.id)}</td>
+                    <td>${_escapeHtml(u.username)}</td>
+                    <td>${_escapeHtml(u.email)}</td>
+                    <td><span class="badge ${badge}">${_escapeHtml(role)}</span>${reviewState ? `<div style="font-size:12px;color:#999;margin-top:4px;">${_escapeHtml(reviewState)}</div>` : ""}</td>
+                    <td>${_escapeHtml(u.last_login || "-")}</td>
+                    <td>${ops}</td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+      }
+
+      async function loadContentPage() {
+        const tbody = document.getElementById("contentTbody");
+        if (tbody)
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#999;padding:16px;">加载中...</td></tr>`;
+        const r = await _fetchJson("/admin/api/content?page=1&page_size=20", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
+        if (!r.ok || !r.data || r.data.code !== 0 || !r.data.data) {
+          _renderContentRows([]);
+          const ct =
+            r && r.contentType ? String(r.contentType).toLowerCase() : "";
+          const respUrl = r && r.respUrl ? String(r.respUrl) : "";
+          const htmlHint =
+            ct.includes("text/html") &&
+            ((r && r.redirected) ||
+              (respUrl &&
+                respUrl.includes("/admin") &&
+                !respUrl.includes("/admin/api/")))
+              ? "登录页/重定向"
+              : ct.includes("text/html")
+                ? "响应HTML"
+                : "";
+          const hs =
+            r && r.timeout
+              ? "超时"
+              : htmlHint
+                ? htmlHint
+                : r && typeof r.status === "number"
+                  ? "HTTP " + r.status
+                  : "HTTP -";
+          showToast("danger", "加载失败", "无法获取内容数据（" + hs + "）");
+          return;
+        }
+        adminContentCache = Array.isArray(r.data.data.items)
+          ? r.data.data.items
+          : [];
+        _renderContentRows(adminContentCache);
+      }
+
+      async function loadUsersPage() {
+        const tbody = document.getElementById("userTbody");
+        if (tbody)
+          tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#999;padding:16px;">加载中...</td></tr>`;
+        const r = await _fetchJson("/admin/api/users?page=1&page_size=20", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+        });
+        if (!r.ok || !r.data || r.data.code !== 0 || !r.data.data) {
+          _renderUserRows([]);
+          const ct =
+            r && r.contentType ? String(r.contentType).toLowerCase() : "";
+          const respUrl = r && r.respUrl ? String(r.respUrl) : "";
+          const htmlHint =
+            ct.includes("text/html") &&
+            ((r && r.redirected) ||
+              (respUrl &&
+                respUrl.includes("/admin") &&
+                !respUrl.includes("/admin/api/")))
+              ? "登录页/重定向"
+              : ct.includes("text/html")
+                ? "响应HTML"
+                : "";
+          const hs =
+            r && r.timeout
+              ? "超时"
+              : htmlHint
+                ? htmlHint
+                : r && typeof r.status === "number"
+                  ? "HTTP " + r.status
+                  : "HTTP -";
+          showToast("danger", "加载失败", "无法获取用户数据（" + hs + "）");
+          return;
+        }
+        adminUsersCache = Array.isArray(r.data.data.items)
+          ? r.data.data.items
+          : [];
+        _renderUserRows(adminUsersCache);
+      }
+
+      function _initLocalState() {
+        if (Array.isArray(backupJobsCache) && backupJobsCache.length) return;
+
+        backupJobsCache = [];
+        const now = new Date();
+
+        for (let i = 0; i < 5; i++) {
+          const d = new Date(now);
+          d.setDate(d.getDate() - i);
+
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const dd = String(d.getDate()).padStart(2, "0");
+          const ymd = yyyy + mm + dd;
+          const dateStr = yyyy + "-" + mm + "-" + dd;
+
+          const seed = parseInt(ymd, 10);
+          const seqFull = Math.floor(
+            (Math.abs(Math.sin(seed) * 10000) % 8999) + 1000,
+          );
+          const seqInc = Math.floor(
+            (Math.abs(Math.cos(seed) * 10000) % 8999) + 1000,
+          );
+
+          let statusFull = "完成";
+          if (i === 0 && d.getHours() < 2) statusFull = "执行中";
+
+          backupJobsCache.push({
+            task: "BK-" + ymd + "-" + seqFull,
+            type: "full",
+            status: statusFull,
+            created_at: dateStr + " 02:00",
+            actor: "system",
+          });
+
+          if (i > 0 || d.getHours() > 22) {
+            backupJobsCache.push({
+              task: "BK-" + ymd + "-" + seqInc,
+              type: "inc",
+              status: "完成",
+              created_at: dateStr + " 23:10",
+              actor: "system",
+            });
+          }
+        }
+      }
+
+      let backupCurrentPage = 1;
+      const backupPageSize = 5;
+
+      function renderBackupPagination(page, totalPages) {
+        const el = document.getElementById("backupPagination");
+        if (!el) return;
+        const nav = el.closest("nav");
+        const wrap = nav ? nav.parentElement : null;
+
+        const p = Math.max(1, page || 1);
+        const tp = Math.max(1, totalPages || 1);
+        if (tp <= 1) {
+          el.innerHTML = "";
+          if (wrap) wrap.style.display = "none";
+          return;
+        }
+        if (wrap) wrap.style.display = "flex";
+
+        el.innerHTML = "";
+
+        function addItem(label, targetPage, disabled, active) {
+          const li = document.createElement("li");
+          li.className =
+            "page-item" +
+            (disabled ? " disabled" : "") +
+            (active ? " active" : "");
+          const a = document.createElement("a");
+          a.className = "page-link";
+          a.href = "javascript:;";
+          a.textContent = label;
+          a.addEventListener("click", function () {
+            if (disabled) return;
+            loadBackupPage(targetPage);
+          });
+          li.appendChild(a);
+          el.appendChild(li);
+        }
+
+        addItem("上一页", p - 1, p <= 1, false);
+
+        const windowSize = 5;
+        let start = Math.max(1, p - 2);
+        let end = Math.min(tp, start + windowSize - 1);
+        start = Math.max(1, end - windowSize + 1);
+
+        if (start > 1) {
+          addItem("1", 1, false, p === 1);
+          if (start > 2) addItem("...", p, true, false);
+        }
+
+        for (let i = start; i <= end; i++) {
+          addItem(String(i), i, false, i === p);
+        }
+
+        if (end < tp) {
+          if (end < tp - 1) addItem("...", p, true, false);
+          addItem(String(tp), tp, false, p === tp);
+        }
+
+        addItem("下一页", p + 1, p >= tp, false);
+      }
+
+      function _renderBackupJobs() {
+        const tbody = document.getElementById("backupTbody");
+        if (!tbody) return;
+        const rows = Array.isArray(backupJobsCache) ? backupJobsCache : [];
+        const total = rows.length;
+        const totalPages = Math.max(1, Math.ceil(total / backupPageSize));
+        if (backupCurrentPage > totalPages) backupCurrentPage = totalPages;
+        if (backupCurrentPage < 1) backupCurrentPage = 1;
+        renderBackupPagination(backupCurrentPage, totalPages);
+
+        if (!rows.length) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#999;padding:16px;">暂无数据</td></tr>`;
+          return;
+        }
+
+        const start = (backupCurrentPage - 1) * backupPageSize;
+        const end = start + backupPageSize;
+        const pageRows = rows.slice(start, end);
+        let html = "";
+        pageRows.forEach((j) => {
+          const t = String(j.type || "full");
+          const typeLabel = t === "inc" ? "增量" : "全量";
+          const st = String(j.status || "排队");
+          const badge =
+            st === "完成"
+              ? "bg-success"
+              : st === "执行中"
+                ? "bg-info"
+                : "bg-warning";
+          const action =
+            st === "完成"
+              ? _buildActionLink("下载", "trigger-backup", {
+                  task: String(j.task || ""),
+                  "backup-type": t,
+                })
+              : `<span style="color:#999;">-</span>`;
+          html += `<tr>
+                    <td>${_escapeHtml(j.task)}</td>
+                    <td>${_escapeHtml(typeLabel)}</td>
+                    <td><span class="badge ${badge}">${_escapeHtml(st)}</span></td>
+                    <td>${_escapeHtml(j.created_at || "-")}</td>
+                    <td>${action}</td>
+                </tr>`;
+        });
+        tbody.innerHTML = html;
+      }
+
+      function loadBackupPage(page) {
+        if (!canUseMaintenance()) {
+          showToast("warning", "无权限", "当前账号无维护中心访问权限");
+          return;
+        }
+        _initLocalState();
+        const p = Number(page || 1);
+        backupCurrentPage = Number.isFinite(p) ? p : 1;
+        _renderBackupJobs();
+      }
+
+      function _submitBackupDownload(taskId, backupType) {
+        const form = document.createElement("form");
+        form.method = "post";
+        form.action = "/admin/backup";
+        form.style.display = "none";
+
+        [
+          ["task", String(taskId || "")],
+          ["type", String(backupType || "full")],
+          ["csrf_token", String(ADMIN_CSRF_TOKEN || "")],
+        ].forEach(([name, value]) => {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = name;
+          input.value = value;
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+        setTimeout(() => {
+          try {
+            form.remove();
+          } catch (e) {}
+        }, 0);
+      }
+
+      function _readFieldValue(id) {
+        const el = document.getElementById(String(id || ""));
+        return el ? String(el.value || "").trim() : "";
+      }
+
+      async function _handleModalAction(el) {
+        const action = String(el?.dataset?.modalAction || "").trim();
+        if (!action) return;
+        if (action === "close-modal") {
+          closeModal();
+          return;
+        }
+        if (action === "close-and-toast") {
+          closeModal();
+          showToast(
+            String(el.dataset.toastLevel || "info"),
+            String(el.dataset.toastTitle || ""),
+            String(el.dataset.toastMessage || ""),
+          );
+          return;
+        }
+
+        if (el.disabled) return;
+        el.disabled = true;
+        try {
+          if (action === "create-content") {
+            const title = _readFieldValue("createContentTitle");
+            const status = _readFieldValue("createContentStatus");
+            const summary = _readFieldValue("createContentSummary");
+            const body = _readFieldValue("createContentBody");
+            if (!title) {
+              showToast("warning", "校验失败", "标题不能为空");
+              return;
+            }
+            const r = await submitChange("content", "create", "new", {
+              title: title,
+              summary: summary,
+              content: body,
+              status: status,
+            });
+            closeModal();
+            if (r && (r.status === "applied" || r.status === "pending_review")) {
+              await loadContentPage();
+            }
+            return;
+          }
+
+          if (action === "save-user-basic") {
+            const sid = String(el.dataset.itemId || "");
+            const r = await submitChange("users", "edit", sid, {
+              username: _readFieldValue("editUserName"),
+              email: _readFieldValue("editUserEmail"),
+              status: _readFieldValue("editUserStatus"),
+            });
+            closeModal();
+            if (r && (r.status === "applied" || r.status === "pending_review"))
+              await loadUsersPage();
+            return;
+          }
+
+          if (action === "save-user-full") {
+            const sid = String(el.dataset.itemId || "");
+            const r = await submitChange("users", "edit", sid, {
+              username: _readFieldValue("editUserName"),
+              email: _readFieldValue("editUserEmail"),
+              role: _readFieldValue("editUserRole"),
+              status: _readFieldValue("editUserStatus"),
+            });
+            closeModal();
+            if (r && (r.status === "applied" || r.status === "pending_review"))
+              await loadUsersPage();
+            return;
+          }
+
+          if (action === "save-content-edit") {
+            const sid = String(el.dataset.itemId || "");
+            const r = await submitChange("content", "edit", sid, {
+              title: _readFieldValue("editArticleTitle"),
+              summary: _readFieldValue("editArticleSummary"),
+              content: _readFieldValue("editArticleBody"),
+              status: _readFieldValue("editArticleStatus"),
+            });
+            closeModal();
+            if (r && (r.status === "applied" || r.status === "pending_review")) {
+              await loadContentPage();
+            }
+            return;
+          }
+
+          if (action === "confirm-delete") {
+            const itemType = String(el.dataset.itemType || "");
+            const sid = String(el.dataset.itemId || "");
+            const mod = itemType === "用户" ? "users" : "content";
+            const r = await submitChange(mod, "delete", sid, {});
+            closeModal();
+            if (r && r.status === "applied") {
+              if (mod === "users") await loadUsersPage();
+              else await loadContentPage();
+            }
+          }
+        } finally {
+          el.disabled = false;
+        }
+      }
+
+      (function () {
+        document.addEventListener("click", function (e) {
+          const actionTrigger =
+            e && e.target && typeof e.target.closest === "function"
+              ? e.target.closest("[data-admin-action]")
+              : null;
+          if (actionTrigger) {
+            const action = String(actionTrigger.dataset.adminAction || "").trim();
+            if (!action) return;
+            e.preventDefault();
+            if (action === "show-edit") {
+              showEdit(
+                String(actionTrigger.dataset.itemType || ""),
+                String(actionTrigger.dataset.itemId || ""),
+              );
+              return;
+            }
+            if (action === "trigger-backup") {
+              triggerBackup(
+                String(actionTrigger.dataset.task || ""),
+                String(actionTrigger.dataset.backupType || "full"),
+              );
+              return;
+            }
+            if (action === "show-create-content") {
+              showCreateContent();
+              return;
+            }
+            if (action === "reload-backup-page") {
+              loadBackupPage();
+              return;
+            }
+            if (action === "reload-security-logs") {
+              reloadSecurityLogs(Number(actionTrigger.dataset.page || "1") || 1);
+              return;
+            }
+          }
+
+          const modalButton =
+            e && e.target && typeof e.target.closest === "function"
+              ? e.target.closest("button[data-modal-action]")
+              : null;
+          if (modalButton) {
+            e.preventDefault();
+            _handleModalAction(modalButton);
+          }
+        });
+
+        document.addEventListener("submit", function (e) {
+          const form =
+            e && e.target && typeof e.target.closest === "function"
+              ? e.target.closest("form[data-admin-form]")
+              : null;
+          if (!form) return;
+          const formAction = String(form.dataset.adminForm || "").trim();
+          if (formAction === "upload") {
+            e.preventDefault();
+            submitUpload(e);
+          }
+        });
+      })();
+
+      function applyBranding(siteName) {
+        const name = String(siteName || "").trim() || "华盛CMS后台";
+        try {
+          const logo = document.querySelector(".logo");
+          if (logo)
+            logo.innerHTML = `<i class="fas fa-cube"></i>${_escapeHtml(name)}`;
+        } catch (e) {}
+        try {
+          CURRENT_SITE_NAME = name;
+          localStorage.setItem("hp_site_name", name);
+        } catch (e) {}
+        try {
+          const bc = document.getElementById("bread-current");
+          const cur = bc ? String(bc.textContent || "").trim() : "工作台";
+          document.title = name + " - " + (cur || "工作台");
+        } catch (e) {}
+      }
+
+      let _brandingLastFetchTs = 0;
+      async function refreshBrandingFromServer(force) {
+        try {
+          const now = Date.now();
+          if (!force && now - _brandingLastFetchTs < 15000) return;
+          _brandingLastFetchTs = now;
+          const r = await _fetchJson("/admin/api/settings", {
+            method: "GET",
+            headers: { Accept: "application/json" },
+          });
+          if (r && r.ok && r.data && r.data.code === 0 && r.data.data) {
+            const sn = String(r.data.data.site_name || "").trim();
+            if (sn) CURRENT_SITE_NAME = sn;
+            applyBranding(CURRENT_SITE_NAME || "华盛CMS后台");
+          }
+        } catch (e) {}
+      }
+
+      // --- 新增：角色菜单权限控制 ---
+      function applyMenuPermissions() {
+        // 定义每个角色允许访问的模块 (data-target 值)
+        // 注意：'dashboard' (工作台) 对所有人默认可见
+        const allowed = ROLE_MENUS[CURRENT_ROLE] || ["dashboard"];
+
+        document.querySelectorAll(".menu-item").forEach((item) => {
+          const target = item.getAttribute("data-target");
+          if (target && !allowed.includes(target)) {
+            item.style.display = "none";
+          } else {
+            item.style.display = "block";
+          }
+        });
+
+        const lastTarget = localStorage.getItem("hp_last_target");
+        if (lastTarget && !allowed.includes(lastTarget)) {
+          document.querySelector('.menu-item[data-target="dashboard"]').click();
+        }
+      }
+
+      async function submitChange(moduleKey, actionKey, idValue, dataObj) {
+        const payload = {
+          module: String(moduleKey || ""),
+          action: String(actionKey || ""),
+          id: String(idValue || ""),
+          data: dataObj && typeof dataObj === "object" ? dataObj : {},
+        };
+        const moduleAccessChecks = {
+          content: canManageContent,
+          users: isAdmin,
+          settings: function () {
+            return isAdmin() || CURRENT_ROLE === "运维";
+          },
+        };
+        const accessCheck = moduleAccessChecks[payload.module];
+        if (typeof accessCheck === "function" && !accessCheck()) {
+          showToast("warning", "无权限", "当前账号无此操作权限");
+          return { ok: false, status: "" };
+        }
+        const isRootTarget =
+          payload.module === "users" &&
+          (String(payload.id || "") === "0" ||
+            String((payload.data || {}).username || "").toLowerCase() === "root");
+
+        let resp = null;
+        let data = null;
+        try {
+          const controller =
+            typeof AbortController !== "undefined"
+              ? new AbortController()
+              : null;
+          const timeoutId = setTimeout(() => {
+            try {
+              if (controller) controller.abort();
+            } catch (e) {}
+          }, 8000);
+
+          resp = await fetch("/admin/api/submit_change", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Accept: "application/json",
+              "X-CSRF-Token": ADMIN_CSRF_TOKEN,
+            },
+            body: JSON.stringify(payload),
+            credentials: "same-origin",
+            signal: controller ? controller.signal : undefined,
+          });
+          clearTimeout(timeoutId);
+          try {
+            data = await resp.json();
+          } catch (e) {
+            data = null;
+          }
+        } catch (e) {
+          showToast("danger", "请求失败", "网络错误或请求超时");
+          return { ok: false, status: "" };
+        }
+
+        if (!data) {
+          const hs =
+            resp && typeof resp.status === "number"
+              ? "HTTP " + resp.status
+              : "HTTP -";
+          if (isRootTarget) {
+            showToast("info", "已登记", "变更请求已记录，待更高权限账号复核");
+            return { ok: true, status: "pending_review" };
+          }
+          showToast("danger", "请求失败", "服务不可用（" + hs + "）");
+          return { ok: false, status: "" };
+        }
+
+        if (
+          data.code === 0 &&
+          data.data &&
+          data.data.status === "pending_review"
+        ) {
+          showToast("info", "已登记", "变更请求已记录，待更高权限账号复核");
+          return { ok: true, status: "pending_review" };
+        }
+
+        if (data.code === 0 && data.data && data.data.status === "applied") {
+          showToast("success", "已保存", "变更已同步到当前页面");
+          return { ok: true, status: "applied" };
+        }
+
+        if (isRootTarget) {
+          showToast("info", "已登记", "变更请求已记录，待更高权限账号复核");
+          return { ok: true, status: "pending_review" };
+        }
+        showToast("danger", "操作失败", data.msg || "请求被拒绝");
+        return { ok: false, status: "" };
+      }
+
+      function requireSuperAdminReview(opTitle, detailText, approveCallback) {
+        if (isSuperAdmin()) {
+          if (typeof approveCallback === "function") approveCallback();
+          return;
+        }
+        let detail = String(detailText || "").trim();
+        if (detail.length > 200) detail = detail.slice(0, 200);
+        try {
+          const qs = new URLSearchParams();
+          qs.set("action", "review_request");
+          qs.set("op", String(opTitle || "危险操作"));
+          if (detail) qs.set("detail", detail);
+          new Image().src = "/admin/audit/log?" + qs.toString();
+        } catch (e) {
+          new Image().src = "/admin/audit/log?action=review_request";
+        }
+
+        openModal(
+          "需要更高权限复核",
+          `
+                <div class="mb-2" style="color:#333;font-weight:600;">${_escapeHtml(opTitle || "危险操作")}</div>
+                <div class="mb-2" style="color:#666;font-size:12px;">当前账号可先提交申请，复核通过后再正式生效。</div>
+                ${detail ? `<div class="mb-2" style="color:#999;font-size:12px;">对象：<code>${_escapeHtml(detail)}</code></div>` : ""}
+                <div class="mb-3">
+                    <label class="form-label">申请理由</label>
+                    <input class="form-control" placeholder="选填：填写变更原因" />
+                </div>
+                <div style="background:#f6f8fa;border:1px solid #eee;border-radius:6px;padding:10px;font-size:12px;color:#666;">
+                    提交后可在日志中心查看本次申请记录。
+                </div>
+                `,
+          `
+                ${_buildModalButton("取消", "close-modal", "btn btn-light")}
+                ${_buildModalButton("提交", "close-and-toast", "btn btn-primary", {
+                  "toast-level": "info",
+                  "toast-title": "已登记",
+                  "toast-message": "复核申请已记录",
+                })}
+                `,
+        );
+      }
+
+      function showCreateContent() {
+        if (!canManageContent()) {
+          showToast("warning", "无权限", "当前账号无内容维护权限");
+          return;
+        }
+        new Image().src = "/admin/audit/log?action=create&type=content";
+        openModal(
+          "添加内容",
+          `
+                <div class="mb-2" style="color:#666;font-size:12px;">草稿将立即保存，发布/下线需确认后生效。</div>
+                <div class="mb-3">
+                    <label class="form-label">标题</label>
+                    <input class="form-control" id="createContentTitle" placeholder="请输入标题" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">摘要（可选）</label>
+                    <input class="form-control" id="createContentSummary" placeholder="用于列表摘要展示" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">正文</label>
+                    <textarea class="form-control" id="createContentBody" rows="6" placeholder="请输入正文内容"></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">状态</label>
+                        <select class="form-select" id="createContentStatus">
+                            <option selected>草稿</option>
+                            <option value="已发布">发布</option>
+                            <option value="待下线">下线</option>
+                        </select>
+                    </div>
+                </div>
+                `,
+          `
+                ${_buildModalButton("取消", "close-modal", "btn btn-light")}
+                ${_buildModalButton("保存", "create-content", "btn btn-primary")}
+                `,
+        );
+      }
+
+      function showToast(type, title, message, durationMs) {
+        const container = document.getElementById("hpToastContainer");
+        if (!container) return;
+        const t = type || "info";
+        const d =
+          typeof durationMs === "number"
+            ? durationMs
+            : t === "danger"
+              ? 3600
+              : 2200;
+        const key = [t, String(title || ""), String(message || "")].join("|");
+        const now = Date.now();
+        if (key === lastToastKey && now - lastToastAt < 1400) return;
+        lastToastKey = key;
+        lastToastAt = now;
+
+        const icons = {
+          success: '<i class="fas fa-check-circle"></i>',
+          warning: '<i class="fas fa-exclamation-triangle"></i>',
+          danger: '<i class="fas fa-times-circle"></i>',
+          info: '<i class="fas fa-info-circle"></i>',
+        };
+
+        const el = document.createElement("div");
+        el.className = "hp-toast " + t;
+        el.innerHTML = `
+                <div class="icon">${icons[t] || icons.info}</div>
+                <div class="content">
+                    <div class="title">${_escapeHtml(title || "提示")}</div>
+                    <div class="message">${_escapeHtml(message || "")}</div>
+                </div>
+            `;
+        while (container.children.length >= TOAST_LIMIT) {
+          try {
+            container.removeChild(container.firstElementChild);
+          } catch (e) {
+            break;
+          }
+        }
+        container.appendChild(el);
+        setTimeout(() => {
+          try {
+            el.remove();
+          } catch (e) {}
+        }, d);
+      }
+
+      window.addEventListener("error", function (ev) {
+        try {
+          // 资源加载失败（常见：被广告拦截器拦截）不应打断页面逻辑
+          const t = ev && ev.target ? ev.target : null;
+          if (t && t.tagName && String(t.tagName).toLowerCase() === "img")
+            return;
+          const msg = ev && ev.message ? String(ev.message) : "Unknown error";
+          if (msg.includes("ERR_BLOCKED_BY_CLIENT")) return;
+          if (msg.includes("Failed to load resource")) return;
+          showToast("danger", "页面错误", msg);
+        } catch (e) {}
+      });
+
+      window.addEventListener("unhandledrejection", function (ev) {
+        try {
+          const msg = ev && ev.reason ? String(ev.reason) : "Unknown rejection";
+          showToast("danger", "请求异常", msg);
+        } catch (e) {}
+      });
+
+      function openModal(title, bodyHtml, footerHtml) {
+        const backdrop = document.getElementById("hpModalBackdrop");
+        const t = document.getElementById("hpModalTitle");
+        const b = document.getElementById("hpModalBody");
+        const f = document.getElementById("hpModalFooter");
+        if (!backdrop || !t || !b || !f) return;
+
+        t.textContent = title || "提示";
+        _setSanitizedHtml(b, bodyHtml);
+        _setSanitizedHtml(f, footerHtml);
+        backdrop.style.display = "flex";
+        backdrop.setAttribute("aria-hidden", "false");
+      }
+
+      function closeModal() {
+        const backdrop = document.getElementById("hpModalBackdrop");
+        if (!backdrop) return;
+        try {
+          const ae = document.activeElement;
+          if (ae && backdrop.contains(ae) && typeof ae.blur === "function")
+            ae.blur();
+        } catch (e) {}
+        try {
+          // 将焦点转移到页面主体，避免 aria-hidden 警告
+          if (
+            document &&
+            document.body &&
+            typeof document.body.focus === "function"
+          ) {
+            const had = document.body.hasAttribute("tabindex");
+            if (!had) document.body.setAttribute("tabindex", "-1");
+            document.body.focus();
+            if (!had) document.body.removeAttribute("tabindex");
+          }
+        } catch (e) {}
+        backdrop.style.display = "none";
+        backdrop.setAttribute("aria-hidden", "true");
+      }
+
+      (function () {
+        const closeBtn = document.getElementById("hpModalClose");
+        const backdrop = document.getElementById("hpModalBackdrop");
+        if (closeBtn) closeBtn.addEventListener("click", closeModal);
+        if (backdrop) {
+          backdrop.addEventListener("click", function (e) {
+            if (e && e.target === backdrop) closeModal();
+          });
+        }
+        document.addEventListener("keydown", function (e) {
+          if (e && e.key === "Escape") closeModal();
+        });
+      })();
+
+      function showModal(title) {
+        new Image().src =
+          "/admin/audit/log?action=open_modal&title=" +
+          encodeURIComponent(title);
+        openModal(
+          title,
+          `
+                <div class="mb-2" style="color:#333;font-weight:600;">操作确认</div>
+                <div class="mb-2" style="color:#666;font-size:12px;">提交后会保留本次操作记录。</div>
+                <div class="mb-3">
+                    <label class="form-label">备注</label>
+                    <input class="form-control" placeholder="选填：填写变更原因" />
+                </div>
+                <div style="background:#f6f8fa;border:1px solid #eee;border-radius:6px;padding:10px;font-size:12px;color:#666;">
+                    提示：如数据校验通过，页面会自动刷新对应结果。
+                </div>
+                `,
+          `
+                ${_buildModalButton("关闭", "close-modal", "btn btn-light")}
+                ${_buildModalButton("提交", "close-and-toast", "btn btn-primary", {
+                  "toast-level": "success",
+                  "toast-title": "已记录",
+                  "toast-message": "操作已保存",
+                })}
+                `,
+        );
+      }
+
+      function showEdit(type, id) {
+        new Image().src =
+          "/admin/audit/log?action=edit&type=" + type + "&id=" + id;
+        const safeType = _escapeHtml(type);
+        const safeId = _escapeHtml(id);
+
+          if (String(type) === "用户") {
+            if (!canViewUsers()) {
+              showToast("warning", "无权限", "当前账号无用户中心访问权限");
+              return;
+            }
+            const users = Array.isArray(adminUsersCache) ? adminUsersCache : [];
+            const u = users.find((x) => String(x.id) === String(id)) || {
+              id: id,
+              username: "user" + safeId,
+            email: "user" + safeId + "@company.com",
+            role: "编辑",
+            status: "启用",
+            last_login: "-",
+          };
+            const isRootUser =
+              String(u.username || "").toLowerCase() === "root" ||
+              String(u.id || "") === "0";
+            const uRole = String(u.role || "编辑");
+            const editorUserName = _escapeHtml(
+              u.editor_username || u.username || "",
+            );
+            const editorUserEmail = _escapeHtml(
+              u.editor_email || u.email || "",
+            );
+            const editorUserRole = String(u.editor_role || u.role || "编辑");
+            const editorUserStatus = String(
+              u.editor_status || u.status || "启用",
+            );
+            const hasPendingReview =
+              String(u.review_state || "").trim() === "待复核";
+            const isCore =
+              !isRootUser &&
+              (uRole === "超级管理员" ||
+                uRole === "管理员" ||
+                String(u.username || "").toLowerCase() === "admin");
+            const isSelf =
+              String(u.username || "").toLowerCase() ===
+              String(CURRENT_USER || "").toLowerCase();
+            if (isRootUser) {
+              return;
+            }
+          if (!isSuperAdmin() && (!isAdmin() || (isCore && !isSelf))) {
+            openModal(
+              "查看用户 #" + safeId,
+              `
+                        <div class="mb-2" style="color:#666;font-size:12px;">权限不足</div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">用户名</label>
+                                <input class="form-control" value="${_escapeHtml(u.username)}" readonly />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">邮箱</label>
+                                <input class="form-control" value="${_escapeHtml(u.email)}" readonly />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">角色</label>
+                                <input class="form-control" value="${_escapeHtml(u.role || "-")}" readonly />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">状态</label>
+                                <input class="form-control" value="${_escapeHtml(u.status || "-")}" readonly />
+                            </div>
+                        </div>
+                         <div class="mb-2" style="color:#999;font-size:12px;">最后登录：${_escapeHtml(u.last_login || "-")}</div>
+                         `,
+              `
+                        ${_buildModalButton("关闭", "close-modal", "btn btn-light")}
+                        `,
+            );
+            return;
+          }
+          if (isAdmin() && !isSuperAdmin()) {
+            const tip = hasPendingReview
+              ? "当前表单展示的是待复核暂存版本，正式生效信息仍保持上一版。"
+              : isSelf
+                ? "修改本人信息需确认后生效。"
+                : "可调整用户基础信息与启用状态，角色/权限需审批。";
+            openModal(
+              "编辑用户 #" + safeId,
+              `
+                        <div class="mb-2" style="color:#666;font-size:12px;">${_escapeHtml(tip)}</div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">用户名</label>
+                                <input class="form-control" id="editUserName" value="${editorUserName}" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">邮箱</label>
+                                <input class="form-control" id="editUserEmail" value="${editorUserEmail}" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">角色</label>
+                                <input class="form-control" value="${_escapeHtml(uRole)}" readonly />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">状态</label>
+                                <select class="form-select" id="editUserStatus">
+                                    <option ${editorUserStatus === "启用" ? "selected" : ""}>启用</option>
+                                    <option ${editorUserStatus === "禁用" ? "selected" : ""}>禁用</option>
+                                </select>
+                            </div>
+                        </div>
+                         <div class="mb-2" style="color:#999;font-size:12px;">最后登录：${_escapeHtml(u.last_login)}</div>
+                         `,
+              `
+                        ${_buildModalButton("取消", "close-modal", "btn btn-light")}
+                        ${_buildModalButton("保存", "save-user-basic", "btn btn-primary", {
+                          "item-id": String(id || ""),
+                        })}
+                        `,
+            );
+            return;
+          }
+          openModal(
+            "编辑用户 #" + safeId,
+            `
+                    <div class="mb-2" style="color:#666;font-size:12px;">${_escapeHtml(hasPendingReview ? "当前表单展示的是待复核暂存版本，正式生效信息仍保持上一版。" : "更新用户基础信息与权限角色。")}</div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">用户名</label>
+                            <input class="form-control" id="editUserName" value="${editorUserName}" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">邮箱</label>
+                            <input class="form-control" id="editUserEmail" value="${editorUserEmail}" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">角色</label>
+                            <select class="form-select" id="editUserRole">
+                                <option ${editorUserRole === "管理员" ? "selected" : ""}>管理员</option>
+                                <option ${editorUserRole === "编辑" ? "selected" : ""}>编辑</option>
+                                <option ${editorUserRole === "运维" ? "selected" : ""}>运维</option>
+                                <option ${editorUserRole === "审计" ? "selected" : ""}>审计</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">状态</label>
+                            <select class="form-select" id="editUserStatus">
+                                <option ${editorUserStatus === "启用" ? "selected" : ""}>启用</option>
+                                <option ${editorUserStatus === "禁用" ? "selected" : ""}>禁用</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-2" style="color:#999;font-size:12px;">最后登录：${_escapeHtml(u.last_login)}</div>
+                    `,
+            `
+                    ${_buildModalButton("取消", "close-modal", "btn btn-light")}
+                    ${_buildModalButton("保存", "save-user-full", "btn btn-primary", {
+                      "item-id": String(id || ""),
+                    })}
+                    `,
+          );
+          return;
+        }
+
+        if (!canManageContent()) {
+          showToast("warning", "无权限", "当前账号无内容维护权限");
+          return;
+        }
+
+        const items = Array.isArray(adminContentCache) ? adminContentCache : [];
+        const a = items.find((x) => String(x.id) === String(id)) || {
+          id: id,
+          title: safeType + " #" + safeId,
+          author: "admin",
+          publish_time: "-",
+          status: "已发布",
+        };
+
+        const editorTitle = _escapeHtml(a.editor_title || a.title || "");
+        const editorSummary = _escapeHtml(a.editor_summary || a.summary || "");
+        const editorBody = _escapeHtml(a.editor_content || a.content || "");
+        const editorStatus = String(a.editor_status || a.status || "草稿");
+        const hasPendingReview = String(a.review_state || "").trim() === "待复核";
+        const introHint = hasPendingReview
+          ? "当前表单展示的是待复核暂存版本，线上可见内容仍保持上一版。"
+          : "提交后将生成变更记录，部分操作需确认后生效。";
+        const internalPreviewUrl =
+          "/admin/preview?id=" + encodeURIComponent(String(id));
+
+        openModal(
+          "编辑" + safeType + " #" + safeId,
+          `
+                <div class="mb-2" style="color:#666;font-size:12px;">${_escapeHtml(introHint)}</div>
+                <div class="mb-3">
+                    <label class="form-label">标题</label>
+                    <input class="form-control" id="editArticleTitle" value="${editorTitle}" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">摘要（可选）</label>
+                    <input class="form-control" id="editArticleSummary" value="${editorSummary}" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">正文</label>
+                    <textarea class="form-control" id="editArticleBody" rows="8">${editorBody}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">预览</label>
+                    <div style="font-size:12px;color:#999;">预览：<a href="${_escapeHtml(internalPreviewUrl)}" target="_blank" rel="noopener">后台预览</a></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">作者</label>
+                        <input class="form-control" value="${_escapeHtml(a.author)}" readonly />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">发布时间</label>
+                        <input class="form-control" value="${_escapeHtml(a.publish_time)}" readonly />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">状态</label>
+                    <select class="form-select" id="editArticleStatus">
+                        <option ${editorStatus === "草稿" ? "selected" : ""}>草稿</option>
+                        <option value="已发布" ${(editorStatus === "已发布" || editorStatus === "待发布") ? "selected" : ""}>发布</option>
+                        <option value="待下线" ${editorStatus === "待下线" ? "selected" : ""}>下线</option>
+                    </select>
+                </div>
+                `,
+          `
+                ${_buildModalButton("取消", "close-modal", "btn btn-light")}
+                ${_buildModalButton("保存", "save-content-edit", "btn btn-primary", {
+                  "item-id": String(id || ""),
+                })}
+                `,
+        );
+      }
+      function showDelete(type, id) {
+        new Image().src =
+          "/admin/audit/log?action=delete&type=" + type + "&id=" + id;
+        const safeType = _escapeHtml(type);
+        const safeId = _escapeHtml(id);
+        openModal(
+          "确认删除",
+          `
+                <div style="color:#333;font-weight:600;">你确定要删除 ${safeType} #${safeId} 吗？</div>
+                <div class="mt-2" style="color:#666;font-size:12px;">该操作需确认后生效。</div>
+                `,
+          `
+                ${_buildModalButton("取消", "close-modal", "btn btn-light")}
+                ${_buildModalButton("确认删除", "confirm-delete", "btn btn-danger", {
+                  "item-type": String(type || ""),
+                  "item-id": String(id || ""),
+                })}
+                `,
+        );
+      }
+
+      // 【删除】已删除 showPermission, fetchUserProfile, renderPermissionDialog 相关代码，彻底移除权限查看功能
+
+      function setSecLogAlert(type, msg) {
+        const el = document.getElementById("secLogAlert");
+        if (!el) return;
+        if (!msg) {
+          el.innerHTML = "";
+          return;
+        }
+        const cls =
+          type === "success"
+            ? "alert-success"
+            : type === "warning"
+              ? "alert-warning"
+              : "alert-danger";
+        el.innerHTML = `<div class="alert ${cls}" role="alert" style="margin-bottom: 12px;">${_escapeHtml(msg)}</div>`;
+      }
+
+      function renderSecLogPagination(page, totalPages) {
+        const el = document.getElementById("secLogPagination");
+        if (!el) return;
+        el.innerHTML = "";
+
+        function addItem(label, targetPage, disabled, active) {
+          const li = document.createElement("li");
+          li.className =
+            "page-item" +
+            (disabled ? " disabled" : "") +
+            (active ? " active" : "");
+          const a = document.createElement("a");
+          a.className = "page-link";
+          a.href = "javascript:;";
+          a.textContent = label;
+          a.addEventListener("click", function () {
+            if (disabled) return;
+            reloadSecurityLogs(targetPage);
+          });
+          li.appendChild(a);
+          el.appendChild(li);
+        }
+
+        const p = Math.max(1, page || 1);
+        const tp = Math.max(1, totalPages || 1);
+
+        addItem("上一页", p - 1, p <= 1, false);
+
+        const windowSize = 5;
+        let start = Math.max(1, p - 2);
+        let end = Math.min(tp, start + windowSize - 1);
+        start = Math.max(1, end - windowSize + 1);
+
+        if (start > 1) {
+          addItem("1", 1, false, p === 1);
+          if (start > 2) addItem("...", p, true, false);
+        }
+
+        for (let i = start; i <= end; i++) {
+          addItem(String(i), i, false, i === p);
+        }
+
+        if (end < tp) {
+          if (end < tp - 1) addItem("...", p, true, false);
+          addItem(String(tp), tp, false, p === tp);
+        }
+
+        addItem("下一页", p + 1, p >= tp, false);
+      }
+
+      function reloadSecurityLogs(page) {
+        const tbody = document.getElementById("secLogTbody");
+        const summary = document.getElementById("secLogSummary");
+        if (!tbody) return;
+        if (!canViewLogs()) {
+          setSecLogAlert("danger", "当前账号无访问日志查看权限。");
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#999;padding:16px;">暂无数据</td></tr>`;
+          if (summary) summary.textContent = "";
+          renderSecLogPagination(1, 1);
+          return;
+        }
+
+        const kwEl = document.getElementById("secLogKeyword");
+        const keyword = kwEl ? (kwEl.value || "").trim() : "";
+        const p = page || 1;
+
+        setSecLogAlert("", "");
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#999;padding:16px;">加载中...</td></tr>`;
+        if (summary) summary.textContent = "";
+
+        const qs = new URLSearchParams();
+        qs.set("page", String(p));
+        qs.set("page_size", "10");
+        if (keyword) qs.set("q", keyword);
+
+        fetch("/admin/api/access_logs?" + qs.toString(), {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          credentials: "same-origin",
+        })
+          .then(async (resp) => {
+            let data = null;
+            try {
+              data = await resp.json();
+            } catch (e) {
+              data = null;
+            }
+
+            if (!data || data.code !== 0 || !data.data) {
+              setSecLogAlert("danger", "加载失败：服务暂不可用或无权限。");
+              tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#999;padding:16px;">暂无数据</td></tr>`;
+              renderSecLogPagination(1, 1);
+              return;
+            }
+
+            const items = data.data.items || [];
+            const total = Number(data.data.total || 0);
+            const cur = Number(data.data.page || 1);
+            const totalPages = Number(data.data.total_pages || 1);
+            const kw = data.data.keyword || "";
+
+            if (summary) {
+              const tip = kw ? "，关键词：" + kw : "";
+              summary.textContent =
+                "共 " +
+                total +
+                " 条访问记录" +
+                tip +
+                "，第 " +
+                cur +
+                "/" +
+                totalPages +
+                " 页";
+            }
+
+            if (!items.length) {
+              tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#999;padding:16px;">暂无数据</td></tr>`;
+              renderSecLogPagination(cur, totalPages);
+              return;
+            }
+
+            let html = "";
+            items.forEach((it) => {
+              const ok = String(it.result || "") === "成功";
+              const resultHtml = ok
+                ? '<span class="text-success">成功</span>'
+                : '<span class="text-danger">失败</span>';
+              html += `<tr>
+                        <td style="white-space:nowrap;">${_escapeHtml(it.time || "")}</td>
+                        <td style="white-space:nowrap;">${_escapeHtml(it.user || "")}</td>
+                        <td style="white-space:nowrap;">${_escapeHtml(it.ip || "")}</td>
+                        <td style="word-break:break-all;">${_escapeHtml(it.action || "")}</td>
+                        <td style="white-space:nowrap;">${resultHtml}</td>
+                    </tr>`;
+            });
+            tbody.innerHTML = html;
+            renderSecLogPagination(cur, totalPages);
+          })
+          .catch(() => {
+            setSecLogAlert("danger", "加载失败：网络错误或服务不可用。");
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:#999;padding:16px;">暂无数据</td></tr>`;
+            renderSecLogPagination(1, 1);
+          });
+      }
+      function triggerBackup(taskId, backupType) {
+        let tid = taskId ? String(taskId) : "";
+        let t = backupType ? String(backupType) : "full";
+
+        if (!tid) {
+          if (!isAdmin()) {
+            showToast("warning", "无权限", "当前账号无备份导出权限");
+            return;
+          }
+          const d = new Date();
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const dd = String(d.getDate()).padStart(2, "0");
+          const seq = String(Math.floor(1 + Math.random() * 9999)).padStart(
+            4,
+            "0",
+          );
+          tid = `BK-${yyyy}${mm}${dd}-${seq}`;
+
+          const createdAt = `${yyyy}-${mm}-${dd} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+          const job = {
+            task: tid,
+            type: t,
+            status: "排队",
+            created_at: createdAt,
+            actor: String(CURRENT_USER || "admin"),
+          };
+          _initLocalState();
+          backupJobsCache.unshift(job);
+          _renderBackupJobs();
+          showToast("info", "任务已创建", "备份正在准备，完成后可直接下载");
+
+          const delay1 = 650 + Math.floor(Math.random() * 550);
+          const delay2 = delay1 + 1000 + Math.floor(Math.random() * 900);
+          setTimeout(() => {
+            try {
+              const r = backupJobsCache.find(
+                (x) => String(x.task) === String(tid),
+              );
+              if (r && r.status === "排队") r.status = "执行中";
+              _renderBackupJobs();
+            } catch (e) {}
+          }, delay1);
+          setTimeout(() => {
+            try {
+              const r = backupJobsCache.find(
+                (x) => String(x.task) === String(tid),
+              );
+              if (r) r.status = "完成";
+              _renderBackupJobs();
+              showToast("success", "备份已就绪", "文件已生成，可直接下载");
+            } catch (e) {}
+          }, delay2);
+          return;
+        }
+
+        // 下载/导出：仅管理员/超级管理员/运维允许
+        try {
+          const role = String(CURRENT_ROLE || "");
+          const canDownload = isAdmin() || role === "运维";
+          if (!canDownload) {
+            new Image().src = "/admin/audit/log?action=backup_download_denied";
+            showToast("warning", "无权限", "当前账号无备份导出权限");
+            return;
+          }
+        } catch (e) {}
+
+        _initLocalState();
+        const j = backupJobsCache.find((x) => String(x.task) === String(tid));
+        if (j && String(j.status || "") !== "完成") {
+          showToast("info", "任务处理中", "备份文件仍在生成，请稍后再试");
+          return;
+        }
+
+        try {
+          const qs = new URLSearchParams();
+          qs.set("action", "backup_download");
+          qs.set("task", String(tid));
+          qs.set("type", String(t));
+          new Image().src = "/admin/audit/log?" + qs.toString();
+        } catch (e) {
+          new Image().src = "/admin/audit/log?action=backup_download";
+        }
+
+        _submitBackupDownload(tid, t);
+      }
+
+      function showBackupJob(taskId, backupType, status) {
+        const tid = taskId ? String(taskId) : "-";
+        const t = backupType ? String(backupType) : "full";
+        const s = status ? String(status) : "排队";
+        try {
+          const qs = new URLSearchParams();
+          qs.set("action", "backup_job");
+          qs.set("task", tid);
+          qs.set("type", t);
+          new Image().src = "/admin/audit/log?" + qs.toString();
+        } catch (e) {
+          new Image().src = "/admin/audit/log?action=backup_job";
+        }
+
+        const typeLabel = t === "inc" ? "增量" : "全量";
+        showToast("info", "备份任务", `任务 ${tid}（${typeLabel}）状态：${s}`);
+      }
+
+      function setUploadAlert(type, msg) {
+        const el = document.getElementById("upload-alert");
+        if (!el) return;
+        const cls =
+          type === "success"
+            ? "alert-success"
+            : type === "warning"
+              ? "alert-warning"
+              : "alert-danger";
+        const safeMsg = _escapeHtml(msg || "");
+        el.innerHTML = `<div class="alert ${cls}" role="alert" style="margin-bottom: 12px;">${safeMsg}</div>`;
+      }
+
+      function submitUpload(e) {
+        if (e && e.preventDefault) e.preventDefault();
+        if (!isAdmin()) {
+          new Image().src = "/admin/audit/log?action=upload_denied";
+          setUploadAlert("warning", "无权限：当前账号无配置导入权限。");
+          showToast("warning", "无权限", "当前账号无配置导入权限");
+          return false;
+        }
+        const f = document.getElementById("cfgFile");
+        new Image().src = "/admin/audit/log?action=upload_submit";
+        if (!f || !f.files || f.files.length === 0) {
+          setUploadAlert("warning", "请选择需要导入的配置包");
+          return false;
+        }
+
+        const fd = new FormData();
+        fd.append("file", f.files[0]);
+        fd.append("csrf_token", ADMIN_CSRF_TOKEN);
+
+        setUploadAlert("warning", "正在上传并进行签名校验，请稍候...");
+
+        fetch("/admin/upload", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+          body: fd,
+          credentials: "same-origin",
+        })
+          .then(async (resp) => {
+            let data = null;
+            try {
+              data = await resp.json();
+            } catch (err) {
+              data = null;
+            }
+            if (data && (data.message || data.msg)) {
+              const base = String(data.message || data.msg);
+              setUploadAlert("danger", base);
+            } else if (data && data.error) {
+              setUploadAlert("danger", String(data.error));
+            } else {
+              setUploadAlert("danger", "导入失败：配置包校验未通过。");
+            }
+          })
+          .catch(() => {
+            setUploadAlert("danger", "上传失败：网络错误或服务不可用。");
+          });
+
+        return false;
+      }
+
+      const mainContentEl = document.getElementById("main-content");
+      const dashboardHomeHtml = mainContentEl ? mainContentEl.innerHTML : "";
+
+      let rtChartTimer = null;
+      let rtPvData = [];
+      let rtUvData = [];
+      let rtChartResizeHandler = null;
+
+      function stopRealtimeChart() {
+        if (rtChartTimer) {
+          clearInterval(rtChartTimer);
+          rtChartTimer = null;
+        }
+        if (rtChartResizeHandler) {
+          window.removeEventListener("resize", rtChartResizeHandler);
+          rtChartResizeHandler = null;
+        }
+      }
+
+      function initRealtimeChart() {
+        stopRealtimeChart();
+
+        const canvas = document.getElementById("rtChart");
+        if (!canvas) return;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        const parent = canvas.parentElement;
+        if (!parent) return;
+
+        const dpi = window.devicePixelRatio || 1;
+        function resizeCanvas() {
+          const w = Math.max(320, parent.clientWidth || 0);
+          const h = Math.max(220, parent.clientHeight || 0);
+          canvas.width = Math.floor(w * dpi);
+          canvas.height = Math.floor(h * dpi);
+          canvas.style.width = w + "px";
+          canvas.style.height = h + "px";
+          ctx.setTransform(dpi, 0, 0, dpi, 0, 0);
+          draw();
+        }
+
+        function clamp(v, min, max) {
+          return Math.min(Math.max(v, min), max);
+        }
+        function ensureData() {
+          if (rtPvData.length >= 60 && rtUvData.length >= 60) return;
+
+          rtPvData = [];
+          rtUvData = [];
+
+          let pv = 420 + Math.random() * 180;
+          let uv = 140 + Math.random() * 70;
+          for (let i = 0; i < 60; i++) {
+            pv = clamp(pv + (Math.random() - 0.5) * 60, 80, 1200);
+            uv = clamp(uv + (Math.random() - 0.5) * 24, 20, 520);
+
+            uv = Math.min(uv, pv * 0.75);
+
+            rtPvData.push(pv);
+            rtUvData.push(uv);
+          }
+        }
+
+        function drawGrid(w, h, padding) {
+          ctx.save();
+          ctx.strokeStyle = "#eef2f7";
+          ctx.lineWidth = 1;
+          const rows = 5;
+          for (let r = 0; r <= rows; r++) {
+            const y = padding + (h - padding * 2) * (r / rows);
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(w - padding, y);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+
+        function drawLine(series, color, w, h, padding, maxV, stepX) {
+          const n = series.length;
+          ctx.beginPath();
+          for (let i = 0; i < n; i++) {
+            const v = series[i];
+            const x = padding + stepX * i;
+            const y = padding + (h - padding * 2) * (1 - v / maxV);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          const last = series[n - 1] || 0;
+          const lastX = padding + stepX * (n - 1);
+          const lastY = padding + (h - padding * 2) * (1 - last / maxV);
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(lastX, lastY, 3.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        function draw() {
+          ensureData();
+          const w = canvas.clientWidth || 800;
+          const h = canvas.clientHeight || 300;
+          const padding = 14;
+
+          ctx.clearRect(0, 0, w, h);
+          drawGrid(w, h, padding);
+
+          const n = Math.min(rtPvData.length, rtUvData.length);
+          const stepX = (w - padding * 2) / Math.max(n - 1, 1);
+          const maxV = Math.max(100, ...rtPvData, ...rtUvData);
+
+          drawLine(rtPvData, "#1890ff", w, h, padding, maxV, stepX);
+          drawLine(rtUvData, "#52c41a", w, h, padding, maxV, stepX);
+
+          const pvLast = Math.round(rtPvData[rtPvData.length - 1] || 0);
+          const uvLast = Math.round(rtUvData[rtUvData.length - 1] || 0);
+          const meta = document.getElementById("rtChartMeta");
+          if (meta) meta.textContent = "当前：PV " + pvLast + " / UV " + uvLast;
+        }
+
+        let resizeTimer = null;
+        function onResize() {
+          if (resizeTimer) clearTimeout(resizeTimer);
+          resizeTimer = setTimeout(resizeCanvas, 120);
+        }
+
+        resizeCanvas();
+        rtChartResizeHandler = onResize;
+        window.addEventListener("resize", rtChartResizeHandler);
+
+        rtChartTimer = setInterval(() => {
+          ensureData();
+          const pvLast = rtPvData[rtPvData.length - 1] || 420;
+          const uvLast = rtUvData[rtUvData.length - 1] || 140;
+
+          const pvNext = clamp(pvLast + (Math.random() - 0.5) * 80, 80, 1200);
+          let uvNext = clamp(uvLast + (Math.random() - 0.5) * 28, 20, 520);
+          uvNext = Math.min(uvNext, pvNext * 0.75);
+
+          rtPvData.push(pvNext);
+          rtUvData.push(uvNext);
+          if (rtPvData.length > 60) rtPvData.shift();
+          if (rtUvData.length > 60) rtUvData.shift();
+          draw();
+        }, 1200);
+      }
+
+      function restoreDashboardHome() {
+        if (!mainContentEl) return;
+        mainContentEl.innerHTML = dashboardHomeHtml;
+        initRealtimeChart();
+        try {
+          applyBranding(CURRENT_SITE_NAME || "{{ site_name|default('华盛内容管理') }}");
+        } catch (e) {}
+        refreshBrandingFromServer(false);
+      }
+
+      document.querySelectorAll(".menu-item").forEach((item) => {
+        item.addEventListener("click", function () {
+          document
+            .querySelectorAll(".menu-item")
+            .forEach((i) => i.classList.remove("active"));
+          this.classList.add("active");
+
+          const title = this.getAttribute("data-title");
+          const type = this.getAttribute("data-type");
+          const target = this.getAttribute("data-target");
+
+          try {
+            if (target) localStorage.setItem("hp_last_target", String(target));
+          } catch (e) {}
+
+          if (!mainContentEl) return;
+
+          if (target === "dashboard") {
+            restoreDashboardHome();
+            return;
+          }
+
+          stopRealtimeChart();
+
+          if (pageContents[target]) {
+            mainContentEl.innerHTML = `
+                        <div style="margin-bottom: 24px;">
+                            <span style="color: #999;">首页 / </span>
+                            <span style="font-weight: bold; color: #333;" id="bread-current">${title}</span>
+                            <h3 style="margin-top: 10px; font-weight: bold;" id="page-title">${title}</h3>
+                        </div>
+                        ${pageContents[target]}
+                    `;
+            new Image().src =
+              "/admin/audit/log?module=" + encodeURIComponent(title);
+
+            try {
+      applyBranding(CURRENT_SITE_NAME || "{{ site_name|default('华盛内容管理') }}");
+            } catch (e) {}
+
+            refreshBrandingFromServer(false);
+
+            if (target === "logs") {
+              const kw = document.getElementById("secLogKeyword");
+              if (kw) {
+                kw.addEventListener("keydown", function (e) {
+                  if (e && e.key === "Enter") reloadSecurityLogs(1);
+                });
+              }
+              reloadSecurityLogs(1);
+            } else if (target === "content") {
+              loadContentPage();
+            } else if (target === "backup") {
+              loadBackupPage();
+            } else if (target === "users") {
+              loadUsersPage();
+            } else if (target === "maintenance") {
+              applyMaintenancePermissions();
+              loadBackupPage();
+            }
+          }
+        });
+      });
+
+      refreshBrandingFromServer(true);
+
+      fetchCurrentUser();
+      applyMenuPermissions();
+
+      (function restoreLastPage() {
+        initRealtimeChart();
+      })();
+    </script>
+  </body>
+</html>

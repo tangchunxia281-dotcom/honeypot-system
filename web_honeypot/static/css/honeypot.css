@@ -1,0 +1,450 @@
+/**
+ * 蜜罐端通用样式
+ * Honeypot Common Styles
+ */
+
+/* 重置与基础 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+}
+
+/* ========================================
+   登录页面样式
+   ======================================== */
+body.login-page {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    width: 380px;
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-header .logo {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.login-header h1 {
+    color: #333;
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.login-header p {
+    color: #666;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #555;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #2a5298;
+}
+
+.remember-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+.remember-row a {
+    color: #2a5298;
+    text-decoration: none;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(42, 82, 152, 0.4);
+}
+
+.error-msg {
+    background: #fff2f0;
+    border: 1px solid #ffccc7;
+    color: #ff4d4f;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.footer {
+    text-align: center;
+    margin-top: 25px;
+    color: #999;
+    font-size: 12px;
+}
+
+.captcha-row {
+    display: flex;
+    gap: 10px;
+}
+
+.captcha-row input {
+    flex: 1;
+}
+
+.captcha-img {
+    width: 100px;
+    height: 40px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #666;
+    letter-spacing: 5px;
+    cursor: pointer;
+}
+
+/* ========================================
+   新闻/内容页面样式
+   ======================================== */
+body.content-page {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.header {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    color: white;
+    padding: 20px 0;
+}
+
+.header .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 { font-size: 24px; }
+
+.nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 30px;
+}
+
+.main {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+.article {
+    background: white;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.article h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #1e3c72;
+}
+
+.article-meta {
+    color: #999;
+    font-size: 14px;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.article-content {
+    line-height: 1.8;
+    font-size: 16px;
+}
+
+.sidebar {
+    margin-top: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.sidebar h3 {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #1e3c72;
+}
+
+.sidebar ul { list-style: none; }
+
+.sidebar li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar a {
+    color: #333;
+    text-decoration: none;
+}
+
+.sidebar a:hover { color: #1e3c72; }
+
+/* ========================================
+   搜索页面样式
+   ======================================== */
+body.search-page {
+    background: #f5f5f5;
+}
+
+.search-header {
+    background: white;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.search-header .container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.search-box {
+    display: flex;
+    gap: 10px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 12px 15px;
+    border: 2px solid #1e3c72;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.search-box button {
+    padding: 12px 30px;
+    background: #1e3c72;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-main {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.result-info {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.result-info strong {
+    color: #1e3c72;
+}
+
+.no-result {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 8px;
+}
+
+.no-result h2 {
+    color: #999;
+    margin-bottom: 10px;
+}
+
+/* ========================================
+   404 页面样式
+   ======================================== */
+body.error-404 {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.error-container {
+    text-align: center;
+}
+
+.error-code {
+    font-size: 150px;
+    font-weight: bold;
+    text-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+    margin-bottom: 20px;
+}
+
+.error-msg {
+    font-size: 24px;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+.back-btn {
+    display: inline-block;
+    padding: 15px 40px;
+    background: white;
+    color: #1e3c72;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+.back-btn:hover {
+    transform: scale(1.05);
+}
+
+/* ========================================
+   数据库错误页面样式
+   ======================================== */
+body.db-error {
+    font-family: 'Courier New', monospace;
+    background: #1a1a1a;
+    color: #00ff00;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.db-error-container {
+    max-width: 800px;
+    width: 100%;
+}
+
+.db-error-header {
+    background: #333;
+    padding: 10px 15px;
+    border-radius: 5px 5px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.db-error-header span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.db-error-header span:nth-child(1) { background: #ff5f56; }
+.db-error-header span:nth-child(2) { background: #ffbd2e; }
+.db-error-header span:nth-child(3) { background: #27c93f; }
+
+.db-error-header .title {
+    color: #aaa;
+    margin-left: 10px;
+    font-size: 14px;
+}
+
+.db-error-body {
+    background: #0d0d0d;
+    padding: 20px;
+    border-radius: 0 0 5px 5px;
+    border: 1px solid #333;
+    border-top: none;
+}
+
+.db-error-line {
+    margin-bottom: 10px;
+    word-break: break-all;
+}
+
+.db-error-line.warning { color: #ffcc00; }
+.db-error-line.error { color: #ff4444; }
+.db-error-line.info { color: #00aaff; }
+
+.timestamp { color: #666; }
+
+.blink {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* ========================================
+   普通页面样式
+   ======================================== */
+body.simple-page {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+body.simple-page h1 {
+    color: #1e3c72;
+    margin-bottom: 20px;
+}
+
+body.simple-page .content {
+    line-height: 1.8;
+}
+
