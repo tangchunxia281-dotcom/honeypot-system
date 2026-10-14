@@ -294,6 +294,24 @@ def _merge_archive_group_counts(counter: Counter, rows: list, default_key: str =
             counter[key] += count
 
 
+def _notify_risk_mark(source: str, severity: str, event_type: str, src_ip: str,
+                      session_id: str, payload: str, extra) -> None:
+    """[risk-mark] 事件落库后通知密标模块做实时识别。
+
+    惰性导入避免 db <-> risk_mark 循环依赖；risk_mark 目录被整体删除时静默跳过。
+    on_event 自身异常安全，且默认关闭（[risk_mark] auto_detect_enabled=false），
+    因此此处无条件调用即可，不影响主流程性能与稳定性。
+    """
+    try:
+        from risk_mark import service as _risk_mark_service
+        _risk_mark_service.on_event(
+            source=source, severity=severity, event_type=event_type, src_ip=src_ip,
+            session_id=session_id, payload=payload, extra=extra,
+        )
+    except Exception:
+        pass
+
+
 def log_event(source: str, severity: str, event_type: str, src_ip: str,
               session_id: str = '', tags=None, payload: str = '', raw_ref: str = '',
               raw_request_id=None, extra=None, timestamp: str = ''):
@@ -353,14 +371,17 @@ def log_event(source: str, severity: str, event_type: str, src_ip: str,
             cursor.execute(sql, tuple(params))
             conn.commit()
             _clear_event_stats_cache()
-            return cursor.lastrowid
+            new_id = cursor.lastrowid
+        else:
+            def _insert_action(c):
+                c.execute(sql, tuple(params))
+                return c.lastrowid
 
-        def _insert_action(c):
-            c.execute(sql, tuple(params))
-            return c.lastrowid
+            new_id = _sqlite_run_with_retry(conn, _insert_action)
+            _clear_event_stats_cache()
 
-        new_id = _sqlite_run_with_retry(conn, _insert_action)
-        _clear_event_stats_cache()
+        # [risk-mark] 实时识别钩子（异常安全；总开关默认关闭）
+        _notify_risk_mark(src, sev, evt, ip, sid, safe_payload, extra)
         return new_id
     except Exception as e:
         logger.debug(f"event_log 写入失败: {e}")

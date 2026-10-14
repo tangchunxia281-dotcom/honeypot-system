@@ -69,6 +69,10 @@
     <Compile Include="risk_mark\service.py" />
     <Compile Include="risk_mark\dashboard_api.py" />
     <Compile Include="risk_mark\selftest.py" />
+    <Compile Include="tests\conftest.py" />
+    <Compile Include="tests\test_event_logs.py" />
+    <Compile Include="tests\test_alerting.py" />
+    <Compile Include="tests\test_risk_mark_hook.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="dashboard\" />
@@ -83,10 +87,15 @@
     <Folder Include="web_honeypot\" />
     <Folder Include="risk_mark\" />
     <Folder Include="risk_mark\static\" />
+    <Folder Include="tests\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
     <Content Include="honeypot.ini" />
+    <Content Include="Dockerfile" />
+    <Content Include="docker-compose.yml" />
+    <Content Include=".dockerignore" />
+    <Content Include="pytest.ini" />
     <Content Include="risk_mark\README.md" />
     <Content Include="risk_mark\static\risk_mark.css" />
     <Content Include="risk_mark\static\risk_mark.js" />
