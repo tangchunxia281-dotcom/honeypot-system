@@ -72,6 +72,19 @@ _ENV_CONFIG_MAP = {
     'SESSION_ID_WINDOW_SECONDS': ('database', 'session_id_window_seconds'),
     'HAS_REAL_CACHE_TTL': ('database', 'has_real_cache_ttl'),
 
+     # AI request-level attack inference service
+    'AI_XSS_ENABLED': ('ai', 'enabled'),
+    'AI_XSS_URL': ('ai', 'url'),
+    'AI_XSS_INFO_URL': ('ai', 'info_url'),
+    'AI_XSS_TIMEOUT': ('ai', 'timeout'),
+    # Deprecated compatibility key. The v2 detect API uses ai_points,
+    # not a confidence threshold, to participate in honeypot scoring.
+    'AI_XSS_THRESHOLD': ('ai', 'threshold'),
+    'AI_XSS_TEXT_MAX': ('ai', 'text_max'),
+    'AI_XSS_FAILURE_THRESHOLD': ('ai', 'failure_threshold'),
+    'AI_XSS_BACKOFF_SECONDS': ('ai', 'backoff_seconds'),
+    'AI_XSS_MODEL_INFO_TTL': ('ai', 'model_info_ttl'),
+
     # services
     'SSH_HOST': ('services.ssh', 'host'),
     'SSH_PORT': ('services.ssh', 'port'),
@@ -368,6 +381,29 @@ class Config:
     DB_PASS = env_str('DB_PASS', '')
     DB_NAME = env_str('DB_NAME', 'honeypot_db') or 'honeypot_db'
     DB_CHARSET = env_str('DB_CHARSET', 'utf8mb4') or 'utf8mb4'
+
+    # ============================================
+    # AI request-level attack inference service
+    # ============================================
+    AI_XSS_ENABLED = env_bool('AI_XSS_ENABLED', False)
+    AI_XSS_URL = (
+        env_str(
+            'AI_XSS_URL',
+            'http://127.0.0.1:8003/api/v1/detect'
+        ).strip()
+        or 'http://127.0.0.1:8003/api/v1/detect'
+    )
+    AI_XSS_INFO_URL = (
+        env_str('AI_XSS_INFO_URL', 'http://127.0.0.1:8003/model/info').strip()
+        or 'http://127.0.0.1:8003/model/info'
+    )
+    AI_XSS_TIMEOUT = env_float('AI_XSS_TIMEOUT', 1.0, 0.1, 10.0)
+    # Compatibility only; v2 integration does not gate on this value.
+    AI_XSS_THRESHOLD = env_float('AI_XSS_THRESHOLD', 0.90, 0.0, 1.0)
+    AI_XSS_TEXT_MAX = env_int('AI_XSS_TEXT_MAX', 5000, 128, 100000)
+    AI_XSS_FAILURE_THRESHOLD = env_int('AI_XSS_FAILURE_THRESHOLD', 3, 1, 100)
+    AI_XSS_BACKOFF_SECONDS = env_float('AI_XSS_BACKOFF_SECONDS', 30.0, 0.0, 3600.0)
+    AI_XSS_MODEL_INFO_TTL = env_int('AI_XSS_MODEL_INFO_TTL', 300, 0, 86400)
 
     # ============================================
     # 日志配置

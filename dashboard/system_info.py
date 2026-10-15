@@ -8,6 +8,7 @@ import logging
 import os
 
 from utils.ip_location import get_server_location
+from utils.ai_client import get_ai_metrics
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +25,19 @@ def get_system_status():
             'memory_percent': mem.percent,
             'memory_used_gb': round(mem.used / (1024**3), 1),
             'memory_total_gb': round(mem.total / (1024**3), 1),
-            'disk_percent': disk.percent
+            'disk_percent': disk.percent,
+            'ai': get_ai_metrics()
         }
     except Exception as e:
         logger.debug(f"获取系统状态失败: {e}")
-        return {'cpu_percent': 0, 'memory_percent': 0, 'memory_used_gb': 0, 'memory_total_gb': 0, 'disk_percent': 0}
+        return {
+            'cpu_percent': 0,
+            'memory_percent': 0,
+            'memory_used_gb': 0,
+            'memory_total_gb': 0,
+            'disk_percent': 0,
+            'ai': get_ai_metrics()
+        }
 
 def get_server_info(include_system: bool = True):
     """API 聚合"""

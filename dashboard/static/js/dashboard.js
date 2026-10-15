@@ -1599,6 +1599,63 @@ function parseExtraJsonMaybe(raw) {
     }
 }
 
+function extractAiLogMeta(log) {
+    const data = log && typeof log === 'object' ? log : {};
+    const extra = parseExtraJsonMaybe(data.extra);
+    const ai = extra && typeof extra.ai === 'object' ? extra.ai : null;
+    if (!ai) return null;
+
+    const attackType = String(
+        ai.attack_type || ai.model_label || ''
+    ).trim().toLowerCase();
+    const allowedTypes = new Set([
+        'xss',
+        'sqli',
+        'path_traversal',
+        'sensitive_path',
+        'scanner',
+        'normal'
+    ]);
+    if (!allowedTypes.has(attackType)) return null;
+
+    const confidence = Number(ai.confidence);
+    if (!Number.isFinite(confidence) || confidence < 0 || confidence > 1) {
+        return null;
+    }
+
+    const attackProb = Number(ai.attack_prob);
+    if (!Number.isFinite(attackProb) || attackProb < 0 || attackProb > 1) {
+        return null;
+    }
+
+    const aiPoints = Number(ai.ai_points);
+    if (!Number.isFinite(aiPoints) || aiPoints < 0 || aiPoints > 25) {
+        return null;
+    }
+
+    const isAttack = ai.is_attack === true;
+    if (isAttack !== (attackType !== 'normal')) return null;
+
+    const reasons = Array.isArray(ai.reasons)
+        ? ai.reasons.map(value => String(value || '').trim()).filter(Boolean)
+        : [];
+    const signals = Array.isArray(ai.signals) ? ai.signals : [];
+
+    return {
+        attackType,
+        isAttack,
+        attackProb,
+        aiPoints,
+        confidence,
+        reasons,
+        signals,
+        modelLabel: String(ai.model_label || '').trim(),
+        applied: extra.ai_applied === true || aiPoints > 0,
+        finalSource: String(extra.final_source || '').trim().toLowerCase(),
+        highRisk: ai.high_risk === true
+    };
+}
+
 function buildRealtimeLogHoverContent(log, displayType, levelText, normalizedTime, payloadFull) {
     const data = log && typeof log === 'object' ? log : {};
     const extra = parseExtraJsonMaybe(data.extra);
@@ -1623,6 +1680,37 @@ function buildRealtimeLogHoverContent(log, displayType, levelText, normalizedTim
     if (signals.length) {
         const signalText = formatDetailBulletLines(signals);
         if (signalText) lines.push(['命中信号', signalText]);
+    }
+
+    const aiMeta = extractAiLogMeta(data);
+    if (aiMeta) {
+        lines.push([
+            'AI判定',
+            aiMeta.attackType === 'normal'
+                ? '正常'
+                : aiMeta.attackType.toUpperCase()
+        ]);
+        lines.push([
+            'AI攻击概率',
+            `${(aiMeta.attackProb * 100).toFixed(1)}%`
+        ]);
+        lines.push(['AI加分', `+${aiMeta.aiPoints}`]);
+        lines.push([
+            'AI置信度',
+            `${(aiMeta.confidence * 100).toFixed(1)}%`
+        ]);
+        if (aiMeta.reasons.length) {
+            lines.push(['AI原因', aiMeta.reasons.join('\n')]);
+        }
+        if (aiMeta.modelLabel) {
+            lines.push(['模型标签', aiMeta.modelLabel]);
+        }
+        lines.push([
+            '最终判定',
+            aiMeta.finalSource === 'rule+ai'
+                ? '规则 + AI 加分'
+                : '原规则结果'
+        ]);
     }
 
     const ua = String(extra?.ua || '').trim();
@@ -1733,6 +1821,44 @@ function createLogItem(log, logId, isNew) {
     ipDiv.style.margin = '3px 0';
     ipDiv.textContent = log.src_ip || '-';
 
+    const aiMeta = extractAiLogMeta(log);
+    let aiDiv = null;
+    if (aiMeta) {
+        aiDiv = document.createElement('div');
+        aiDiv.style.display = 'inline-flex';
+        aiDiv.style.alignItems = 'center';
+        aiDiv.style.margin = '0 0 3px 0';
+        aiDiv.style.padding = '1px 6px';
+        aiDiv.style.borderRadius = '8px';
+        aiDiv.style.fontSize = '10px';
+        aiDiv.style.fontWeight = '600';
+        aiDiv.style.width = 'fit-content';
+
+        const aiDisplayType = aiMeta.attackType === 'normal'
+            ? 'Normal'
+            : aiMeta.attackType.toUpperCase();
+
+        if (aiMeta.isAttack && aiMeta.applied) {
+            aiDiv.textContent =
+                `AI ${aiDisplayType} +${aiMeta.aiPoints}`;
+            aiDiv.style.color = '#00d4ff';
+            aiDiv.style.background = 'rgba(0, 212, 255, 0.12)';
+            aiDiv.style.border = '1px solid rgba(0, 212, 255, 0.45)';
+        } else if (!aiMeta.isAttack) {
+            aiDiv.textContent =
+                `AI Normal +${aiMeta.aiPoints}`;
+            aiDiv.style.color = '#2ed573';
+            aiDiv.style.background = 'rgba(46, 213, 115, 0.10)';
+            aiDiv.style.border = '1px solid rgba(46, 213, 115, 0.35)';
+        } else {
+            aiDiv.textContent =
+                `AI ${aiDisplayType} +0`;
+            aiDiv.style.color = '#ffa502';
+            aiDiv.style.background = 'rgba(255, 165, 2, 0.10)';
+            aiDiv.style.border = '1px solid rgba(255, 165, 2, 0.35)';
+        }
+    }
+
     const payloadDiv = document.createElement('div');
     payloadDiv.style.color = '#888';
     payloadDiv.style.fontSize = '100%';
@@ -1742,7 +1868,9 @@ function createLogItem(log, logId, isNew) {
 
     const hoverContent = buildRealtimeLogHoverContent(log, displayType, levelText, normalizedTime, payloadFull);
 
-    item.append(header, ipDiv, payloadDiv);
+    item.append(header, ipDiv);
+    if (aiDiv) item.appendChild(aiDiv);
+    item.appendChild(payloadDiv);
     bindLogMapHover(item);
     bindPanelDetailHover(item, function() { return hoverContent; });
     return item;

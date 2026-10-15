@@ -24,6 +24,10 @@ from utils.alerting import (
     ALERT_HIGH_THRESHOLD,
     ALERT_CRITICAL_THRESHOLD,
 )
+from utils.ai_client import (
+    detect_request,
+    get_ai_metrics,
+)
 from .event_logs import log_event
 from .connection import (
     USE_MYSQL,
@@ -972,6 +976,53 @@ def _signals_to_tags(signals: list, event_type: str) -> list:
     return tags[:12]
 
 
+def _resolve_web_final_decision(
+    rule_score: int,
+    rule_is_suspicious: bool,
+    ai_result
+) -> tuple:
+    """
+    AI v2 加权融合：
+    final_score = rule_score + ai_points
+
+    ai_points 是 AI 返回的 0~25 加权分，不覆盖原规则分数。
+    """
+    if isinstance(ai_result, dict):
+        try:
+            ai_points = int(ai_result.get('ai_points') or 0)
+        except Exception:
+            ai_points = 0
+        ai_points = max(0, min(25, ai_points))
+        ai_is_attack = bool(ai_result.get('is_attack'))
+        ai_high_risk = bool(ai_result.get('high_risk'))
+        final_score = min(
+            100,
+            max(0, int(rule_score or 0) + ai_points)
+        )
+        # AI 内部已完成规则+模型融合；如果它明确判定攻击，
+        # 用双阈值下界保证蜜罐不会因两套规则差异而漏掉该事件。
+        if ai_is_attack:
+            final_score = max(final_score, 20)
+        if ai_high_risk:
+            final_score = max(final_score, 40)
+        ai_applied = ai_points > 0 or ai_is_attack or ai_high_risk
+        return (
+            final_score,
+            final_score >= 20,
+            'rule+ai' if ai_applied else 'rule',
+            ai_applied,
+            ai_points,
+        )
+
+    return (
+        int(rule_score or 0),
+        bool(rule_is_suspicious),
+        'rule',
+        False,
+        0,
+    )
+
+
 def log_raw_request(session_id: str, src_ip: str, method: str, path: str,
                     query_string: str, headers: dict, body: str,
                     extra_signals=None, min_risk_score: int = 0):
@@ -1042,29 +1093,143 @@ def log_raw_request(session_id: str, src_ip: str, method: str, path: str,
                     c.execute(sql, params)
                     return c.lastrowid
                 raw_request_id = _sqlite_run_with_retry(conn, _insert_action)
+            rule_risk_score = int(risk_score or 0)
+            rule_is_suspicious = bool(is_suspicious)
+
+            ai_result = detect_request(
+                path=path,
+                query=query_string,
+                body=body,
+                method=method,
+                user_agent=user_agent,
+                source='web',
+                ip=src_ip,
+                session_id=session_id,
+                request_id=(
+                    f'raw_request:{raw_request_id}'
+                    if raw_request_id else ''
+                )
+            )
+
+            (
+                risk_score,
+                is_suspicious,
+                final_source,
+                ai_applied,
+                ai_points,
+            ) = _resolve_web_final_decision(
+                rule_score=rule_risk_score,
+                rule_is_suspicious=rule_is_suspicious,
+                ai_result=ai_result
+            )
+
+            if (
+                raw_request_id
+                and (
+                    risk_score != rule_risk_score
+                    or is_suspicious != rule_is_suspicious
+                )
+            ):
+                update_sql = (
+                    "UPDATE raw_request "
+                    f"SET is_suspicious = {placeholder}, "
+                    f"threat_score = {placeholder} "
+                    f"WHERE id = {placeholder}"
+                )
+                update_params = (
+                    1 if is_suspicious else 0,
+                    risk_score,
+                    raw_request_id,
+                )
+                if USE_MYSQL:
+                    cursor.execute(update_sql, update_params)
+                    conn.commit()
+                else:
+                    def _update_action(c):
+                        c.execute(update_sql, update_params)
+                    _sqlite_run_with_retry(conn, _update_action)
+
+            if ai_applied and ai_result:
+                attack_type = str(
+                    ai_result.get('attack_type') or 'unknown'
+                )
+                ai_signal = (
+                    f"AI判定{attack_type}(+{ai_points}分)"
+                )
+                reasons = ai_result.get('reasons') or []
+                if isinstance(reasons, list) and reasons:
+                    ai_signal += f": {str(reasons[0])[:200]}"
+                if ai_signal not in signals:
+                    signals.append(ai_signal)
+            
             update_session_track(session_id, src_ip, path, is_suspicious, risk_score)
             # 仅可疑请求进入统一事件流，避免 event_log 被普通流量淹没
             if is_suspicious:
-                event_type = _classify_web_event_type(method, path, query_string, body, signals)
-                event_tags = _signals_to_tags(signals, event_type)
-                label = _event_label(event_type)
+                if ai_applied and ai_result and ai_result.get('is_attack'):
+                    ai_attack_type = str(
+                        ai_result.get('attack_type') or 'normal'
+                    )
+                    event_type_map = {
+                        'xss': 'xss_ai_detected',
+                        'sqli': 'sqli_ai_detected',
+                        'path_traversal': 'path_traversal_ai_detected',
+                        'sensitive_path': 'sensitive_path_ai_detected',
+                        'scanner': 'scanner_ai_detected',
+                    }
+                    event_type = event_type_map.get(
+                        ai_attack_type,
+                        'web_ai_detected'
+                    )
+                    event_tags = ['web', ai_attack_type, 'ai']
+                    label = f"AI判定{ai_attack_type}"
+                else:
+                    event_type = _classify_web_event_type(method, path, query_string, body, signals)
+                    event_tags = _signals_to_tags(signals, event_type)
+                    label = _event_label(event_type)
                 method_text = str(method or '').upper()
                 decoded_query = _decode_for_display(query_string)
                 safe_decoded_query = _truncate_text(_redact_sensitive_text(decoded_query), 180)
                 payload = f"[{label}] {method_text} {path}"
                 if safe_decoded_query:
                     payload += f"?{safe_decoded_query}"
-                if signals:
+                if ai_applied and ai_result:
+                    reasons = ai_result.get('reasons') or []
+                    if isinstance(reasons, list) and reasons:
+                        payload += f" | {str(reasons[0])[:240]}"
+                elif signals:
                     for sig in signals:
                         if not _is_redundant_signal(event_type, sig):
                             payload += f" | {str(sig)}"
                             break
+                ai_metrics = get_ai_metrics()
                 extra = {
                     'score': int(risk_score),
                     'signals': [str(x) for x in (signals or [])[:6]],
                     'method': str(method or '').upper(),
                     'path': str(path or '')[:240],
                     'ua': str(user_agent or '')[:200],
+                    'rule': {
+                        'score': int(rule_risk_score),
+                        'is_suspicious': bool(rule_is_suspicious),
+                    },
+                    'ai': ai_result or {},
+                    'ai_applied': bool(ai_applied),
+                    'ai_points': int(ai_points),
+                    'ai_input': {
+                        'path_length': len(str(path or '')),
+                        'query_length': len(str(query_string or '')),
+                        'body_length': len(str(body or '')),
+                        'user_agent_length': len(str(user_agent or '')),
+                    },
+                    'ai_error': (
+                        ''
+                        if ai_result
+                        else str(ai_metrics.get('last_error') or '')
+                    ),
+                    'ai_backoff_remaining_seconds': float(
+                        ai_metrics.get('backoff_remaining_seconds') or 0.0
+                    ),
+                    'final_source': final_source,
                 }
                 log_event(
                     source='web',
