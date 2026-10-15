@@ -1,0 +1,273 @@
+# 基于蜜罐技术的网络威胁捕获系统——多协议扩展完善方案 
+ 
+ 
+ ## 一、扩展总体思路 
+ 
+ 现有系统已覆盖SSH与Web两类入口，统一事件模型、双阈值分层风险判定和管理端可视化链路均已跑通。扩展新协议蜜罐的核心原则是 **“复用治理层、独立接入层、统一数据口径”** ——新蜜罐模块只负责协议仿真与行为采集，事件写入复用现有的统一事件模型和评分机制，管理端展示链路无需改动。 
+ 
+ 因此，本方案不建议推倒重建，而是在现有架构上做增量扩展。每个新增协议蜜罐作为一个独立的接入模块，实现“协议交互 → 行为捕获 → 事件构造 → 写入event_log表 → 管理端展示”的闭环。 
+ 
+ 
+ ## 二、新增协议蜜罐选型 
+ 
+ 结合当前系统定位（中交互、实验/教学场景、Python技术栈）和攻击面覆盖面，建议优先扩展以下四类协议： 
+ 
+ ### 2.1 数据库协议蜜罐 
+ 
+ | 协议 | 仿真方式 | 推荐库 | 风险信号 | 
+ |---|---|---|---| 
+ | **MySQL** | 实现握手、认证、查询交互 | `mysql-mimic` (纯Python MySQL wire protocol实现) | 未授权访问尝试、SQL注入探测、`LOAD DATA LOCAL` 文件读取攻击 | 
+ | **Redis** | 实现RESP协议，响应PING/INFO/AUTH/KEYS/GET/SET等命令 | 原生Socket实现RESP协议即可 | 未授权访问、`CONFIG SET` 写文件、`SLAVEOF` 主从复制利用、`MODULE LOAD` 恶意模块加载 | 
+ 
+ MySQL蜜罐通过`mysql-mimic`库可模拟MySQL 5.7/8.0的握手、认证和查询处理流程，能够捕获攻击者的连接尝试、账号爆破和SQL注入探测行为。Redis蜜罐实现RESP协议子集，当攻击者尝试`CONFIG SET dir /var/spool/cron`等写文件操作时，系统记录为高危事件。 
+ 
+ ### 2.2 文件共享协议蜜罐 
+ 
+ | 协议 | 仿真方式 | 推荐方案 | 风险信号 | 
+ |---|---|---|---| 
+ | **FTP** | 控制通道仿真，支持USER/PASS/LIST/RETR命令 | `Twisted` 或原生Socket | 匿名登录尝试、凭证爆破、敏感文件下载探测 | 
+ | **SMB** | 实现SMB协商和会话建立，可配合诱饵文件 | `impacket` 或 `samba` 容器 | 漏洞利用尝试（如EternalBlue）、横向移动探测、凭据抓取 | 
+ 
+ FTP蜜罐可用Python的`Twisted`框架快速搭建低交互控制通道仿真，模拟vsftpd/ProFTPD的banner和命令响应，捕获攻击者的登录尝试和目录遍历行为。SMB蜜罐实现难度略高，建议初期部署低交互版本，专注于捕获端口445的连接尝试和SMB协商请求，后续再考虑引入Dionaea的SMB模块。 
+ 
+ ### 2.3 远程管理协议蜜罐 
+ 
+ | 协议 | 仿真方式 | 推荐方案 | 风险信号 | 
+ |---|---|---|---| 
+ | **RDP** | 实现RDP协商和登录界面仿真 | `pyrdp` (Python 3 RDP库) | 暴力破解、NLA降级尝试、会话劫持 | 
+ | **Telnet** | 模拟BusyBox/IoT设备登录流程 | 原生Socket + IAC协商 | IoT设备爆破、命令注入、僵尸网络投递 | 
+ 
+ RDP蜜罐可利用`pyrdp`库实现RDP协商和登录仿真，该库同时支持MITM模式，能够监视连接并记录攻击者的登录凭据和后续操作。Telnet蜜罐可参考Cowrie的Telnet模块实现思路，或采用独立实现，重点模拟IoT路由器（如D-Link）的banner和登录流程。 
+ 
+ 
+ ## 三、架构适配方案 
+ 
+ ### 3.1 模块接入架构 
+ 
+ 在现有三端（SSH蜜罐、Web蜜罐、管理端）基础上，新增蜜罐模块按以下方式接入： 
+ 
+ ``` 
+ main.py (统一启动入口) 
+     │ 
+     ├── ssh_honeypot/server.py          （已有） 
+     ├── web_honeypot/server.py          （已有） 
+     ├── dashboard/server.py             （已有） 
+     │ 
+     ├── db_honeypot/                     （新增） 
+     │   ├── server.py                    # 统一数据库蜜罐入口 
+     │   ├── mysql_handler.py             # MySQL协议仿真 
+     │   └── redis_handler.py             # Redis协议仿真 
+     │ 
+     ├── file_honeypot/                   （新增） 
+     │   ├── server.py                    # 文件共享蜜罐入口 
+     │   ├── ftp_handler.py               # FTP协议仿真 
+     │   └── smb_handler.py               # SMB协议仿真 
+     │ 
+     └── remote_honeypot/                 （新增） 
+         ├── server.py                    # 远程管理蜜罐入口 
+         ├── rdp_handler.py               # RDP协议仿真 
+         └── telnet_handler.py            # Telnet协议仿真 
+ ``` 
+ 
+ 在`main.py`的`SERVICES`列表中追加新服务条目即可纳入统一进程管理。每个新蜜罐模块遵循相同接口约定：接收`--host`和`--port`参数、输出`CRED::user::pass`格式的凭证行、异常退出时返回非零状态码。 
+ 
+ ### 3.2 统一事件写入接口 
+ 
+ 各蜜罐模块不直接操作数据库，而是通过统一的`db.event_logs.log_event()`函数写入事件。该函数负责： 
+ 
+ 1. **字段标准化**：将协议特有字段映射为公共字段（`source`、`event_type`、`severity`、`src_ip`、`session_id`、`tags`、`payload`、`raw_ref`、`extra`） 
+ 2. **脱敏与截断**：敏感参数替换、超长载荷按阈值截断 
+ 3. **风险评分**：复用“多特征加权 + 双阈值分层”机制，为数据库/文件/远程管理协议定义各自的权重表 
+ 
+ 各协议的事件类型映射示例如下： 
+ 
+ | 协议 | 事件类型 | 风险级别 | 标签示例 | 
+ |---|---|---|---| 
+ | MySQL | `db_auth_attempt` / `db_auth_success` / `db_query` | medium / high | `mysql`, `bruteforce`, `sql_injection` | 
+ | Redis | `redis_command` / `redis_unauthorized` | medium / critical | `redis`, `unauthorized`, `config_write` | 
+ | FTP | `ftp_login_attempt` / `ftp_directory_list` | low / medium | `ftp`, `anonymous`, `bruteforce` | 
+ | SMB | `smb_negotiate` / `smb_session_setup` | medium / high | `smb`, `exploit_attempt` | 
+ | RDP | `rdp_connection` / `rdp_auth_attempt` | medium / high | `rdp`, `bruteforce`, `nla_downgrade` | 
+ | Telnet | `telnet_login_attempt` / `telnet_command` | low / medium | `telnet`, `iot`, `botnet` | 
+ 
+ ### 3.3 数据库表扩展 
+ 
+ 现有四张核心表（统一事件表、地理缓存表、原始请求表、会话追踪表）基本可以覆盖新协议的需求。统一事件表作为核心落点，新增协议的事件通过`source`字段区分（如`mysql`、`redis`、`ftp`、`smb`、`rdp`、`telnet`），`extra`字段存放协议特有的扩展信息（如MySQL的查询语句、Redis的命令参数）。 
+ 
+ 对于需要保留原始交互证据的协议，建议新增一张 **协议原始记录表**，结构参照`raw_requests`： 
+ 
+ ```sql 
+ CREATE TABLE raw_protocol_records ( 
+     id INTEGER PRIMARY KEY AUTOINCREMENT, 
+     session_id VARCHAR(64), 
+     src_ip VARCHAR(45) NOT NULL, 
+     protocol VARCHAR(16) NOT NULL,        -- mysql/redis/ftp/smb/rdp/telnet 
+     action VARCHAR(64),                    -- handshake/auth/query/command 
+     raw_data TEXT,                         -- 脱敏后的原始交互数据 
+     threat_score INTEGER, 
+     is_suspicious INTEGER, 
+     create_time DATETIME NOT NULL 
+ ); 
+ ``` 
+ 
+ 该表在概念上可归入现有`raw_requests`的泛化形态，统一事件表通过`raw_ref`或`raw_request_id`字段关联。对于实验/毕业设计场景，也可保持表结构不变，将原始交互数据存入`extra`字段。 
+ 
+ 
+ ## 四、风险判定机制复用 
+ 
+ ### 4.1 评分权重表定义 
+ 
+ 各新协议参照Web端的“多特征加权 + 双阈值分层”机制，定义各自的评分权重表。以MySQL为例： 
+ 
+ | 特征项 | 权重（分） | 识别逻辑 | 
+ |---|---|---| 
+ | 连接频率异常（短时间多次连接） | +5至15 | 速率分析 | 
+ | 认证失败累计 | +3至20 | 会话累积 | 
+ | 敏感表查询（`mysql.user`、`information_schema`） | +15至20 | 查询语义分析 | 
+ | `LOAD DATA LOCAL` 使用 | +25至30 | 高危命令识别 | 
+ | SQL注入语义（`UNION SELECT`、`OR 1=1`等） | +18至25 | 载荷特征匹配 | 
+ 
+ Redis蜜罐重点监控 `CONFIG SET`（+25）、`SLAVEOF`（+20）、`MODULE LOAD`（+30）等高危命令。RDP蜜罐对NLA降级尝试（+20）和连续认证失败（+15至25）进行加权。 
+ 
+ 双阈值分层规则与Web端保持一致：累计得分达到20分记为可疑事件（写入统一事件表），达到40分记为高危告警（触发企业微信联动）。 
+ 
+ ### 4.2 MITRE ATT&CK映射 
+ 
+ 为提升事件的管理端展示价值和分析深度，建议为各协议事件建立ATT&CK技术映射，将蜜罐日志中的攻击行为映射到标准技术编号： 
+ 
+ | 攻击行为 | ATT&CK技术 | 编号 | 
+ |---|---|---| 
+ | 端口扫描/服务探测 | Active Scanning | T1595 | 
+ | 暴力破解（SSH/MySQL/RDP/FTP） | Brute Force | T1110 | 
+ | 有效账户利用 | Valid Accounts | T1078 | 
+ | 工具传输（wget/curl/SCP） | Ingress Tool Transfer | T1105 | 
+ | 数据库敏感数据查询 | Data from Information Repositories | T1213 | 
+ | Redis写文件/计划任务 | Scheduled Task/Job | T1053 | 
+ | SMB漏洞利用 | Exploitation of Remote Services | T1210 | 
+ 
+ 在统一事件表的`tags`字段中追加`attack_technique:T1110`等标签，管理端可据此按ATT&CK阶段聚合展示，形成更完整的攻击链视图。 
+ 
+ 
+ ## 五、安全隔离方案 
+ 
+ 新增蜜罐模块必须保持与现有SSH/Web蜜罐一致的安全边界。考虑到中交互蜜罐“模拟较多服务、可能被利用成为跳板”的风险，建议： 
+ 
+ **网络层面**：各蜜罐模块监听不同端口，与Dashboard管理端保持端口隔离（管理端仅监听127.0.0.1）。蜜罐模块不共享网络命名空间，避免一个模块沦陷后影响其他模块。 
+ 
+ **进程层面**：在`main.py`中保持各服务独立子进程运行，异常退出时自动重启但不超过`MAX_RESTART_ATTEMPTS`上限（默认5次）。 
+ 
+ **数据层面**：MySQL和Redis蜜罐的“虚拟数据库”完全在内存中维护，不连接真实数据库实例。FTP和SMB蜜罐的文件系统基于内存映射，不暴露宿主机真实文件。RDP蜜罐的会话状态在独立上下文中维护。 
+ 
+ **容器化建议**（可选扩展）：若需进一步提升隔离性，可将每个蜜罐模块封装为独立Docker容器，通过`docker-compose`统一编排。每个容器分配独立IP地址和唯一标识ID，日志通过挂载卷或标准输出汇聚到宿主机。不过对于毕业设计场景，当前的单机多进程方案已能满足隔离需求，容器化可作为后续优化方向。 
+ 
+ 
+ ## 六、管理端适配 
+ 
+ ### 6.1 展示层扩展 
+ 
+ 现有Dashboard大屏的统计卡片、饼图、TOP列表和地图模块均可直接复用。新增协议后，需在以下位置做增量调整： 
+ 
+ - **事件来源筛选**：在`/api/get_event_logs`的`source`参数中新增`mysql`、`redis`、`ftp`、`smb`、`rdp`、`telnet`等取值 
+ - **饼图数据源**：`/api/get_event_stats`的`by_source`字段自动包含新协议来源 
+ - **地图攻击点**：`/api/get_geo_data`无需改动，新协议事件的来源IP自动纳入地理分布 
+ - **攻击链追踪**：`/api/session_analysis`的会话聚合逻辑需识别新协议的`session_id`格式（建议统一使用`{protocol}-{uuid}`格式） 
+ 
+ ### 6.2 新增协议专属面板（可选） 
+ 
+ 若答辩或演示需要，可在Dashboard中增加一个“协议覆盖度”面板，以环形图展示各协议的事件占比，或在事件明细表中以图标区分协议类型。这部分属于锦上添花，不影响核心链路。 
+ 
+ 
+ ## 七、实施路线图 
+ 
+按以下优先级分阶段实施，每阶段完成后系统均可独立运行和演示： 
+ 
+ **第一阶段（高优先级）** ：MySQL + Redis蜜罐。技术成熟度高（`mysql-mimic`库、RESP协议简单），攻击捕获价值大，与数据库安全主题契合度高。预计工作量：3-5天。 
+ 
+ **第二阶段（中优先级）** ：FTP + Telnet蜜罐。实现难度低（Twisted框架或原生Socket），可快速验证统一事件模型的跨协议适配能力。预计工作量：2-3天。 
+ 
+ **第三阶段（探索性）** ：RDP + SMB蜜罐。RDP可借助`pyrdp`库，SMB实现复杂度较高，建议作为后续扩展方向。预计工作量：5-7天。 
+ 
+ 
+ ## 八、论文写作建议 
+ 
+ 若需将扩展工作纳入毕业论文，建议从以下角度切入： 
+ 
+ 1. **统一事件模型的协议无关性验证**：论述将数据库协议、文件共享协议、远程管理协议纳入同一事件口径时，公共字段设计如何保持一致。这比单纯增加协议数量更有学术价值。 
+ 
+ 2. **多协议攻击链关联分析**：利用新增协议的事件数据，展示跨协议攻击链的追踪能力——例如同一来源IP先扫描MySQL端口（探测），再尝试Redis未授权访问（利用），最后通过Web注入获取数据（影响）。这种跨协议关联分析是单协议蜜罐无法实现的。 
+ 
+ 3. **分层风险处置的跨协议适配**：说明“多特征加权 + 双阈值分层”机制如何从Web端推广到数据库协议和远程管理协议，各协议权重表的差异化设计依据是什么。 
+ 
+ 4. **ATT&CK映射的工程实践**：将蜜罐事件映射到ATT&CK技术编号，展示从“事件记录”到“战术分析”的升级路径，符合当前安全运营的实际需求。 
+ 
+ 
+ ## 九、关键技术风险与应对 
+ 
+ | 风险点 | 应对措施 | 
+ |---|---| 
+ | MySQL协议复杂度高，仿真不完整导致被识别 | 使用成熟的`mysql-mimic`库，优先保证握手和认证阶段仿真度 | 
+ | Redis RESP协议存在多种版本（RESP2/RESP3） | 优先实现RESP2，覆盖`redis-cli`等常见客户端的探测行为 | 
+ | SMB协议实现难度大 | 初期部署低交互版本，仅捕获连接和协商请求，后续迭代 | 
+ | 多协议事件写入导致数据库压力增大 | 复用SQLite WAL模式，对高频协议（如Redis）设置事件写入速率限制 | 
+ | 蜜罐被识别为诱饵环境 | 各协议banner和版本号需与诱饵主机画像（`Persona Engine`思路）保持一致，避免跨协议特征矛盾 | 
+ 
+ 
+ 综上，本方案的核心思路是在现有统一事件模型和风险判定机制的基础上，以“接入层独立、治理层复用、展示层增量适配”的方式扩展新协议蜜罐。MySQL和Redis蜜罐作为第一优先级，技术成熟度高、实现周期短、与数据库安全主题契合度强，建议优先落地。根据文案中所描述的内容，增添上述需求蜜罐
+
+
+
+
+/////方案已按"复用治理层、独立接入层、统一数据口径"落地， 路线图第一、二阶段的 4 个协议（MySQL、Redis、FTP、Telnet）全部实现并通过 27 项端到端实测 ；RDP/SMB 属方案中的第三阶段探索项，已预留配置位和 source 白名单，可按同一模式续接。
+
+## 新增文件（11 个）
+公共治理层
+
+- utils/protocol_guard.py —`ConnectionGuard` （全局/单IP并发、60秒12败→600秒起指数封禁、10秒18连扫描检测）、`ProtocolReporter` （2.5秒去重 →`log_event` → ≥40分`alert_event` 双阈值告警）、`make_protocol_session_id` （`{protocol}-md5(ip+1小时窗口)` ，对应方案的会话格式）
+数据库蜜罐 （一个进程双监听）
+
+- db_honeypot/server.py — 统一入口，输出 CRED 行
+- db_honeypot/mysql_handler.py — 纯 Python 实现 MySQL wire protocol（无新依赖）：HandshakeV10 伪装 8.0.36、sha1 scramble 校验弱口令、COM_QUERY 评分（`LOAD DATA LOCAL` +30、`INTO OUTFILE` +25、UNION+22、时间盲注+20、mysql.user+18…）、伪造结果集
+- db_honeypot/redis_handler.py — RESP2 仿真无密码 Redis 6.2.6；首条命令即记`redis_unauthorized` （critical）；`CONFIG SET dir` /`SLAVEOF` /`MODULE LOAD` /`FLUSHALL` 全部仿真成功+告警；KEYS/GET 返回诱饵键值
+文件共享蜜罐
+
+- file_honeypot/ftp_handler.py — 伪装 vsftpd 3.0.5，匿名/弱口令、PASV/EPSV/PORT 数据通道、内存诱饵文件（backup_2024.sql.gz/.env）；RETR 敏感文件记高危数据窃取，STOR 内容丢弃不落盘但记录预览
+远程管理蜜罐
+
+- remote_honeypot/telnet_handler.py — IAC 协商（密码期 WILL/WONT ECHO）、伪装 D-Link DI-8003 + BusyBox ash，wget/curl/tftp 僵尸网络投递记 critical
+## 修改文件（4 个）
+- main.py — SERVICES 追加三个服务（受`DB_HONEYPOT_ENABLED/FILE_HONEYPOT_ENABLED/REMOTE_HONEYPOT_ENABLED` 控制），纳入端口检查、日志聚合、CRED 汇总、崩溃重启
+- app_config.py — 新增三组 ini 映射（`[services.database]` /`[services.file]` /`[services.remote]` ）
+- db/event_logs.py — source 白名单加入 mysql/redis/ftp/smb/rdp/telnet（不改这里新事件会被归并成 system）
+- honeypot.ini 与 honeypot.ini.example — 三个新配置段
+## 验证结果
+27/27 全部通过：四端口监听、Redis RESP 命令链、FTP 匿名登录+PASV+LIST 诱饵目录、Telnet 错误/正确登录+BusyBox 命令、 MySQL 真实握手包认证与结果集解析 、以及四个 source 的事件实际写入 event_logs。测试中发现并修复了一个真实缺陷（RESP bulk 短读导致协议错位）。另外修复了 venv 中损坏的 urllib3（`uv sync --reinstall-package urllib3` ，否则含 requests 的所有服务都无法启动）。
+
+## 使用方式
+重新运行`scripts\run.bat` （或`python main.py` ）即启动 6 个服务，控制台汇总显示新凭证；攻击入口：
+
+协议 默认端口 测试命令 MySQL 13306 `mysql -h127.0.0.1 -P13306 -uroot -p` （口令见控制台） Redis 16379 `redis-cli -p 16379` FTP 2121 浏览器/`ftp 127.0.0.1 2121` ，匿名可登 Telnet 2223 `telnet 127.0.0.1 2223`
+
+大屏无需改动：新协议事件自动进入事件流列表、`by_source` 饼图和世界地图（IP 聚合复用现有 geo 链路），事件标签已按方案附带`attack_technique:T1110/T1078/T1105/T1213` 等 ATT&CK 编号。
+
+
+### 1. 公共治理层（1 个）
+- `utils\protocol_guard.py` → 限流/封禁/扫描检测 + 统一事件上报
+### 2. 数据库蜜罐包（4 个）
+- `db_honeypot\__init__.py`
+- `db_honeypot\server.py`
+- `db_honeypot\mysql_handler.py`
+- `db_honeypot\redis_handler.py`
+### 3. 文件共享蜜罐包（3 个）
+- `file_honeypot\__init__.py`
+- `file_honeypot\server.py`
+- `file_honeypot\ftp_handler.py`
+### 4. 远程管理蜜罐包（3 个）
+- `remote_honeypot\__init__.py`
+- `remote_honeypot\server.py`
+- `remote_honeypot\telnet_handler.py`
+另外还 修改了 4 个已有文件 来接入新协议：
+
+- `main.py` （注册 3 个新服务到 SERVICES）
+- `app_config.py` （新增 ini 映射）
+- `db\event_logs.py` （source 白名单加入 mysql/redis/ftp 等）
+- `honeypot.ini` +`honeypot.ini.example` （新增 3 个配置段）

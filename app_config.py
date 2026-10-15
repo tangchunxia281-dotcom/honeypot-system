@@ -109,6 +109,20 @@ _ENV_CONFIG_MAP = {
     'SSH_SCAN_ALERT_COOLDOWN_SECONDS': ('services.ssh', 'scan_alert_cooldown_seconds'),
     'SSH_SCAN_STALE_KEEP_SECONDS': ('services.ssh', 'scan_stale_keep_seconds'),
 
+    # 多协议蜜罐：数据库协议（MySQL / Redis）
+    'DB_HONEYPOT_ENABLED': ('services.database', 'enabled'),
+    'DB_HONEYPOT_HOST': ('services.database', 'host'),
+    'MYSQL_PORT': ('services.database', 'mysql_port'),
+    'REDIS_PORT': ('services.database', 'redis_port'),
+    # 多协议蜜罐：文件共享协议（FTP / SMB 预留）
+    'FILE_HONEYPOT_ENABLED': ('services.file', 'enabled'),
+    'FTP_HOST': ('services.file', 'host'),
+    'FTP_PORT': ('services.file', 'ftp_port'),
+    # 多协议蜜罐：远程管理协议（Telnet / RDP 预留）
+    'REMOTE_HONEYPOT_ENABLED': ('services.remote', 'enabled'),
+    'TELNET_HOST': ('services.remote', 'host'),
+    'TELNET_PORT': ('services.remote', 'telnet_port'),
+
     'WEB_HOST': ('services.web', 'host'),
     'WEB_PORT': ('services.web', 'port'),
     'WEB_MAX_CONTENT_LENGTH': ('services.web', 'max_content_length'),

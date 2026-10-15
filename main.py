@@ -59,6 +59,47 @@ SERVICES: List[Dict] = [
     },
 ]
 
+# ============================================
+# 多协议扩展服务（可通过 honeypot.ini / 环境变量启停）
+# 数据库蜜罐一个进程同时监听 MySQL / Redis 两个端口；
+# 'port' 取 MySQL 端口用于端口检查与汇总展示，Redis 端口在其描述中标注。
+# ============================================
+if _env_bool('DB_HONEYPOT_ENABLED', True):
+    _db_host = _env_str('DB_HONEYPOT_HOST', '0.0.0.0')
+    _mysql_port = _env_int('MYSQL_PORT', 13306, 1, 65535)
+    _redis_port = _env_int('REDIS_PORT', 16379, 1, 65535)
+    SERVICES.append({
+        'name': '数据库蜜罐',
+        'script': os.path.join('db_honeypot', 'server.py'),
+        'host': _db_host,
+        'port': _mysql_port,
+        'description': f'MySQL({_mysql_port}) / Redis({_redis_port}) 协议诱捕',
+        'color': '\033[95m',  # 紫色
+        'short': 'DB'
+    })
+
+if _env_bool('FILE_HONEYPOT_ENABLED', True):
+    SERVICES.append({
+        'name': '文件共享蜜罐',
+        'script': os.path.join('file_honeypot', 'server.py'),
+        'host': _env_str('FTP_HOST', '0.0.0.0'),
+        'port': _env_int('FTP_PORT', 2121, 1, 65535),
+        'description': 'FTP 协议诱捕（SMB 为后续阶段）',
+        'color': '\033[96m',  # 青色
+        'short': 'FTP'
+    })
+
+if _env_bool('REMOTE_HONEYPOT_ENABLED', True):
+    SERVICES.append({
+        'name': '远程管理蜜罐',
+        'script': os.path.join('remote_honeypot', 'server.py'),
+        'host': _env_str('TELNET_HOST', '0.0.0.0'),
+        'port': _env_int('TELNET_PORT', 2223, 1, 65535),
+        'description': 'Telnet(IoT) 协议诱捕（RDP 为后续阶段）',
+        'color': '\033[90m',  # 灰色
+        'short': 'Telnet'
+    })
+
 # 颜色常量
 RESET = '\033[0m'
 RED = '\033[91m'
@@ -159,7 +200,7 @@ def check_port(port: int, host: str = '0.0.0.0') -> bool:
 
 def check_all_ports() -> bool:
     """检查所有服务端口是否可用"""
-    safe_print(f"\n{BOLD}[1/3] 检查端口占用情况...{RESET}\n")
+    safe_print(f"\n{BOLD}[启动检查] 检查端口占用情况...{RESET}\n")
     all_available = True
     for service in SERVICES:
         port = service['port']
@@ -392,7 +433,7 @@ def start_service(service: Dict, restart: bool = False) -> Optional[subprocess.P
 def start_all_services():
     """启动所有服务"""
     global processes, process_services
-    safe_print(f"{BOLD}[2/3] 启动服务进程...{RESET}\n")
+    safe_print(f"{BOLD}[启动服务] 启动服务进程...{RESET}\n")
 
     for service in SERVICES:
         name = service['name']
@@ -423,7 +464,7 @@ def print_service_summary():
     # 先等一小会儿抓取凭证，避免汇总里空白
     wait_for_summary_creds()
 
-    safe_print(f"{BOLD}[3/3] 服务访问地址汇总{RESET}")
+    safe_print(f"{BOLD}[访问汇总] 服务访问地址汇总{RESET}")
     safe_print(f"  {BOLD}{'─' * 60}{RESET}")
 
     for service in SERVICES:
