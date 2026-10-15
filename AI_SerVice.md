@@ -274,6 +274,7 @@ model_info_ttl = 300
 
 
 ```powershell
+根据实际ai训练文件更改目录，后续ai训练完整后可以集成到蜜罐目录
 cd D:\train-ai\xss_detector\xss_detector
 
 uv pip install -r requirements.txt
