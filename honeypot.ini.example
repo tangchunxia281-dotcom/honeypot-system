@@ -105,6 +105,23 @@ sqlite_busy_backoff = 0.05
 session_id_window_seconds = 3600
 has_real_cache_ttl = 0.5
 
+[ai]
+# AI 组请求级攻击检测服务。
+# 主接口：POST /api/v1/detect
+# 请求：path、query、body、method、user_agent、source、ip、session_id、extra
+# 响应：attack_type、is_attack、attack_prob、ai_points、confidence、
+#       high_risk、reasons、signals、model_label
+enabled = true
+url = http://127.0.0.1:8003/api/v1/detect
+info_url = http://127.0.0.1:8003/model/info
+timeout = 1.0
+# 兼容旧配置；v2 使用 ai_points 参与规则分累加。
+threshold = 0.90
+text_max = 5000
+failure_threshold = 3
+backoff_seconds = 30
+model_info_ttl = 300
+
 [alerting]
 enabled = false
 # 企业微信机器人 Webhook。真实地址只写入本地 honeypot.ini，不要写入示例或公开仓库。
