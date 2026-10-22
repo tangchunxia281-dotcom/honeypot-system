@@ -89,6 +89,25 @@ login_audit_max = 200
 login_audit_recent = 30
 asset_version =
 
+# 多协议扩展：数据库协议蜜罐（MySQL + Redis 同一进程）
+[services.database]
+enabled = true
+host = 0.0.0.0
+mysql_port = 13306
+redis_port = 16379
+
+# 多协议扩展：文件共享协议蜜罐（FTP；SMB 后续阶段）
+[services.file]
+enabled = true
+host = 0.0.0.0
+ftp_port = 2121
+
+# 多协议扩展：远程管理协议蜜罐（Telnet；RDP 后续阶段）
+[services.remote]
+enabled = true
+host = 0.0.0.0
+telnet_port = 2223
+
 [database]
 type = sqlite
 # 相对路径按项目根目录解析
@@ -157,6 +176,26 @@ check_interval_seconds = 300
 background_interval_seconds = 3600
 read_enabled = true
 query_max_files = 60
+
+# 风险目标标注（risk_target）：以攻击源 IP 为维度，自动识别 + 人工标注
+[risk_target]
+enabled = true
+auto_derive = true
+derive_hours = 24
+min_events = 2
+min_severity = medium
+
+# 团队数据中心（round 9 合并，独立子进程；默认关闭）
+# 启用前先运行 python scripts/team_center.py init 生成 JSON 配置
+[team_center]
+enabled = false
+config = ./deployment/center/center.json
+
+# AI 推理网关（round 9 合并，独立子进程；默认关闭）
+# 配置文件为 JSON，内含 provider/model/model_url/api_key/clients 等
+[ai_gateway]
+enabled = false
+config = ./deployment/gateway/gateway.json
 
 [geoip]
 timeout = 2.5

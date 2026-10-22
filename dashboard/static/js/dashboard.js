@@ -731,6 +731,7 @@ if (typeof document !== 'undefined' && document?.addEventListener) {
         }
         setDemoMode(false);
         initWindowSwitcher();
+        initRiskTargets();
         updateTime();
         setInterval(updateTime, 1000);
         initCharts();
@@ -3460,6 +3461,317 @@ function updateSessionAnalysis(sessions) {
 }
 
 // 行为分析随主刷新周期自动更新
+
+
+// ==================== 风险目标标注 ====================
+const RISK_TARGET_POLL_INTERVAL_MS = 20000;
+const RISK_TARGET_RISK_COLORS = {
+    critical: '#ff2d55',
+    high: '#ff4757',
+    medium: '#ffa502',
+    low: '#2ed573',
+    unknown: '#6a8caf'
+};
+const RISK_TARGET_RISK_LABELS = {
+    critical: '严重',
+    high: '高',
+    medium: '中',
+    low: '低',
+    unknown: '未知'
+};
+const RISK_TARGET_STATUS_LABELS = {
+    watching: '观察中',
+    banned: '已封禁',
+    handled: '已处置'
+};
+let _riskTargetsCache = [];
+let _riskTargetFetchInFlight = false;
+
+function getDashboardCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    if (meta && meta.getAttribute('content')) return meta.getAttribute('content');
+    const input = document.querySelector('input[name="csrf_token"]');
+    if (input && input.value) return input.value;
+    return '';
+}
+
+function riskTargetFetchJson(url, options) {
+    const opts = options || {};
+    return fetch(url, opts).then(function(res) {
+        if (!res.ok) throw new Error('http_' + res.status);
+        return res.json();
+    });
+}
+
+function fetchRiskTargets() {
+    if (typeof document !== 'undefined' && document.hidden) return;
+    if (_riskTargetFetchInFlight) return;
+    _riskTargetFetchInFlight = true;
+    const searchEl = document.getElementById('riskTargetSearch');
+    const kw = encodeURIComponent((searchEl && searchEl.value || '').trim());
+    riskTargetFetchJson('/api/risk_targets?limit=200&q=' + kw, { cache: 'no-store' })
+        .then(function(resp) {
+            const list = resp && resp.code === 0 && Array.isArray(resp.data) ? resp.data : [];
+            _riskTargetsCache = list.slice();
+            updateRiskTargets(list);
+        })
+        .catch(function() {
+            updateRiskTargets(_riskTargetsCache);
+        })
+        .finally(function() { _riskTargetFetchInFlight = false; });
+}
+
+function updateRiskTargets(list) {
+    const container = document.getElementById('riskTargetList');
+    if (!container) return;
+    const items = Array.isArray(list) ? list : [];
+    if (!items.length) {
+        setEmptyMessage(container, '暂无风险目标，点击「识别目标」自动生成', 8);
+        return;
+    }
+    clearElement(container);
+    items.forEach(function(item) {
+        container.appendChild(buildRiskTargetRow(item));
+    });
+}
+
+function buildRiskTargetRow(item) {
+    const id = item.id;
+    const ip = String(item.target_value || '').trim();
+    const risk = String(item.risk_level || 'medium').toLowerCase();
+    const status = String(item.status || 'watching').toLowerCase();
+    const color = RISK_TARGET_RISK_COLORS[risk] || RISK_TARGET_RISK_COLORS.medium;
+    const riskLabel = RISK_TARGET_RISK_LABELS[risk] || risk;
+    const statusLabel = RISK_TARGET_STATUS_LABELS[status] || status;
+    const source = String(item.source || 'auto').toLowerCase();
+    const tags = Array.isArray(item.tags) ? item.tags : [];
+    const note = String(item.note || '').trim();
+    const location = String(item.location || '未知');
+
+    const row = document.createElement('div');
+    row.className = 'log-item';
+    row.style.borderLeft = '3px solid ' + color;
+    row.dataset.riskTargetId = String(id || '');
+
+    const header = document.createElement('div');
+    header.style.display = 'flex';
+    header.style.justifyContent = 'space-between';
+    header.style.alignItems = 'center';
+    header.style.fontSize = '12px';
+
+    const left = document.createElement('div');
+    left.style.display = 'flex';
+    left.style.alignItems = 'center';
+    left.style.gap = '6px';
+
+    const ipSpan = document.createElement('span');
+    ipSpan.style.color = '#00d4ff';
+    ipSpan.textContent = ip || '-';
+
+    const riskBadge = document.createElement('span');
+    riskBadge.style.padding = '1px 6px';
+    riskBadge.style.borderRadius = '10px';
+    riskBadge.style.fontSize = '10px';
+    riskBadge.style.color = color;
+    riskBadge.style.background = 'rgba(255,255,255,0.06)';
+    riskBadge.textContent = riskLabel;
+
+    const statusBadge = document.createElement('span');
+    statusBadge.style.padding = '1px 6px';
+    statusBadge.style.borderRadius = '10px';
+    statusBadge.style.fontSize = '10px';
+    statusBadge.style.color = status === 'banned' ? '#ffa502' : (status === 'handled' ? '#7bed9f' : '#9fc6e7');
+    statusBadge.style.background = 'rgba(255,255,255,0.06)';
+    statusBadge.textContent = statusLabel;
+
+    left.append(ipSpan, riskBadge, statusBadge);
+
+    const actions = document.createElement('div');
+    actions.style.display = 'flex';
+    actions.style.gap = '6px';
+
+    const editBtn = document.createElement('button');
+    editBtn.type = 'button';
+    editBtn.textContent = '编辑';
+    editBtn.style.cssText = 'border:1px solid rgba(0,150,255,0.4);background:rgba(0,150,255,0.12);color:#9fc6e7;border-radius:3px;font-size:10px;padding:1px 6px;cursor:pointer;';
+    editBtn.addEventListener('click', function() { openRiskTargetModal(item); });
+
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.textContent = '删除';
+    delBtn.style.cssText = 'border:1px solid rgba(255,77,79,0.4);background:rgba(255,77,79,0.12);color:#ff6b6b;border-radius:3px;font-size:10px;padding:1px 6px;cursor:pointer;';
+    delBtn.addEventListener('click', function() { deleteRiskTargetById(id, ip); });
+
+    actions.append(editBtn, delBtn);
+    header.append(left, actions);
+
+    const meta = document.createElement('div');
+    meta.style.color = '#6a8caf';
+    meta.style.fontSize = '10px';
+    meta.style.marginTop = '3px';
+    meta.textContent = [
+        location !== '未知' ? location : '',
+        `${item.event_count || 0} 事件`,
+        source === 'manual' ? '人工标注' : '自动识别'
+    ].filter(Boolean).join(' · ') || '-';
+
+    row.append(header, meta);
+
+    if (tags.length) {
+        const tagRow = document.createElement('div');
+        tagRow.style.display = 'flex';
+        tagRow.style.flexWrap = 'wrap';
+        tagRow.style.gap = '3px';
+        tagRow.style.marginTop = '3px';
+        tags.slice(0, 5).forEach(function(t) {
+            const tSpan = document.createElement('span');
+            tSpan.style.padding = '0 5px';
+            tSpan.style.borderRadius = '3px';
+            tSpan.style.fontSize = '9px';
+            tSpan.style.color = '#8fd3ff';
+            tSpan.style.background = 'rgba(0,212,255,0.12)';
+            tSpan.textContent = String(t || '').trim();
+            tagRow.appendChild(tSpan);
+        });
+        row.appendChild(tagRow);
+    }
+
+    if (note) {
+        const noteDiv = document.createElement('div');
+        noteDiv.style.color = '#7c98b6';
+        noteDiv.style.fontSize = '10px';
+        noteDiv.style.marginTop = '3px';
+        noteDiv.style.wordBreak = 'break-word';
+        noteDiv.style.overflowWrap = 'anywhere';
+        noteDiv.textContent = note;
+        row.appendChild(noteDiv);
+    }
+
+    return row;
+}
+
+function openRiskTargetModal(item) {
+    const modal = document.getElementById('riskTargetModal');
+    const title = document.getElementById('riskTargetModalTitle');
+    const idEl = document.getElementById('riskTargetId');
+    const valEl = document.getElementById('riskTargetValue');
+    const levelEl = document.getElementById('riskTargetLevel');
+    const statusEl = document.getElementById('riskTargetStatus');
+    const tagsEl = document.getElementById('riskTargetTags');
+    const noteEl = document.getElementById('riskTargetNote');
+    if (!modal) return;
+    const editing = !!(item && item.id != null);
+    title.textContent = editing ? '编辑风险目标' : '新增风险目标';
+    idEl.value = editing ? String(item.id) : '';
+    valEl.value = editing ? String(item.target_value || '') : '';
+    levelEl.value = editing ? String(item.risk_level || 'medium').toLowerCase() : 'medium';
+    statusEl.value = editing ? String(item.status || 'watching').toLowerCase() : 'watching';
+    tagsEl.value = editing ? (Array.isArray(item.tags) ? item.tags.join(',') : String(item.tags || '')) : '';
+    noteEl.value = editing ? String(item.note || '') : '';
+    modal.style.display = 'flex';
+}
+
+function closeRiskTargetModal() {
+    const modal = document.getElementById('riskTargetModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function submitRiskTarget() {
+    const id = String(document.getElementById('riskTargetId').value || '').trim();
+    const target_value = String(document.getElementById('riskTargetValue').value || '').trim();
+    if (!target_value) {
+        alert('请填写目标 IP');
+        return;
+    }
+    const payload = {
+        target_value: target_value,
+        risk_level: document.getElementById('riskTargetLevel').value,
+        status: document.getElementById('riskTargetStatus').value,
+        tags: String(document.getElementById('riskTargetTags').value || '').split(',').map(function(s) { return s.trim(); }).filter(Boolean),
+        note: String(document.getElementById('riskTargetNote').value || '')
+    };
+    const token = getDashboardCsrfToken();
+    const isEdit = id !== '';
+    const url = isEdit ? ('/api/risk_targets/' + encodeURIComponent(id)) : '/api/risk_targets';
+    riskTargetFetchJson(url, {
+        method: 'POST',
+        cache: 'no-store',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+        body: JSON.stringify(payload)
+    }).then(function(resp) {
+        if (resp && resp.code === 0) {
+            closeRiskTargetModal();
+            fetchRiskTargets();
+        } else {
+            alert((resp && resp.msg) || '保存失败');
+        }
+    }).catch(function() {
+        alert('请求失败，请重试');
+    });
+}
+
+function deleteRiskTargetById(id, ip) {
+    if (id == null || id === '') return;
+    if (!confirm('确定删除风险目标 ' + (ip || '') + ' 吗？')) return;
+    const token = getDashboardCsrfToken();
+    riskTargetFetchJson('/api/risk_targets/' + encodeURIComponent(String(id)) + '/delete', {
+        method: 'POST',
+        cache: 'no-store',
+        headers: { 'X-CSRF-Token': token }
+    }).then(function(resp) {
+        if (resp && resp.code === 0) {
+            fetchRiskTargets();
+        } else {
+            alert((resp && resp.msg) || '删除失败');
+        }
+    }).catch(function() {
+        alert('请求失败，请重试');
+    });
+}
+
+function deriveRiskTargets() {
+    const btn = document.getElementById('riskTargetDeriveBtn');
+    if (btn) { btn.disabled = true; btn.textContent = '识别中…'; }
+    const token = getDashboardCsrfToken();
+    riskTargetFetchJson('/api/risk_targets/derive', {
+        method: 'POST',
+        cache: 'no-store',
+        headers: { 'X-CSRF-Token': token }
+    }).then(function() {
+        fetchRiskTargets();
+    }).catch(function() {
+        alert('识别失败，请重试');
+    }).finally(function() {
+        if (btn) { btn.disabled = false; btn.textContent = '识别目标'; }
+    });
+}
+
+function initRiskTargets() {
+    const addBtn = document.getElementById('riskTargetAddBtn');
+    const deriveBtn = document.getElementById('riskTargetDeriveBtn');
+    const searchInput = document.getElementById('riskTargetSearch');
+    const saveBtn = document.getElementById('riskTargetSave');
+    const cancelBtn = document.getElementById('riskTargetCancel');
+    const modal = document.getElementById('riskTargetModal');
+
+    if (addBtn) addBtn.addEventListener('click', function() { openRiskTargetModal(null); });
+    if (deriveBtn) deriveBtn.addEventListener('click', deriveRiskTargets);
+    if (searchInput) {
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') fetchRiskTargets();
+        });
+        searchInput.addEventListener('input', debounce(fetchRiskTargets, 500));
+    }
+    if (saveBtn) saveBtn.addEventListener('click', submitRiskTarget);
+    if (cancelBtn) cancelBtn.addEventListener('click', closeRiskTargetModal);
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) closeRiskTargetModal();
+        });
+    }
+    fetchRiskTargets();
+    setInterval(fetchRiskTargets, RISK_TARGET_POLL_INTERVAL_MS);
+}
 
 
 

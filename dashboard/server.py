@@ -15,6 +15,7 @@ import sys
 import time
 import threading
 import random
+import re
 from threading import Lock
 from werkzeug.serving import make_server
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -48,11 +49,21 @@ from db import (
     get_event_stats,
     has_real_data,
     calculate_threat_score,
+    derive_risk_targets,
+    list_risk_targets,
+    get_risk_target,
+    upsert_risk_target,
+    update_risk_target,
+    delete_risk_target,
 )
 from utils.http_fingerprint import FAKE_SERVER_HEADERS, FINGERPRINT_STRIP_HEADERS, StealthRequestHandler, spoof_http_fingerprint
 from utils.ip_location import build_geo_location, normalize_geo_fields
 from utils.logger import get_dashboard_logger
 from dashboard.system_info import get_server_info, get_system_status
+from utils import local_ai
+from utils import ai_detection
+from utils import ai_analyst
+from utils.investigations import InvestigationStore, Conflict
 
 logger = get_dashboard_logger()
 app = Flask(
@@ -878,8 +889,546 @@ def api_login_audit():
         top_failed = _sanitize_records(top_failed, ['ip'])
     return jsonify({'code': 0, 'msg': 'success', 'data': {'recent': recent, 'top_failed': top_failed}})
 
+# === 风险目标标注 API ===
+_RISK_TARGET_VIEW_FIELDS = [
+    'id', 'target_type', 'target_value', 'risk_level', 'status', 'tags',
+    'note', 'source', 'first_seen', 'last_seen', 'event_count',
+    'created_at', 'updated_at', 'location'
+]
+
+
+def _risk_target_payload():
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        data = {}
+    out = dict(request.form)
+    for k, v in data.items():
+        out[k] = v
+    return out
+
+
+def _parse_tag_list(raw):
+    if raw is None:
+        return []
+    if isinstance(raw, (list, tuple, set)):
+        items = [str(x or '').strip() for x in raw]
+    else:
+        text = str(raw or '').strip()
+        if text.startswith('[') or text.startswith('{'):
+            try:
+                parsed = json.loads(text)
+                if isinstance(parsed, list):
+                    items = [str(x or '').strip() for x in parsed]
+                else:
+                    items = [str(parsed or '').strip()] if parsed else []
+            except Exception:
+                items = [text]
+        else:
+            items = [x.strip() for x in text.split(',')]
+    return [x for x in items if x]
+
+
+@app.route('/api/risk_targets')
+@enhanced_login_required
+def api_risk_targets():
+    try:
+        target_type = request.args.get('target_type', '')
+        risk_level = request.args.get('risk_level', '')
+        status = request.args.get('status', '')
+        keyword = request.args.get('q', '')
+        limit = request.args.get('limit', '100')
+        offset = request.args.get('offset', '0')
+        rows = list_risk_targets(
+            target_type=target_type,
+            risk_level=risk_level,
+            status=status,
+            keyword=keyword,
+            limit=limit,
+            offset=offset,
+        )
+        geo_cache = {}
+        for item in rows or []:
+            if isinstance(item, dict):
+                item['location'] = _format_ip_location(item.get('target_value', ''), geo_cache)
+                item['tags'] = _parse_tag_list(item.get('tags'))
+        data = _sanitize_records(rows, _RISK_TARGET_VIEW_FIELDS)
+        return jsonify({'code': 0, 'msg': 'success', 'data': data})
+    except Exception as e:
+        logger.exception(f"risk_targets list failed: {e}")
+        return jsonify({'code': -1, 'msg': '服务异常', 'data': []})
+
+
+@app.route('/api/risk_targets/derive', methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+def api_risk_targets_derive():
+    try:
+        hours = request.args.get('hours', '')
+        touched = derive_risk_targets(hours=hours)
+        return jsonify({'code': 0, 'msg': 'success', 'data': {'touched': int(touched)}})
+    except Exception as e:
+        logger.exception(f"risk_targets derive failed: {e}")
+        return jsonify({'code': -1, 'msg': '服务异常', 'data': {'touched': 0}})
+
+
+@app.route('/api/risk_targets', methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+def api_risk_targets_create():
+    body = _risk_target_payload()
+    target_value = str(body.get('target_value') or '').strip()
+    if not target_value:
+        return jsonify({'code': -1, 'msg': 'target_value 不能为空', 'data': None})
+    result = upsert_risk_target(
+        target_value=target_value,
+        target_type=body.get('target_type', 'ip'),
+        risk_level=body.get('risk_level'),
+        status=body.get('status'),
+        tags=body.get('tags'),
+        note=body.get('note'),
+        source=body.get('source', 'manual'),
+    )
+    if result.get('ok'):
+        return jsonify({'code': 0, 'msg': 'success', 'data': result})
+    return jsonify({'code': -1, 'msg': result.get('msg', '保存失败'), 'data': None})
+
+
+@app.route('/api/risk_targets/<int:target_id>', methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+def api_risk_targets_update(target_id):
+    body = _risk_target_payload()
+    fields = {}
+    for key in ('target_type', 'target_value', 'risk_level', 'status', 'tags', 'note', 'source'):
+        if key in body:
+            fields[key] = body.get(key)
+    if not fields:
+        return jsonify({'code': -1, 'msg': '无可更新字段', 'data': None})
+    result = update_risk_target(target_id, **fields)
+    if result.get('ok'):
+        return jsonify({'code': 0, 'msg': 'success', 'data': result})
+    return jsonify({'code': -1, 'msg': result.get('msg', '更新失败'), 'data': None})
+
+
+@app.route('/api/risk_targets/<int:target_id>/delete', methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+def api_risk_targets_delete(target_id):
+    result = delete_risk_target(target_id)
+    if result.get('ok'):
+        return jsonify({'code': 0, 'msg': 'success', 'data': result})
+    return jsonify({'code': -1, 'msg': result.get('msg', '删除失败'), 'data': None})
+
+# ============================================
+# round 9 合并：AI 工作区路由（检测 / 交互 / 分析 / 调查 / 团队中心桥接）
+# ============================================
+@app.route('/ai/center')
+@enhanced_login_required
+def ai_center_bridge():
+    from utils.team_collector import endpoint_ok
+    endpoint=os.environ.get('HONEYPOT_CENTER_URL','http://127.0.0.1:5169')
+    if not endpoint_ok(endpoint,True):return '团队中心地址配置无效',400
+    return redirect(endpoint.rstrip('/')+'/')
+
+
+@app.route('/ai')
+@enhanced_login_required
+def ai_monitor():
+    return render_template('ai.html')
+
+
+@app.route('/api/ai/status')
+@enhanced_login_required
+def api_ai_status():
+    return jsonify({'code': 0, 'data': local_ai.status()})
+
+
+@app.route('/api/ai/probe', methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+def api_ai_probe():
+    # Fixed safe test input; never accept a URL, prompt or model name from the browser.
+    identity = str(session.get('username') or 'operator')
+    import hashlib
+    actor = hashlib.sha256(identity.encode()).hexdigest()[:12]
+    probe_session = 'probe:' + actor + ':' + time.strftime('%Y%m%d%H', time.gmtime())
+    result = local_ai.probe(probe_session, _get_client_ip())
+    return jsonify({'code': 0, 'data': result})
+
+
+@app.route('/ai/analysis')
+@enhanced_login_required
+def ai_analysis_page():
+    ai_analyst.start_worker()
+    return render_template('ai_analysis.html')
+
+
+@app.route('/api/ai/analysis')
+@enhanced_login_required
+def api_ai_analysis():
+    try:
+        limit=max(1,min(30,int(request.args.get('limit',12))))
+        risk=request.args.get('risk','');state=request.args.get('state','')
+        before=request.args.get('before','')
+        if before:
+            value,identifier=before.split(':',1)
+            if not re.fullmatch(r'[a-f0-9]{24}',identifier):raise ValueError()
+            before=(float(value),identifier)
+        else:before=None
+        if risk and risk not in ai_analyst.RISKS:raise ValueError()
+        if state and state not in ('queued','running','completed','fallback','cancelled'):raise ValueError()
+        data=ai_analyst.status(limit,before,risk,state)
+        return jsonify(code=0,data=data)
+    except ValueError:return jsonify(code=1,msg='筛选参数无效'),400
+    except Exception:return jsonify(code=1,msg='分析记录暂不可用'),503
+
+
+@app.route('/api/ai/analysis/scan',methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+def api_ai_analysis_scan():
+    try:
+        ai_analyst.ingest_once();job=ai_analyst.queue_report(force=True);ai_analyst.start_worker();ai_analyst._wake.set()
+        return jsonify(code=0,data={'job':job,'scan':dict(ai_analyst._state)})
+    except Exception:return jsonify(code=1,msg='日志索引暂不可用'),503
+
+
+@app.route('/api/ai/analysis/mode',methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+def api_ai_analysis_mode():
+    data=request.get_json(silent=True)
+    if not isinstance(data,dict) or data.get('mode') not in ('interactive','automatic'):return jsonify(code=1,msg='模式无效'),400
+    try:return jsonify(code=0,data={'pause_until':local_ai.STORE.pause_background(600 if data['mode']=='interactive' else 0)})
+    except Exception:return jsonify(code=1,msg='调度状态暂不可用'),503
+
+
+@app.route('/api/ai/analysis/<identifier>')
+@enhanced_login_required
+def api_ai_analysis_detail(identifier):
+    if not re.fullmatch(r'[a-f0-9]{24}',identifier):return jsonify(code=1,msg='编号无效'),400
+    try:
+        row=ai_analyst.get_store().get(identifier)
+        if not row or row['task']!='report':return jsonify(code=1,msg='报告不存在'),404
+        row['reviews']=ai_analyst.get_store().reviews(identifier)
+        return jsonify(code=0,data=row)
+    except Exception:return jsonify(code=1,msg='报告暂不可用'),503
+
+
+@app.route('/api/ai/analysis/<identifier>/export')
+@enhanced_login_required
+def api_ai_analysis_export(identifier):
+    if not re.fullmatch(r'[a-f0-9]{24}',identifier):return jsonify(code=1,msg='编号无效'),400
+    try:
+        from flask import make_response
+        row=ai_analyst.get_store().get(identifier)
+        if not row or row['task']!='report':return jsonify(code=1,msg='报告不存在'),404
+        if row['status']!='completed':return jsonify(code=1,msg='报告尚未完成'),409
+        from utils.markdown_export import literal
+        r=row['result'];safe=literal
+        parts=['# '+safe(r['title']),f'AI 风险：{safe(r["risk"])} · 报告 {identifier} · 调用 {row["call_id"]}',
+            '## 概述',safe(r['summary']),'## 攻击意图',safe(r['intent']),'## 风险理由',safe(r['risk_reason']),
+            '## 行为过程',*['- '+safe(v['description'])+' · 证据 '+v['evidence_id'] for v in r['timeline']],
+            '## 复核建议',*['- '+safe(v) for v in r['recommendations']],'## 判断局限',safe(r['limitations']),
+            '## 引用证据',*['- '+v['id']+'：'+safe(v['quote']) for v in r['evidence']],
+            '## 本次可见原文',*['- '+safe(v['locator'])+' · '+safe(v['timestamp'])+' · '+safe(v['src_ip'])+' · 原规则 '+safe(v['rule_level'])+'\n  '+safe(v['excerpt']) for v in row['context']['records']]]
+        response=make_response('\n\n'.join(parts));response.headers['Content-Type']='text/markdown; charset=utf-8'
+        response.headers['Content-Disposition']='attachment; filename="ai-report-'+identifier+'.md"';return response
+    except Exception:return jsonify(code=1,msg='报告导出暂不可用'),503
+
+
+def _ai_safe_endpoint(f):
+    @wraps(f)
+    def guarded(*args,**kwargs):
+        try:return f(*args,**kwargs)
+        except Exception as error:
+            logger.error('AI endpoint unavailable: %s',type(error).__name__)
+            return jsonify(code=1,msg='AI 数据服务暂不可用，原规则继续运行'),503
+    return guarded
+
+
+def _chat_owner():
+    if 'ai_chat_owner' not in session:session['ai_chat_owner']=secrets.token_hex(16)
+    return session['ai_chat_owner']
+
+
+@app.route('/api/ai/recover',methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+def api_ai_recover():
+    result=local_ai.call_model('probe',[{'role':'system','content':'Return JSON {"reply":"..."}; local service recovery test, no tools.'},
+        {'role':'user','content':'请用一句中文确认模型可以正常回答。'}],'recovery:'+_chat_owner()+':'+str(int(time.time()//3600)),_get_client_ip(),options={'bypass_circuit':True})
+    return jsonify(code=0,data=result)
+
+
+@app.route('/api/ai/analysis/<identifier>/retry',methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+@_ai_safe_endpoint
+def api_ai_report_retry(identifier):
+    if not re.fullmatch(r'[a-f0-9]{24}',identifier):return jsonify(code=1,msg='编号无效'),400
+    store=ai_analyst.get_store();row=store.get(identifier)
+    if not row or row['task']!='report':return jsonify(code=1,msg='报告不存在'),404
+    status=store.retry_task(identifier);ai_analyst._wake.set()
+    return jsonify(code=0,data={'status':status})
+
+
+@app.route('/api/ai/analysis/<identifier>/review',methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+@_ai_safe_endpoint
+def api_ai_report_review(identifier):
+    data=request.get_json(silent=True)
+    if not re.fullmatch(r'[a-f0-9]{24}',identifier) or not isinstance(data,dict):return jsonify(code=1,msg='参数无效'),400
+    verdict=data.get('verdict','');risk=data.get('risk','');note=data.get('note','')
+    if verdict not in ('agree','false_positive','missed','needs_review') or risk not in ai_analyst.RISKS or not isinstance(note,str) or len(note)>500:return jsonify(code=1,msg='复核内容无效'),400
+    if not ai_analyst.get_store().review(identifier,_chat_owner(),verdict,risk,ai_analyst._clean(note,500)):return jsonify(code=1,msg='报告未完成或不存在'),409
+    return jsonify(code=0,data={'saved':True})
+
+
+@app.route('/api/ai/chat/history')
+@enhanced_login_required
+@_ai_safe_endpoint
+def api_ai_chat_history():
+    conversation=request.args.get('conversation','')
+    if not re.fullmatch(r'[a-f0-9]{32}',conversation):return jsonify(code=1,msg='会话无效'),400
+    return jsonify(code=0,data=ai_analyst.get_store().conversations(_chat_owner(),conversation))
+
+
+@app.route('/api/ai/archives')
+@enhanced_login_required
+def api_ai_archives():
+    try:return jsonify(code=0,data=ai_analyst.get_store().archives())
+    except Exception:return jsonify(code=1,msg='档案暂不可用'),503
+
+
+@app.route('/api/ai/archives/<name>')
+@enhanced_login_required
+def api_ai_archive(name):
+    try:
+        rows=ai_analyst.get_store().archived(name)
+        if rows is None:return jsonify(code=1,msg='档案不存在'),404
+        from flask import make_response
+        response=make_response(json.dumps(rows,ensure_ascii=False,indent=2));response.headers['Content-Type']='application/json; charset=utf-8'
+        response.headers['Content-Disposition']='attachment; filename="analysis-'+name+'.json"';return response
+    except Exception:return jsonify(code=1,msg='档案读取失败'),503
+
+
+@app.route('/api/ai/chat/<identifier>/cancel',methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+@_ai_safe_endpoint
+def api_ai_chat_cancel(identifier):
+    if not re.fullmatch(r'[a-f0-9]{24}',identifier):return jsonify(code=1,msg='编号无效'),400
+    if not ai_analyst.get_store().cancel(identifier,_chat_owner()):return jsonify(code=1,msg='问答不存在'),404
+    return jsonify(code=0,data={'status':'cancelled'})
+
+
+@app.route('/api/ai/chat',methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+def api_ai_chat():
+    if not local_ai.SETTINGS.get('analysis_enabled') or not local_ai.SETTINGS['enabled']:return jsonify(code=1,msg='AI 分析已关闭'),409
+    try:
+        payload=request.get_json(silent=True)
+        if not isinstance(payload,dict):raise ValueError()
+        conversation=payload.get('conversation','');question=payload.get('question','');ip=payload.get('src_ip','');term=payload.get('term','');mode=payload.get('mode','logs');report_id=payload.get('report_id','');case_id=payload.get('case_id','');evidence_id=payload.get('evidence_id','')
+        if case_id and (not isinstance(case_id,str) or not re.fullmatch(r'[a-f0-9]{24}',case_id)):raise ValueError()
+        if evidence_id and (not isinstance(evidence_id,str) or not re.fullmatch(r'[a-f0-9]{24}',evidence_id)):raise ValueError()
+        if sum(bool(v) for v in (report_id,case_id,evidence_id))>1:raise ValueError()
+        if not all(isinstance(v,str) for v in (conversation,question,ip,term,mode,report_id,case_id,evidence_id)) or not re.fullmatch(r'[a-f0-9]{32}',conversation) or mode not in ('logs','general') or (report_id and not re.fullmatch(r'[a-f0-9]{24}',report_id)):raise ValueError()
+        job=ai_analyst.ask(_chat_owner(),conversation,question,ip,term,mode,report_id,case_id,evidence_id)
+        if job['status']=='rejected':return jsonify(code=1,msg='问答额度或队列已满'),429
+        return jsonify(code=0,data=job),202
+    except ValueError:return jsonify(code=1,msg='问题、会话编号或来源地址无效'),400
+    except Exception:return jsonify(code=1,msg='问答暂不可用'),503
+
+
+@app.route('/api/ai/chat/<identifier>')
+@enhanced_login_required
+def api_ai_chat_result(identifier):
+    if not re.fullmatch(r'[a-f0-9]{24}',identifier):return jsonify(code=1,msg='编号无效'),400
+    try:
+        row=ai_analyst.get_store().get(identifier,_chat_owner())
+        if not row or row['task'] not in ('chat','general_chat'):return jsonify(code=1,msg='问答不存在'),404
+        return jsonify(code=0,data=row)
+    except Exception:return jsonify(code=1,msg='问答暂不可用'),503
+
+
+@app.route('/ai/investigations')
+@enhanced_login_required
+def ai_investigations_page():
+    return render_template('investigations.html')
+
+
+def _investigations():
+    return InvestigationStore(ai_analyst.get_store())
+
+
+@app.route('/api/ai/source-profile')
+@enhanced_login_required
+@_ai_safe_endpoint
+def api_ai_source_profile():
+    try:return jsonify(code=0,data=_investigations().profile(request.args.get('ip','')))
+    except ValueError as e:return jsonify(code=1,msg=str(e)),400
+
+
+@app.route('/api/ai/investigations')
+@enhanced_login_required
+@_ai_safe_endpoint
+def api_ai_investigations():
+    try:
+        raw=request.args.get('before','');before=None
+        if raw:
+            if not re.fullmatch(r'[0-9]{1,12}(?:\.[0-9]{1,10})?:[a-f0-9]{24}',raw):raise ValueError('分页编号无效')
+            stamp,identifier=raw.split(':');before=(float(stamp),identifier)
+        return jsonify(code=0,data=_investigations().listing(request.args.get('state',''),request.args.get('ip',''),before=before,term=request.args.get('term','')))
+    except ValueError as e:return jsonify(code=1,msg=str(e)),400
+
+
+@app.route('/api/ai/investigations',methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+@_ai_safe_endpoint
+def api_ai_investigation_create():
+    try:
+        p=request.get_json(silent=True)
+        if not isinstance(p,dict):raise ValueError('请求格式无效')
+        report=p.get('report_id','')
+        if not isinstance(report,str) or (report and not re.fullmatch(r'[a-f0-9]{24}',report)):raise ValueError('报告编号无效')
+        return jsonify(code=0,data=_investigations().create(p.get('title',''),p.get('src_ip',''),_chat_owner(),report)),201
+    except ValueError as e:return jsonify(code=1,msg=str(e)),400
+
+
+@app.route('/api/ai/investigations/<identifier>')
+@enhanced_login_required
+@_ai_safe_endpoint
+def api_ai_investigation_detail(identifier):
+    if not re.fullmatch(r'[a-f0-9]{24}',identifier):return jsonify(code=1,msg='编号无效'),400
+    row=_investigations().get(identifier)
+    if not row:return jsonify(code=1,msg='调查不存在'),404
+    return jsonify(code=0,data=row)
+
+
+@app.route('/api/ai/investigations/<identifier>',methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+@_ai_safe_endpoint
+def api_ai_investigation_update(identifier):
+    if not re.fullmatch(r'[a-f0-9]{24}',identifier):return jsonify(code=1,msg='编号无效'),400
+    try:
+        p=request.get_json(silent=True)
+        if not isinstance(p,dict):raise ValueError('请求格式无效')
+        for k in ('state','risk','report_id'):
+            if not isinstance(p.get(k,''),str):raise ValueError('字段类型无效')
+        if p.get('report_id') and not re.fullmatch(r'[a-f0-9]{24}',p['report_id']):raise ValueError('报告编号无效')
+        return jsonify(code=0,data=_investigations().update(identifier,p.get('revision'),_chat_owner(),p.get('state',''),p.get('risk',''),p.get('note',''),p.get('report_id','')))
+    except Conflict as e:return jsonify(code=1,msg=str(e)),409
+    except ValueError as e:return jsonify(code=1,msg=str(e)),400
+
+
+@app.route('/api/ai/investigations/<identifier>/export')
+@enhanced_login_required
+@_ai_safe_endpoint
+def api_ai_investigation_export(identifier):
+    if not re.fullmatch(r'[a-f0-9]{24}',identifier):return jsonify(code=1,msg='编号无效'),400
+    try:text=_investigations().export(identifier)
+    except ValueError:return jsonify(code=1,msg='调查不存在'),404
+    return app.response_class(text,mimetype='text/markdown',headers={'Content-Disposition':'attachment; filename="investigation-'+identifier+'.md"'})
+
+@app.route('/ai/interactions')
+@enhanced_login_required
+def ai_interactions_page():
+    return render_template('ai_interactions.html')
+
+
+@app.route('/api/ai/interactions')
+@enhanced_login_required
+def api_ai_interactions():
+    from utils.ai_interaction import get_store
+    try:
+        limit=max(1,min(100,int(request.args.get('limit',50))))
+        sid=request.args.get('session_id','').strip()
+        channel=request.args.get('channel','').strip()
+        if sid and not re.fullmatch(r'[0-9a-f]{32}',sid):return jsonify(code=1,msg='会话编号无效'),400
+        if channel not in ('','ssh','web'):return jsonify(code=1,msg='协议无效'),400
+        return jsonify(code=0,data=get_store().listing(limit,sid,channel))
+    except ValueError:
+        return jsonify(code=1,msg='参数无效'),400
+    except Exception:
+        return jsonify(code=1,msg='交互记录暂不可用'),503
+
+
+@app.route('/ai/detection')
+@enhanced_login_required
+def ai_detection_page():
+    return render_template('ai_detection.html')
+
+
+@app.route('/api/ai/detections')
+@enhanced_login_required
+def api_ai_detections():
+    try:
+        limit=max(1,min(100,int(request.args.get('limit',50))))
+        ip=request.args.get('src_ip','').strip()
+        if ip:ip=str(ipaddress.ip_address(ip))
+        data=ai_detection.STORE.listing(limit,ip)
+        from db.event_logs import severity_from_score
+        for row in data['records']:row['rule_level']=severity_from_score(row['snapshot']['rule_score'])
+        data['policy']={k:local_ai.SETTINGS[k] for k in ('enabled','detection_enabled','detection_queue_max','detection_per_ip_hour','normal_sample_every')}
+        return jsonify({'code':0,'data':data})
+    except ValueError:
+        return jsonify({'code':400,'msg':'来源地址或查询数量无效'}),400
+    except Exception:
+        return jsonify({'code':503,'msg':'AI 研判记录暂不可用；原有规则仍继续处理'}),503
+
+
+@app.route('/api/ai/detections/<identifier>')
+@enhanced_login_required
+def api_ai_detection_detail(identifier):
+    if len(identifier)!=24 or any(c not in '0123456789abcdef' for c in identifier):
+        return jsonify({'code':404,'msg':'记录不存在'}),404
+    try:
+        row=ai_detection.STORE.get(identifier)
+        if row is None:return jsonify({'code':404,'msg':'记录不存在'}),404
+        return jsonify({'code':0,'data':row})
+    except Exception:
+        return jsonify({'code':503,'msg':'记录暂不可用'}),503
+
+
+@app.route('/api/ai/detections/<identifier>/retry',methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+def api_ai_detection_retry(identifier):
+    if len(identifier)!=24 or any(c not in '0123456789abcdef' for c in identifier):
+        return jsonify({'code':404,'msg':'记录不存在'}),404
+    if not local_ai.SETTINGS['enabled'] or not local_ai.SETTINGS['detection_enabled']:
+        return jsonify({'code':409,'msg':'AI 研判已关闭'}),409
+    try:
+        state=ai_detection.STORE.retry(identifier,local_ai.SETTINGS)
+        if state is None:return jsonify({'code':404,'msg':'记录不存在'}),404
+        if state=='queue_full':return jsonify({'code':429,'msg':'分析队列已满，原结果保留'}),429
+        ai_detection.start_worker()
+        return jsonify({'code':0,'data':{'status':state}})
+    except Exception:
+        return jsonify({'code':503,'msg':'无法提交分析任务'}),503
+
+
+@app.route('/api/ai/analyze-recent',methods=['POST'])
+@enhanced_login_required
+@csrf_protect_api
+def api_ai_analyze_recent():
+    try:
+        return jsonify({'code':0,'data':{'outcomes':ai_detection.review_recent_requests(5)}})
+    except Exception:
+        return jsonify({'code':503,'msg':'无法读取原请求或提交分析；原记录保持可用'}),503
+
+
 # === 后台任务：自动归档（仅 Dashboard 执行） ===
 from db import archive_old_logs_sqlite, USE_MYSQL
+
+from dashboard.team_api import register as register_team_api
+register_team_api(app, enhanced_login_required, csrf_protect_api, _ai_safe_endpoint, _chat_owner)
 
 class BackgroundArchiver(threading.Thread):
     def __init__(self):
@@ -901,6 +1450,7 @@ class BackgroundArchiver(threading.Thread):
                 logger.error(f"归档任务异常: {e}")
 
 if __name__ == '__main__':
+    ai_analyst.start_worker()
     import argparse
 
     # 降低 Flask/Werkzeug 启动日志噪声

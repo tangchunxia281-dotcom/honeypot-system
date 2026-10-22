@@ -25,6 +25,14 @@ from .event_logs import (
     get_event_stats,
     get_ssh_suspicious_commands,
 )
+from .risk_targets import (
+    derive_risk_targets,
+    list_risk_targets,
+    get_risk_target,
+    upsert_risk_target,
+    update_risk_target,
+    delete_risk_target,
+)
 
 __all__ = [
     'USE_MYSQL',
@@ -47,6 +55,12 @@ __all__ = [
     'get_event_logs',
     'get_event_stats',
     'get_ssh_suspicious_commands',
+    'derive_risk_targets',
+    'list_risk_targets',
+    'get_risk_target',
+    'upsert_risk_target',
+    'update_risk_target',
+    'delete_risk_target',
 ]
 
 
