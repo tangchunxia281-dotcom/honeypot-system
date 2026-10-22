@@ -106,6 +106,30 @@ CREATE TABLE IF NOT EXISTS event_log (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='统一事件日志表';
 
 -- ============================================
+-- 表5: risk_target - 风险目标标注表（运营态标注数据，不纳入冷归档）
+-- 与 db/risk_targets.py 中 MySQL 建表口径保持一致
+-- ============================================
+CREATE TABLE IF NOT EXISTS risk_target (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '主键 ID',
+    target_type VARCHAR(16) NOT NULL DEFAULT 'ip' COMMENT '目标类型：ip/域名等',
+    target_value VARCHAR(64) NOT NULL COMMENT '目标值（攻击源 IP）',
+    risk_level VARCHAR(16) NOT NULL DEFAULT 'medium' COMMENT '风险等级：low/medium/high/critical',
+    status VARCHAR(16) NOT NULL DEFAULT 'watching' COMMENT '处置状态：watching/banned/handled',
+    tags TEXT COMMENT '标签(JSON 数组)',
+    note TEXT COMMENT '人工备注',
+    source VARCHAR(16) NOT NULL DEFAULT 'auto' COMMENT '来源：auto 自动识别 / manual 人工标注',
+    first_seen DATETIME DEFAULT NULL COMMENT '首次出现',
+    last_seen DATETIME DEFAULT NULL COMMENT '最近出现',
+    event_count INT DEFAULT 0 COMMENT '关联事件数',
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_risk_target_value (target_value),
+    KEY idx_rt_risk_level (risk_level),
+    KEY idx_rt_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='风险目标标注表';
+
+-- ============================================
 -- 可选：初始化归档库表
 -- 这样 mysql_archive.sql 就不需要重复维护表结构
 -- ============================================
@@ -115,4 +139,5 @@ CREATE TABLE IF NOT EXISTS honeypot_archive.event_log LIKE honeypot_db.event_log
 
 -- 注意：
 -- 1) geo_ip 作为缓存表，通常保留在主库即可，不单独做冷归档
--- 2) 若已有旧版本表结构，需要按实际库状态执行 ALTER TABLE 迁移，而不是重复导入本文件
+-- 2) risk_target 属运营态标注数据，不纳入冷归档
+-- 3) 若已有旧版本表结构，需要按实际库状态执行 ALTER TABLE 迁移，而不是重复导入本文件

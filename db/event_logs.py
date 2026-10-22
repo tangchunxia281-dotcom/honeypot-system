@@ -107,7 +107,9 @@ def severity_from_score(score: int) -> str:
 
 def _normalize_source(source: str) -> str:
     s = str(source or '').strip().lower()
-    if s in ('web', 'ssh', 'dashboard', 'system'):
+    # 多协议扩展：mysql/redis 属数据库蜜罐，ftp/smb 属文件共享蜜罐，rdp/telnet 属远程管理蜜罐
+    if s in ('web', 'ssh', 'dashboard', 'system',
+             'mysql', 'redis', 'ftp', 'smb', 'rdp', 'telnet'):
         return s
     return 'system'
 

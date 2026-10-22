@@ -109,6 +109,27 @@ _ENV_CONFIG_MAP = {
     'SSH_SCAN_ALERT_COOLDOWN_SECONDS': ('services.ssh', 'scan_alert_cooldown_seconds'),
     'SSH_SCAN_STALE_KEEP_SECONDS': ('services.ssh', 'scan_stale_keep_seconds'),
 
+    # 多协议蜜罐：数据库协议（MySQL / Redis）
+    'DB_HONEYPOT_ENABLED': ('services.database', 'enabled'),
+    'DB_HONEYPOT_HOST': ('services.database', 'host'),
+    'MYSQL_PORT': ('services.database', 'mysql_port'),
+    'REDIS_PORT': ('services.database', 'redis_port'),
+    # 多协议蜜罐：文件共享协议（FTP / SMB 预留）
+    'FILE_HONEYPOT_ENABLED': ('services.file', 'enabled'),
+    'FTP_HOST': ('services.file', 'host'),
+    'FTP_PORT': ('services.file', 'ftp_port'),
+    # 多协议蜜罐：远程管理协议（Telnet / RDP 预留）
+    'REMOTE_HONEYPOT_ENABLED': ('services.remote', 'enabled'),
+    'TELNET_HOST': ('services.remote', 'host'),
+    'TELNET_PORT': ('services.remote', 'telnet_port'),
+
+    # 团队数据中心（独立子进程，配置为 JSON 文件路径）
+    'TEAM_CENTER_ENABLED': ('team_center', 'enabled'),
+    'TEAM_CENTER_CONFIG': ('team_center', 'config'),
+    # AI 推理网关（独立子进程，配置为 JSON 文件路径）
+    'AI_GATEWAY_ENABLED': ('ai_gateway', 'enabled'),
+    'AI_GATEWAY_CONFIG': ('ai_gateway', 'config'),
+
     'WEB_HOST': ('services.web', 'host'),
     'WEB_PORT': ('services.web', 'port'),
     'WEB_MAX_CONTENT_LENGTH': ('services.web', 'max_content_length'),
@@ -186,6 +207,13 @@ _ENV_CONFIG_MAP = {
     'ARCHIVE_BACKGROUND_INTERVAL_SECONDS': ('archive', 'background_interval_seconds'),
     'ARCHIVE_READ_ENABLED': ('archive', 'read_enabled'),
     'ARCHIVE_QUERY_MAX_FILES': ('archive', 'query_max_files'),
+
+    # risk target annotation
+    'RISK_TARGET_ENABLED': ('risk_target', 'enabled'),
+    'RISK_TARGET_AUTO_DERIVE': ('risk_target', 'auto_derive'),
+    'RISK_TARGET_DERIVE_HOURS': ('risk_target', 'derive_hours'),
+    'RISK_TARGET_MIN_EVENTS': ('risk_target', 'min_events'),
+    'RISK_TARGET_MIN_SEVERITY': ('risk_target', 'min_severity'),
 
     # geoip
     'GEOIP_TIMEOUT': ('geoip', 'timeout'),

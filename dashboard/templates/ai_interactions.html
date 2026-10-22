@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 会话交互回放</title><link rel="stylesheet" href="{{ url_for('static',filename='css/ai.css',v=ASSET_VERSION) }}"><link rel="stylesheet" href="{{ url_for('static',filename='css/ai_shell.css',v=ASSET_VERSION) }}"></head>
+<body class="ai-workspace">{% include 'ai_sidebar.html' %}<main>
+<header><div><a href="{{ url_for('ai_monitor') }}">← 本地 AI 运行监控</a><h1>会话交互回放</h1><p>沿同一会话查看输入、回应来源、受控策略与虚拟状态。</p></div>
+<div class="actions"><a href="{{ url_for('ai_detection_page') }}">攻击研判对照 →</a><button id="refresh">刷新</button></div></header>
+<p id="notice" role="status">正在读取实际交互记录…</p>
+<section class="cards"><article><span>AI 选择策略</span><strong id="modelCount">—</strong><small>通过格式校验并完成状态保存</small></article>
+<article><span>预设逻辑回应</span><strong id="programCount">—</strong><small>虚拟命令与任务状态查询</small></article>
+<article><span>异常备用处理</span><strong id="fallbackCount">—</strong><small>模型断开、超时、预算或策略限制</small></article>
+<article><span>受控范围</span><strong>SSH · Web 预览</strong><small>模型选择策略；程序维护状态</small></article></section>
+<section class="panel"><div class="actions"><label>协议 <select id="channel"><option value="">全部</option><option value="ssh">SSH</option><option value="web">Web</option></select></label>
+<label>会话 <input id="sessionId" placeholder="32 位会话编号" maxlength="32"></label><button id="filter">筛选</button><button id="clear">查看全部</button></div>
+<p>点击“回放此会话”，按步骤查看该会话最近 100 条记录。这里显示脱敏限长预览，不是完整流量包。</p>
+<div class="table-scroll"><table><thead><tr><th>时间／会话</th><th>协议／步骤</th><th>来源／策略</th><th>输入 → 回应</th><th>虚拟状态／关联调用</th><th>操作</th></tr></thead><tbody id="turns"></tbody></table></div></section>
+<footer>最多保留 30 天／约 10,000 条交互。SSH 内建命令由虚拟系统处理；未知命令由 AI 选择有限策略；Web 预览不会访问提交的目标地址。模型关闭时仍有备用回应。</footer>
+</main><script src="{{ url_for('static',filename='js/ai_interactions.js',v=ASSET_VERSION) }}"></script><script src="{{ url_for('static',filename='js/ai_shell.js',v=ASSET_VERSION) }}"></script></body></html>

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>本地 AI 运行监控</title>
+  <link rel="stylesheet" href="{{ url_for('static',filename='css/ai.css',v=ASSET_VERSION) }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='css/ai_shell.css',v=ASSET_VERSION) }}"></head>
+<body class="ai-workspace">{% include 'ai_sidebar.html' %}
+<main>
+  <header><div><a href="{{ url_for('dashboard') }}">← 返回态势大屏</a><h1>本地 AI 运行监控</h1>
+    <p>查看模型是否可用、实际生成的回复，以及失败后的备用处理。</p></div>
+    <div class="actions"><a href="{{ url_for('ai_analysis_page') }}">AI 日志分析与问答 →</a><a href="{{ url_for('ai_detection_page') }}">攻击研判对照 →</a><a href="{{ url_for('ai_interactions_page') }}">会话交互回放 →</a><button id="refresh" type="button">刷新状态</button><button id="probe" type="button">发送连接验收</button></div></header>
+  <p id="notice" role="status" aria-live="polite">正在读取真实运行状态…</p>
+  <section class="cards" aria-label="模型状态">
+    <article><span>配置模型</span><strong id="model">—</strong><small id="config">—</small></article>
+    <article><span>服务与模型</span><strong id="health">—</strong><small id="loaded">—</small></article>
+    <article><span>实际成功生成</span><strong id="success">—</strong><small id="lastSuccess">尚无记录</small></article>
+    <article><span>备用处理</span><strong id="fallback">—</strong><small id="active">—</small></article>
+  </section>
+  <section class="panel"><h2>最近一次连接验收</h2><p id="probeMeta">尚未发送验收。服务能连接不等于模型已经成功回答。</p><pre id="probeReply">点击“发送连接验收”，程序将向配置模型发送一个固定测试问题。</pre></section>
+  <section class="panel"><div class="section-head"><h2>真实调用记录</h2><span>最近 30 条 · 北京时间</span></div>
+    <p>统计覆盖保留的调用历史，最多 30 天／10,000 条。输入仅存摘要，回复预览已限长并作基础脱敏。</p>
+    <div class="table-scroll"><table><thead><tr><th>时间／编号</th><th>任务／会话</th><th>结果／原因</th><th>耗时</th><th>模型回复预览</th></tr></thead><tbody id="calls"></tbody></table></div>
+  </section>
+  <footer>实际调用、受控交互、自动报告、证据问答与调查跟踪均在侧边栏查看。</footer>
+</main>
+<script src="{{ url_for('static',filename='js/ai.js',v=ASSET_VERSION) }}"></script>
+<script src="{{ url_for('static',filename='js/ai_shell.js',v=ASSET_VERSION) }}"></script></body></html>

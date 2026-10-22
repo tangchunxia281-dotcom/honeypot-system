@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>网络威胁态势感知大屏</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css', v=ASSET_VERSION) }}">
     <script src="{{ url_for('static', filename='js/echarts.min.js') }}"></script>
@@ -231,6 +232,26 @@
             border-color: rgba(0, 212, 255, 0.8);
             color: #ffffff;
         }
+        .ai-nav {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            margin-right: 2px;
+        }
+        .ai-nav a {
+            border: 1px solid rgba(119, 220, 206, 0.35);
+            background: rgba(10, 20, 40, 0.9);
+            color: #77dcce;
+            font-size: 11px;
+            line-height: 1;
+            padding: 5px 8px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+        .ai-nav a:hover {
+            border-color: rgba(119, 220, 206, 0.8);
+            color: #dffff8;
+        }
         .status-dot {
             width: 8px;
             height: 8px;
@@ -257,6 +278,14 @@
         <span id="serverIP"></span>
         <span id="serverLocation"></span>
         <span id="currentTime"></span>
+        <span class="ai-nav">
+            <a href="{{ url_for('ai_monitor') }}">AI 状态</a>
+            <a href="{{ url_for('ai_analysis_page') }}">AI 分析</a>
+            <a href="{{ url_for('ai_detection_page') }}">AI 检测</a>
+            <a href="{{ url_for('ai_interactions_page') }}">AI 交互</a>
+            <a href="{{ url_for('ai_investigations_page') }}">调查</a>
+            <a href="{{ url_for('ai_center_bridge') }}">团队中心</a>
+        </span>
         <form class="logout-form" method="post" action="{{ url_for('logout') }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button class="logout-btn" type="submit">安全退出</button>
@@ -307,6 +336,17 @@
                 <div class="panel-title">🎯 攻击来源 TOP</div>
                 <div class="log-scroll" id="topList"></div>
             </div>
+            <div class="panel" style="flex:0 0 auto;">
+                <div class="panel-title">
+                    🚨 风险目标标注
+                    <button type="button" id="riskTargetAddBtn" style="float:right;border:1px solid rgba(0,150,255,0.4);background:rgba(0,150,255,0.15);color:#9fc6e7;border-radius:4px;font-size:11px;padding:2px 8px;cursor:pointer;">＋ 新增</button>
+                </div>
+                <div style="display:flex;gap:6px;padding:0 0 8px;">
+                    <button type="button" id="riskTargetDeriveBtn" style="border:1px solid rgba(46,213,115,0.4);background:rgba(46,213,115,0.12);color:#7bed9f;border-radius:4px;font-size:11px;padding:3px 8px;cursor:pointer;white-space:nowrap;">识别目标</button>
+                    <input type="text" id="riskTargetSearch" placeholder="搜索 IP / 备注 / 标签" style="flex:1;min-width:0;background:rgba(10,20,40,0.8);border:1px solid rgba(0,150,255,0.3);border-radius:4px;color:#d8e6f3;font-size:11px;padding:3px 6px;">
+                </div>
+                <div class="log-scroll" id="riskTargetList" style="max-height:240px;"></div>
+            </div>
             <div class="panel" style="flex:1;">
                 <div class="panel-title">🔍 可疑行为分析</div>
                 <div class="log-scroll" id="suspiciousScroll"></div>
@@ -334,5 +374,48 @@
 
 <script src="{{ url_for('static', filename='js/dashboard.js', v=ASSET_VERSION) }}"></script>
 <script src="{{ url_for('static', filename='js/dashboard_data_flow.js', v=ASSET_VERSION) }}"></script>
+
+<!-- 风险目标标注 弹窗 -->
+<div id="riskTargetModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000;align-items:center;justify-content:center;">
+    <div style="width:420px;max-width:92vw;background:#0c1a2e;border:1px solid rgba(0,150,255,0.35);border-radius:8px;padding:16px;box-shadow:0 8px 30px rgba(0,0,0,0.5);">
+        <div style="font-size:14px;color:#9fc6e7;margin-bottom:12px;" id="riskTargetModalTitle">新增风险目标</div>
+        <input type="hidden" id="riskTargetId">
+        <div style="margin-bottom:10px;">
+            <label style="font-size:11px;color:#6a8caf;">目标 IP</label>
+            <input type="text" id="riskTargetValue" placeholder="如 45.33.32.156" style="width:100%;box-sizing:border-box;margin-top:4px;background:rgba(10,20,40,0.9);border:1px solid rgba(0,150,255,0.3);border-radius:4px;color:#d8e6f3;font-size:12px;padding:6px 8px;">
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:10px;">
+            <div style="flex:1;">
+                <label style="font-size:11px;color:#6a8caf;">风险等级</label>
+                <select id="riskTargetLevel" style="width:100%;box-sizing:border-box;margin-top:4px;background:rgba(10,20,40,0.9);border:1px solid rgba(0,150,255,0.3);border-radius:4px;color:#d8e6f3;font-size:12px;padding:6px;">
+                    <option value="low">低</option>
+                    <option value="medium" selected>中</option>
+                    <option value="high">高</option>
+                    <option value="critical">严重</option>
+                </select>
+            </div>
+            <div style="flex:1;">
+                <label style="font-size:11px;color:#6a8caf;">处置状态</label>
+                <select id="riskTargetStatus" style="width:100%;box-sizing:border-box;margin-top:4px;background:rgba(10,20,40,0.9);border:1px solid rgba(0,150,255,0.3);border-radius:4px;color:#d8e6f3;font-size:12px;padding:6px;">
+                    <option value="watching" selected>观察中</option>
+                    <option value="banned">已封禁</option>
+                    <option value="handled">已处置</option>
+                </select>
+            </div>
+        </div>
+        <div style="margin-bottom:10px;">
+            <label style="font-size:11px;color:#6a8caf;">标签（逗号分隔）</label>
+            <input type="text" id="riskTargetTags" placeholder="如 暴力破解, 扫描器" style="width:100%;box-sizing:border-box;margin-top:4px;background:rgba(10,20,40,0.9);border:1px solid rgba(0,150,255,0.3);border-radius:4px;color:#d8e6f3;font-size:12px;padding:6px 8px;">
+        </div>
+        <div style="margin-bottom:12px;">
+            <label style="font-size:11px;color:#6a8caf;">备注</label>
+            <textarea id="riskTargetNote" rows="3" placeholder="人工研判备注" style="width:100%;box-sizing:border-box;margin-top:4px;background:rgba(10,20,40,0.9);border:1px solid rgba(0,150,255,0.3);border-radius:4px;color:#d8e6f3;font-size:12px;padding:6px 8px;resize:vertical;"></textarea>
+        </div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button type="button" id="riskTargetCancel" style="border:1px solid rgba(0,150,255,0.3);background:transparent;color:#9fc6e7;border-radius:4px;font-size:12px;padding:5px 14px;cursor:pointer;">取消</button>
+            <button type="button" id="riskTargetSave" style="border:1px solid rgba(0,150,255,0.5);background:rgba(0,150,255,0.2);color:#d8e6f3;border-radius:4px;font-size:12px;padding:5px 14px;cursor:pointer;">保存</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
