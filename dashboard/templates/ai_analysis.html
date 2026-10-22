@@ -1,0 +1,32 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}"><title>AI 攻击日志分析中心</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='css/ai.css',v=ASSET_VERSION) }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='css/ai_analysis.css',v=ASSET_VERSION) }}"><link rel="stylesheet" href="{{ url_for('static',filename='css/ai_shell.css',v=ASSET_VERSION) }}"></head>
+<body class="ai-workspace">{% include 'ai_sidebar.html' %}<main><header><div><a href="{{ url_for('dashboard') }}">← 态势大屏</a><p class="eyebrow">本地模型 · 有证据的研判</p><h1>AI 攻击日志分析中心</h1>
+<p>把零散日志整理为攻击过程、独立风险判断与可追溯问答。</p></div></header>
+<p id="notice" role="status">正在读取分析进度…</p>
+<section class="cards" id="overview"><article><span>已纳入的日志证据</span><strong id="indexed">—</strong><small id="coverage">—</small></article>
+<article><span>AI 报告：极高危／高危</span><strong id="high">—</strong><small>针对攻击尝试，不能等同于已攻破</small></article>
+<article><span>AI 报告：中风险／低风险</span><strong id="medium">—</strong><small>AI 独立判断；原规则分数继续保留</small></article>
+<article><span>正在等待／处理中</span><strong id="waiting">—</strong><small id="unknown">—</small></article></section>
+<div class="analysis-layout"><section class="analysis-main">
+<section class="panel" id="reportSection"><div class="section-head"><h2>自动攻击分析报告</h2><div class="actions"><select id="riskFilter" aria-label="报告风险筛选"><option value="">全部风险</option><option value="critical">极高危</option><option value="high">高危</option><option value="medium">中风险</option><option value="low">低风险</option><option value="unknown">证据不足</option></select><select id="stateFilter" aria-label="报告状态筛选"><option value="">全部状态</option><option value="queued">排队</option><option value="running">处理中</option><option value="completed">已完成</option><option value="fallback">未完成</option><option value="cancelled">已取消</option></select></div></div>
+<p>每批最多24条，不同行为分成多个子批逐批研判，每次最多6条代表证据；重复行为合并。原文由程序附上，子批报告数不等于攻击次数。</p><div id="reports" class="report-list"></div><div class="actions"><button id="latest">最新报告</button><button id="older">较早报告</button><span id="pageInfo"></span></div></section>
+<section class="panel" id="reportDetail" hidden><div class="section-head"><h2 id="title">报告详情</h2><span id="riskBadge"></span></div><a id="exportReport" hidden>下载报告（Markdown）</a>
+<p id="scope"></p><div class="actions"><button id="retryReport">重新分析这份报告</button><button id="createCase">加入调查工作台</button><button id="discuss">问 AI 关于此报告</button><button id="closeDetail">收起详情</button></div><p id="summary" class="report-summary"></p><h3>AI 推断的攻击目的</h3><p id="intent"></p><h3>风险判断依据</h3><p id="riskReason"></p>
+<h3>行为推进过程</h3><ol id="timeline"></ol><h3>建议复核</h3><ul id="recommendations"></ul>
+<div class="limitation"><strong>判断边界</strong><p id="limitations"></p></div>
+<h3>可追溯证据 · 原规则独立显示</h3><div id="evidence"></div>
+<details><summary>查看这批原始证据预览</summary><pre id="records"></pre></details></section>
+<section class="panel" id="reviewPanel" hidden><h2>人工复核 · 独立保留</h2><p>不会覆盖原规则或 AI 原始结论，也不会触发真实封禁。</p><div class="actions"><select id="reviewVerdict" aria-label="复核意见"><option value="needs_review">待复核</option><option value="agree">认可</option><option value="false_positive">可能误报</option><option value="missed">可能漏报</option></select><select id="reviewRisk" aria-label="人工风险"><option value="unknown">证据不足</option><option value="low">低风险</option><option value="medium">中风险</option><option value="high">高危</option><option value="critical">极高危</option></select></div><textarea id="reviewNote" maxlength="500" rows="2" placeholder="填写复核理由"></textarea><button id="saveReview">保存复核</button><div id="reviews"></div></section>
+<section class="panel" id="coverageSection"><h2>覆盖范围与进度</h2><p>当前事件库及 database/archive 下最多 256 个 SQLite 归档。记录增量索引；Web 关联事件去重。超过保留天数的已结束 AI 分析自动归档，原攻击日志不删除。未落库的纯文本运维日志不在此范围。</p><pre id="scanState">—</pre><button id="archives">查看历史分析档案</button><div id="archiveList"></div></section>
+</section><aside class="panel chat-panel" id="chatSection"><div class="section-head"><h2>问 AI 日志助手</h2><button id="newChat">新对话</button></div>
+<p>围绕检索到的日志提问。回答带原文引用；不会执行命令或自动封禁。</p>
+<label>对话模式<select id="chatMode"><option value="logs">日志分析 · 带证据</option><option value="general">普通本地聊天 · 不读取日志</option></select></label><p id="discussion">当前使用 IP／关键词检索。</p><button id="clearDiscussion" hidden>清除关联上下文</button>
+<label>来源 IP（可选）<input id="chatIp" placeholder="例如 127.0.0.1"></label><label>检索关键词（可选）<input id="chatTerm" placeholder="例如 sqlmap、/admin、sshd" maxlength="80"></label>
+<div class="suggestions"><button data-question="请总结这些日志的攻击目的和行为过程，给出证据。">总结攻击过程</button><button data-question="这些记录能够证明真实系统被攻破吗？请说明证据和局限。">是否已被攻破？</button><button data-question="建议我先复核哪些异常？为什么？">优先复核什么？</button></div>
+<div id="messages" aria-live="polite"><p class="chat-empty">先发一个问题，AI 将检索最近相关记录。</p></div>
+<form id="chatForm"><label for="question">你的问题</label><textarea id="question" maxlength="500" rows="3" placeholder="例如：为什么把这些记录判断为高风险？"></textarea><div class="actions"><button id="send" type="submit">询问本地 AI</button><button id="cancelChat" type="button" hidden>取消等待</button></div></form>
+<p id="chatStatus" role="status">最多检索250条候选、保留24条相关记录，模型使用最多6条代表证据；详情显示覆盖范围。</p></aside></div>
+<footer>AI 风险用于人工复核，不改变原规则分数。后台研判延后调度，受控交互优先；模型忙、超时或证据校验失败时保留原因。</footer>
+</main><script src="{{ url_for('static',filename='js/ai_analysis.js',v=ASSET_VERSION) }}"></script><script src="{{ url_for('static',filename='js/ai_shell.js',v=ASSET_VERSION) }}"></script></body></html>

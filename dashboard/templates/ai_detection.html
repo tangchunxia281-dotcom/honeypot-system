@@ -1,0 +1,18 @@
+<!doctype html><html lang="zh-CN"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="csrf-token" content="{{ csrf_token() }}"><title>规则与 AI 攻击研判对照</title>
+<link rel="stylesheet" href="{{ url_for('static',filename='css/ai.css',v=ASSET_VERSION) }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='css/ai_shell.css',v=ASSET_VERSION) }}"></head><body class="ai-workspace">{% include 'ai_sidebar.html' %}<main>
+<header><div><a href="{{ url_for('ai_monitor') }}">← 模型运行监控</a><h1>规则与 AI 攻击研判对照</h1>
+<p>请求先由原规则处理，AI 在后台分析。模型判断属于待核对线索，不代表攻击成功。</p></div>
+<div class="actions"><button id="refresh" type="button">刷新</button><button id="recent" type="button">分析最近 5 条请求</button></div></header>
+<p id="notice" role="status" aria-live="polite">正在读取记录…</p>
+<section class="panel"><h2>分析范围与处理状态</h2><p id="policy">—</p><p id="counts">—</p>
+<label>来源 IP 筛选 <input id="sourceIp" maxlength="64" placeholder="留空显示全部来源"></label>
+<p>原规则分数不会被 AI 覆盖。排队、跳过、超时和无效输出均不表示请求正常。</p></section>
+<section class="panel"><h2>请求与判断对照</h2><div class="table-scroll"><table>
+<thead><tr><th>时间／来源</th><th>请求／原记录</th><th>规则判断</th><th>AI 判断／状态</th><th>查看</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<section class="panel" id="detail" hidden><h2>脱敏证据与 AI 依据</h2><p id="detailMeta"></p><p id="summary"></p>
+<ul id="evidence"></ul><pre id="requestFields"></pre><button id="retry" type="button">重新分析这条记录</button></section>
+<footer>仅分析所捕获的 HTTP 字段；不推断来源身份，不从单条请求认定暴力破解频率。原始记录保留在原数据库。</footer>
+</main><script src="{{ url_for('static',filename='js/ai_detection.js',v=ASSET_VERSION) }}"></script><script src="{{ url_for('static',filename='js/ai_shell.js',v=ASSET_VERSION) }}"></script></body></html>
