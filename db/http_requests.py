@@ -83,6 +83,32 @@ _EXPR_INJECTION_RE = re.compile(
     re.IGNORECASE,
 )
 
+# SSRF：必须同时出现“URL 形态参数”与“内网/云元数据目标”，
+# 仅在文本中提及一个地址不构成 SSRF 证据。
+_SSRF_PARAM_RE = re.compile(
+    r"""(?i)(?:^|[?&;,\s])["']?(?:url|uri|target|dest|destination|redirect|redirect_uri|next|callback|cb|fetch|preview|link|src|source|host|domain|path|file|proxy|image|avatar)["']?\s*="""
+)
+_SSRF_JSON_PARAM_RE = re.compile(
+    r"""(?i)"(?:url|uri|target|dest|destination|redirect|next|callback|src|source|host|domain|path|file|proxy)"\s*:"""
+)
+_SSRF_TARGET_RE = re.compile(
+    r"""(?i)(?:"""
+    r"""(?:https?|ftp|gopher|dict|ldap|file)://(?:169\.254\.169\.254|metadata\.google\.internal|metadata\.azure\.com|100\.100\.100\.200|127\.0\.0\.1|localhost|\[::1\]|0\.0\.0\.0|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})"""
+    r"""|/latest/meta-data|/metadata/v1|computemetadata|169\.254\.169\.254"""
+    r""")"""
+)
+
+# SSTI：只认表达式/算术模板，普通占位名（如 {{username}}）不算。
+_SSTI_RE = re.compile(
+    r"""(?i)(?:\{\{\s*\d+\s*[-+*/%]\s*\d+\s*\}\}|\$\{\s*\d+\s*[-+*/%]\s*\d+\s*\}|#\{\s*\d+\s*[-+*/%]\s*\d+\s*\}"""
+    r"""|\{\{\s*(?:config|self|request|application|session|__class__|__mro__|__globals__)\b|\b__class__\b|\b__mro__\b|\b__globals__\b|\blipsum\b|\bcycler\b|\bjoiner\b)"""
+)
+
+# XXE：DTD 外部实体声明。
+_XXE_RE = re.compile(
+    r"""(?is)<!DOCTYPE[^>]{0,400}<!ENTITY|<!ENTITY\s+(?:%|[\w.-]+)\s+(?:SYSTEM|PUBLIC)\b"""
+)
+
 _SCANNER_HEADER_FINGERPRINTS = {
     # 你关心的 5 类扫描器
     'sqlmap': ('sqlmap',),
@@ -649,6 +675,34 @@ def _detect_expression_signals(query_decoded: str, body_decoded: str, header_blo
     return hits
 
 
+def _detect_ssrf_signals(query_raw: str, query_decoded: str, body_raw: str, body_decoded: str) -> list:
+    """SSRF 探测：URL 形态参数携带内网/云元数据目标时才命中。"""
+    for text in (query_raw, query_decoded, body_raw, body_decoded):
+        value = str(text or '')
+        if not value:
+            continue
+        has_param = bool(_SSRF_PARAM_RE.search(value) or _SSRF_JSON_PARAM_RE.search(value))
+        if has_param and _SSRF_TARGET_RE.search(value):
+            return ['ssrf']
+    return []
+
+
+def _detect_ssti_signals(query_decoded: str, body_decoded: str) -> list:
+    """SSTI：模板表达式/算术求值特征。"""
+    merged = '\n'.join(part for part in (str(query_decoded or ''), str(body_decoded or '')) if part)
+    if merged and _SSTI_RE.search(merged):
+        return ['ssti']
+    return []
+
+
+def _detect_xxe_signals(query_decoded: str, body_raw: str, body_decoded: str) -> list:
+    """XXE：XML 外部实体声明。"""
+    merged = '\n'.join(part for part in (str(body_raw or ''), str(body_decoded or ''), str(query_decoded or '')) if part)
+    if merged and _XXE_RE.search(merged):
+        return ['xxe']
+    return []
+
+
 def _has_lfi_traversal_signal(path: str, query_raw: str, body_raw: str, query_decoded: str, body_decoded: str) -> bool:
     """
     目录穿越/LFI 判定（收敛版）：
@@ -715,6 +769,9 @@ def _event_label(event_type: str) -> str:
         'sqli_probe': '疑似SQL注入',
         'xss_probe': '疑似XSS攻击',
         'lfi_probe': '疑似目录穿越',
+        'ssrf_probe': '疑似SSRF探测',
+        'ssti_probe': '疑似模板注入',
+        'xxe_probe': '疑似XXE注入',
         'file_probe': '疑似敏感文件访问',
         'admin_probe': '疑似后台探测',
         'upload_probe': '疑似上传探测',
@@ -764,6 +821,12 @@ def _is_redundant_signal(event_type: str, signal: str) -> bool:
         return True
     if et == 'webshell_probe' and ('webshell' in s or '命令执行' in s):
         return True
+    if et == 'ssrf_probe' and 'ssrf' in s:
+        return True
+    if et == 'ssti_probe' and ('ssti' in s or '模板' in s):
+        return True
+    if et == 'xxe_probe' and 'xxe' in s:
+        return True
     return False
 
 
@@ -803,6 +866,16 @@ def calculate_threat_score(method: str, path: str, query: str, headers: dict, bo
     if _has_lfi_traversal_signal(path, query, body, ql, bl):
         risk_score += 22
         suspicious_signals.append("目录穿越/LFI特征")
+
+    if _detect_ssrf_signals(query, ql, body, bl):
+        risk_score += 30
+        suspicious_signals.append("疑似SSRF特征(内网/云元数据)")
+    if _detect_ssti_signals(ql, bl):
+        risk_score += 20
+        suspicious_signals.append("疑似SSTI模板注入")
+    if _detect_xxe_signals(ql, body, bl):
+        risk_score += 24
+        suspicious_signals.append("疑似XXE外部实体注入")
 
     if query:
         if len(query) > 500:
@@ -899,6 +972,9 @@ def calculate_threat_score(method: str, path: str, query: str, headers: dict, bo
         risk_score += 10
         suspicious_signals.append("多层代理")
 
+    # 分数统一封顶 100：多特征叠加（敏感路径 × 多种注入）不应越界，
+    # 否则严重度映射与前端色条会失真。
+    risk_score = max(0, min(100, int(risk_score)))
     is_suspicious = risk_score >= 20
     return risk_score, is_suspicious, suspicious_signals
 
@@ -909,13 +985,14 @@ def _classify_web_event_type(method: str, path: str, query_string: str, body: st
     b = _decode_for_match(body)
     sig = ' '.join(str(x or '').lower() for x in (signals or []))
 
-    sensitive_files = ('.env', '.git', 'config.php', '.bak', 'backup', 'dump.sql')
-    if any(x in p for x in sensitive_files):
-        return 'file_probe'
-    if '/admin' in p:
-        return 'admin_probe'
-    if '/upload' in p:
-        return 'upload_probe'
+    # 攻击技术优先于路径形状：/admin 上的 XSS/SSTI 必须记录技术类型，
+    # 否则后台探测会掩盖真实攻击手法。
+    if 'ssrf' in sig:
+        return 'ssrf_probe'
+    if 'ssti' in sig or '模板注入' in sig:
+        return 'ssti_probe'
+    if 'xxe' in sig:
+        return 'xxe_probe'
     if '疑似webshell路径' in sig or '疑似命令执行/webshell特征' in sig or '疑似命令执行特征' in sig:
         return 'webshell_probe'
     if '疑似jndi注入特征' in sig or '疑似表达式注入特征' in sig:
@@ -931,6 +1008,15 @@ def _classify_web_event_type(method: str, path: str, query_string: str, body: st
         return 'sqli_probe'
     if any(x in q for x in ('<script', 'javascript:', 'onerror=')) or any(x in b for x in ('<script', 'javascript:', 'onerror=')):
         return 'xss_probe'
+
+    sensitive_files = ('.env', '.git', 'config.php', '.bak', 'backup', 'dump.sql')
+    if any(x in p for x in sensitive_files):
+        return 'file_probe'
+    if '/admin' in p:
+        return 'admin_probe'
+    if '/upload' in p:
+        return 'upload_probe'
+
     if any(x in q for x in ('../', '..\\')) or any(x in p for x in ('../', '..\\')):
         return 'lfi_probe'
     if '扫描工具特征' in sig or '扫描路径特征' in sig:
@@ -958,6 +1044,9 @@ def _signals_to_tags(signals: list, event_type: str) -> list:
         '疑似命令执行特征': 'cmd_exec',
         '可疑命令参数滥用': 'cmd_param',
         '疑似SQL注入弱特征': 'sqli_weak',
+        '疑似SSRF特征(内网/云元数据)': 'ssrf',
+        '疑似SSTI模板注入': 'ssti',
+        '疑似XXE外部实体注入': 'xxe',
         '无User-Agent': 'missing_ua',
         '超长User-Agent': 'long_ua',
         '扫描工具特征': 'scanner',
@@ -995,9 +1084,14 @@ def _resolve_web_final_decision(
         ai_points = max(0, min(25, ai_points))
         ai_is_attack = bool(ai_result.get('is_attack'))
         ai_high_risk = bool(ai_result.get('high_risk'))
+        ai_type = str(ai_result.get('attack_type') or '').strip().lower()
+        # 模型判 normal 时不加分：normal 的 ai_points 是概率映射值，
+        # 直接累加会把正常流量（例如静态资源路径命中 "/admin" 子串）
+        # 推过 20 分可疑阈值。AI 仍参与判定，只是加分为 0。
+        effective_points = ai_points if (ai_is_attack or ai_type not in ('', 'normal')) else 0
         final_score = min(
             100,
-            max(0, int(rule_score or 0) + ai_points)
+            max(0, int(rule_score or 0) + effective_points)
         )
         # AI 内部已完成规则+模型融合；如果它明确判定攻击，
         # 用双阈值下界保证蜜罐不会因两套规则差异而漏掉该事件。
@@ -1011,7 +1105,7 @@ def _resolve_web_final_decision(
             final_score >= 20,
             'rule+ai' if ai_applied else 'rule',
             ai_applied,
-            ai_points,
+            effective_points,
         )
 
     return (
@@ -1215,6 +1309,7 @@ def log_raw_request(session_id: str, src_ip: str, method: str, path: str,
                     'ai': ai_result or {},
                     'ai_applied': bool(ai_applied),
                     'ai_points': int(ai_points),
+                    'ai_service_points': int((ai_result or {}).get('ai_points') or 0),
                     'ai_input': {
                         'path_length': len(str(path or '')),
                         'query_length': len(str(query_string or '')),
@@ -1252,6 +1347,32 @@ def log_raw_request(session_id: str, src_ip: str, method: str, path: str,
                 alert_web_high_risk(src_ip, method, path, risk_score, signals, headers.get('User-Agent', ''))
             except Exception:
                 pass
+
+        # 规则先落库，AI 复核异步排队（不阻塞请求、不改变规则分数）。
+        try:
+            if raw_request_id:
+                from utils import ai_detection as _ai_detection
+                from .connection import _config as _db_config
+                if USE_MYSQL:
+                    db_key = str(getattr(_db_config, 'DB_HOST', '')) + '|' + str(getattr(_db_config, 'DB_NAME', ''))
+                else:
+                    db_key = str(getattr(_db_config, 'DB_PATH', ''))
+                _ai_detection.submit(
+                    raw_request_id,
+                    src_ip,
+                    session_id,
+                    method,
+                    path,
+                    query_string,
+                    headers if isinstance(headers, dict) else {},
+                    body,
+                    int(rule_risk_score),
+                    list(signals or []),
+                    now_text,
+                    db_key,
+                )
+        except Exception as ai_error:
+            logger.debug(f"AI 复核入队失败(保留规则结果): {ai_error}")
 
         return risk_score, signals
     except Exception as e:

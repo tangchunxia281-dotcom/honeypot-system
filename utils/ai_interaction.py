@@ -10,6 +10,11 @@ from utils import decoy_profiles
 _guard=threading.Lock()
 SSH_STRATEGIES=('not_found','unavailable','permission_denied','profile_summary')
 WEB_STRATEGIES=('preview_pending','format_error','service_busy')
+WEB_REPLY_TEMPLATES={
+    'preview_pending': '预览任务已创建：{target}\n当前状态：等待渲染\n预计 1-2 分钟完成（模拟结果，不会访问目标地址）。\n',
+    'format_error': '预览失败：目标地址格式不正确（模拟结果，未访问目标地址）。\n',
+    'service_busy': '预览服务繁忙，请稍后重试（模拟结果，未访问目标地址）。\n',
+}
 
 
 def get_store():
@@ -43,6 +48,9 @@ def choose(task, context, allowed, session_id, ip):
 
 
 def record_program(shell, command, output):
+    # AI 关闭时不做逐命令审计，避免给纯规则部署增加写放大。
+    if not local_ai.SETTINGS.get('enabled'):
+        return
     try:
         store=get_store()
         turn=store.begin(getattr(shell,'_interaction_session',''),getattr(shell,'client_ip',''),'ssh',
@@ -54,6 +62,76 @@ def record_program(shell, command, output):
     except Exception:
         # Do not break existing deterministic shell operation on audit failure.
         pass
+
+
+def _program_reply(target, strategy='preview_pending'):
+    return WEB_REPLY_TEMPLATES.get(strategy, WEB_REPLY_TEMPLATES['preview_pending']).format(
+        target=local_ai.safe_text(target, 120) or '（未提供地址）')
+
+
+def web_reply(ip, target='', session_token=''):
+    """Web 预览请求：程序维护任务状态，模型只选择封闭策略。
+
+    返回 reply/strategy/source/reason/call_id，调用方据此渲染虚拟任务页。
+    """
+    settings = local_ai.SETTINGS
+    store = get_store()
+    try:
+        turn = store.begin(session_token, ip, 'web', settings, sanitize(target, 300)[0])
+    except Exception:
+        return {'reply': _program_reply(target), 'strategy': 'preview_pending',
+                'source': 'fallback', 'reason': 'audit_storage_unavailable', 'call_id': ''}
+    if turn['reason']:
+        return {'reply': _program_reply(target), 'strategy': 'preview_pending',
+                'source': 'fallback', 'reason': turn['reason'], 'call_id': ''}
+
+    if not settings.get('web_interaction_enabled'):
+        reply = _program_reply(target)
+        try:
+            store.complete(turn, {'resource': 'preview'}, 'program', 'preview_pending', '', reply)
+        except Exception:
+            pass
+        return {'reply': reply, 'strategy': 'preview_pending', 'source': 'program',
+                'reason': '', 'call_id': '', 'session_id': turn['session_id']}
+
+    context = {'resource': 'preview', 'url': sanitize(target, 300)[0], 'has_target': bool(target)}
+    if settings.get('configured'):
+        result = choose('web_reply', context, WEB_STRATEGIES, turn['session_id'], ip)
+    else:
+        # 未配置模型：不发起调用，直接返回确定的虚拟任务状态
+        result = {'status': 'fallback', 'reason': 'configuration_invalid', 'call_id': ''}
+    strategy = 'preview_pending'
+    if result.get('status') == 'success':
+        strategy = result.get('data', {}).get('strategy') or 'preview_pending'
+    reply = _program_reply(target, strategy)
+    source = 'model' if result.get('status') == 'success' else 'fallback'
+    try:
+        store.complete(turn, {'resource': 'preview', 'strategy': strategy}, source, strategy,
+                       result.get('reason', ''), reply, result.get('call_id', ''))
+    except Exception:
+        pass
+    return {'reply': reply, 'strategy': strategy, 'source': source,
+            'reason': result.get('reason', ''), 'call_id': result.get('call_id', ''),
+            'session_id': turn['session_id']}
+
+
+def follow_up(shell, command, output):
+    """命令执行后的交互归因。
+
+    - 普通命令：记为“程序处理”，不调用模型；
+    - 未知命令：交由模型在封闭策略中选择（不给自由文本），失败保持原提示。
+    返回替换后的输出，或 None 表示沿用原输出。
+    """
+    text = str(command or '').strip()
+    body = str(output or '')
+    if not text:
+        return None
+    if body.rstrip().endswith('command not found'):
+        if len(text) > 200 or re.search(r'[;|&<>`\n\r]|\$\(', text):
+            return None
+        return ssh_reply(shell, text)
+    record_program(shell, text, body)
+    return None
 
 
 def ssh_reply(shell, command):
@@ -80,8 +158,12 @@ def ssh_reply(shell, command):
         else:allowed=SSH_STRATEGIES[:-1]
         result={'status':'fallback','reason':'policy_restricted','call_id':''}
         if not blocked:
-            result=choose('ssh_reply',{'command':sanitize(raw,500)[0],'virtual_hostname':hostname,
-                                      'virtual_cwd':cwd,'intent':request_intent,'virtual_profile':getattr(shell,'decoy_profile',{})},allowed,turn['session_id'],getattr(shell,'client_ip',''))
+            if local_ai.SETTINGS.get('configured'):
+                result=choose('ssh_reply',{'command':sanitize(raw,500)[0],'virtual_hostname':hostname,
+                                          'virtual_cwd':cwd,'intent':request_intent,'virtual_profile':getattr(shell,'decoy_profile',{})},allowed,turn['session_id'],getattr(shell,'client_ip',''))
+            else:
+                # 未配置模型：不发起调用，直接走确定性人设回复
+                result={'status':'fallback','reason':'configuration_invalid','call_id':''}
         strategy=result.get('data',{}).get('strategy','not_found') if result['status']=='success' else request_intent['action'] if request_intent and not blocked else 'not_found'
         replies={'not_found':f'{local_ai.safe_text(name,80)}: command not found\n',
                  'unavailable':f'{local_ai.safe_text(name,80)}: service temporarily unavailable\n',

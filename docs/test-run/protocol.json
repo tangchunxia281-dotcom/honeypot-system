@@ -1,0 +1,229 @@
+{
+  "generated_at": "2026-10-28T13:52:44",
+  "records": [
+    {
+      "at": "2026-10-28T13:52:22",
+      "protocol": "mysql",
+      "action": "登录 root",
+      "status": "connected",
+      "detail": "('8.0.36',)"
+    },
+    {
+      "at": "2026-10-28T13:52:22",
+      "protocol": "mysql",
+      "action": "UNION 查询",
+      "status": "query_sent",
+      "detail": ""
+    },
+    {
+      "at": "2026-10-28T13:52:22",
+      "protocol": "mysql",
+      "action": "认证 admin",
+      "status": "auth_rejected",
+      "detail": "OperationalError"
+    },
+    {
+      "at": "2026-10-28T13:52:24",
+      "protocol": "redis",
+      "action": "命令 AUTH",
+      "status": "response_received",
+      "detail": "-ERR Client sent AUTH, but no password is set "
+    },
+    {
+      "at": "2026-10-28T13:52:24",
+      "protocol": "redis",
+      "action": "命令 INFO",
+      "status": "response_received",
+      "detail": "$267 # Server redis_version:6.2.6 redis_git_sha1:00000000 redis_build_id:0000000000000000 redis_mode:standalone os:Linux"
+    },
+    {
+      "at": "2026-10-28T13:52:24",
+      "protocol": "redis",
+      "action": "命令 KEYS *",
+      "status": "response_received",
+      "detail": "*5 $13 backup_db.sql $11 db_password $10 api_secret $10 access_key $13 session:admin "
+    },
+    {
+      "at": "2026-10-28T13:52:25",
+      "protocol": "redis",
+      "action": "命令 CONFIG GET",
+      "status": "response_received",
+      "detail": "*2 $11 requirepass $0  "
+    },
+    {
+      "at": "2026-10-28T13:52:25",
+      "protocol": "redis",
+      "action": "命令 GET flag",
+      "status": "response_received",
+      "detail": "$-1 "
+    },
+    {
+      "at": "2026-10-28T13:52:26",
+      "protocol": "ftp",
+      "action": "匿名登录 anonymous",
+      "status": "virtual_login_accepted",
+      "detail": ""
+    },
+    {
+      "at": "2026-10-28T13:52:26",
+      "protocol": "ftp",
+      "action": "LIST 目录",
+      "status": "listing_received",
+      "detail": "6 行"
+    },
+    {
+      "at": "2026-10-28T13:52:26",
+      "protocol": "ftp",
+      "action": "RETR /etc/passwd",
+      "status": "file_denied",
+      "detail": "error_perm"
+    },
+    {
+      "at": "2026-10-28T13:52:26",
+      "protocol": "ftp",
+      "action": "弱口令登录 admin",
+      "status": "virtual_login_accepted",
+      "detail": ""
+    },
+    {
+      "at": "2026-10-28T13:52:26",
+      "protocol": "ftp",
+      "action": "LIST 目录",
+      "status": "listing_received",
+      "detail": "6 行"
+    },
+    {
+      "at": "2026-10-28T13:52:26",
+      "protocol": "ftp",
+      "action": "RETR /etc/passwd",
+      "status": "file_denied",
+      "detail": "error_perm"
+    },
+    {
+      "at": "2026-10-28T13:52:28",
+      "protocol": "telnet",
+      "action": "读取 banner",
+      "status": "banner_received",
+      "detail": "��\u0001��\u0003��\u0018��\u001f \n************************************************ \n*       D-Link DI-8003 Enterprise Ga"
+    },
+    {
+      "at": "2026-10-28T13:52:29",
+      "protocol": "telnet",
+      "action": "用户名 root",
+      "status": "response_received",
+      "detail": "root \nPassword:"
+    },
+    {
+      "at": "2026-10-28T13:52:29",
+      "protocol": "telnet",
+      "action": "密码尝试",
+      "status": "response_received",
+      "detail": "Login incorrect \n \nlogin:"
+    },
+    {
+      "at": "2026-10-28T13:52:30",
+      "protocol": "telnet",
+      "action": "命令 uname -a",
+      "status": "response_received",
+      "detail": "uname -a \nPassword:"
+    },
+    {
+      "at": "2026-10-28T13:52:30",
+      "protocol": "telnet",
+      "action": "命令 cat /etc/passwd",
+      "status": "response_received",
+      "detail": "Login incorrect \n \nlogin:"
+    },
+    {
+      "at": "2026-10-28T13:52:31",
+      "protocol": "telnet",
+      "action": "命令 ls -la",
+      "status": "response_received",
+      "detail": "ls -la \nPassword:"
+    },
+    {
+      "at": "2026-10-28T13:52:31",
+      "protocol": "telnet",
+      "action": "退出",
+      "status": "response_received",
+      "detail": "Login incorrect \n \nToo many login attempts. Connection closed."
+    },
+    {
+      "at": "2026-10-28T13:52:34",
+      "protocol": "ssh",
+      "action": "登录失败 #1 root",
+      "status": "auth_failed",
+      "detail": ""
+    },
+    {
+      "at": "2026-10-28T13:52:36",
+      "protocol": "ssh",
+      "action": "登录失败 #2 root",
+      "status": "auth_failed",
+      "detail": ""
+    },
+    {
+      "at": "2026-10-28T13:52:37",
+      "protocol": "ssh",
+      "action": "登录成功 root",
+      "status": "virtual_login_accepted",
+      "detail": ""
+    },
+    {
+      "at": "2026-10-28T13:52:37",
+      "protocol": "ssh",
+      "action": "命令 whoami",
+      "status": "response_received",
+      "detail": "root"
+    },
+    {
+      "at": "2026-10-28T13:52:38",
+      "protocol": "ssh",
+      "action": "命令 uname -a",
+      "status": "response_received",
+      "detail": "Linux data-node-436c 6.8.0-57-generic #59-Ubuntu SMP PREEMPT_DYNAMIC Wed Mar 19 18:26:39 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux"
+    },
+    {
+      "at": "2026-10-28T13:52:38",
+      "protocol": "ssh",
+      "action": "命令 cat /etc/passwd",
+      "status": "response_received",
+      "detail": "root:x:0:0:root:/root:/bin/bash \ndaemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin \nbin:x:2:2:bin:/bin:/usr/sbin/nologin \nsys:x:3:3:sys:/dev:/"
+    },
+    {
+      "at": "2026-10-28T13:52:39",
+      "protocol": "ssh",
+      "action": "命令 ls -la /root",
+      "status": "response_received",
+      "detail": "total 39 \ndrwxr-xr-x 2 root root  4096 Jan 07  2025 \u001b[01;34m.\u001b[0m \ndrwxr-xr-x 2 root root  4096 Mar 26  2026 \u001b[01;34m..\u001b[0m \n-rw-r--r-- 2 ro"
+    },
+    {
+      "at": "2026-10-28T13:52:40",
+      "protocol": "ssh",
+      "action": "命令 ip addr",
+      "status": "response_received",
+      "detail": "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000 \n    link/loopback 00:00:00:00:00:00 brd 00:00:0"
+    },
+    {
+      "at": "2026-10-28T13:52:41",
+      "protocol": "ssh",
+      "action": "命令 sysinfo",
+      "status": "response_received",
+      "detail": "hostname: data-node-436c \nos: Ubuntu 24.04.2 LTS \nkernel: 6.8.0-57-generic \nrole: Internal data service \nworking directory: /root"
+    },
+    {
+      "at": "2026-10-28T13:52:42",
+      "protocol": "ssh",
+      "action": "命令 appctl status",
+      "status": "response_received",
+      "detail": "postgresql: running \nredis: running \nbackup-worker: stopped"
+    },
+    {
+      "at": "2026-10-28T13:52:43",
+      "protocol": "ssh",
+      "action": "命令 demo_unknown_cmd",
+      "status": "response_received",
+      "detail": "demo_unknown_cmd: command not found"
+    }
+  ]
+}

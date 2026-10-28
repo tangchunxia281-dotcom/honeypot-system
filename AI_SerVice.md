@@ -262,25 +262,61 @@ AI NORMAL +0
 enabled = true
 url = http://127.0.0.1:8003/api/v1/detect
 info_url = http://127.0.0.1:8003/model/info
-timeout = 1.0
+timeout = 2.0
 text_max = 5000
 failure_threshold = 3
 backoff_seconds = 30
 model_info_ttl = 300
 ```
 
+检测服务进程由主控一起管理：
+
+```ini
+[services.ai_detect]
+enabled = true
+# 模型服务根目录（含 src/api.py 与 models/）
+path = C:\Users\ADMIN\Desktop\xss_detector
+# 留空时自动使用 <path>\.venv\Scripts\python.exe，再退回到主控解释器
+python =
+host = 127.0.0.1
+port = 8003
+```
 
 ## 8. 启动 AI 服务
 
+### 8.1 推荐：随主控自动启动
+
+`main.py` 会按 `[services.ai_detect]` 拉起检测服务（与 SSH/Web/Dashboard 同级，
+崩溃自动重启），启动摘要中会显示：
+
+```text
+> [AI攻击检测] 请求级攻击检测模型（规则 + ai_points 融合）
+  http://127.0.0.1:8003/health
+  http://127.0.0.1:8003/model/info
+```
+
+首次准备（只需一次，为模型目录创建独立虚拟环境）：
 
 ```powershell
-根据实际ai训练文件更改目录，后续ai训练完整后可以集成到蜜罐目录
-cd D:\train-ai\xss_detector\xss_detector
-
-uv pip install -r requirements.txt
-
-python -m uvicorn src.api:app --host 127.0.0.1 --port 8003
+cd C:\Users\ADMIN\Desktop\xss_detector
+python -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements.txt
+# 依赖下载慢时可用镜像：
+# uv pip install --python .venv\Scripts\python.exe -r requirements.txt `
+#   --index-url https://pypi.tuna.tsinghua.edu.cn/simple
 ```
+
+然后正常启动蜜罐即可：`uv run python main.py`。
+
+### 8.2 手动启动（调试用）
+
+```powershell
+cd C:\Users\ADMIN\Desktop\xss_detector
+.venv\Scripts\python.exe -m uvicorn src.api:app --host 127.0.0.1 --port 8003
+```
+
+关闭主控中的自动启动：`[services.ai_detect] enabled = false`，再把 `[ai] enabled`
+改为 `false`（或保留 `[ai] enabled = true` 指向外部已启动的服务）。
 
 ## 9. 启动蜜罐
 

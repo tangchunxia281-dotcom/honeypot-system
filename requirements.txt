@@ -1,0 +1,19 @@
+# 依赖清单（不使用 uv 时使用）
+# uv 用户请直接执行：uv sync
+# 版本以 pyproject.toml 声明 + uv.lock 锁定为准，本文件仅为方便评审快速安装。
+flask>=2.3.3
+werkzeug>=2.3.7
+paramiko>=4.0.0
+pymysql>=1.1.0
+python-dateutil>=2.8.2
+psutil>=5.9.6
+requests>=2.31.0
+cryptography>=41.0.4
+bcrypt>=4.0.1
+pynacl>=1.5.0
+waitress>=2.1
+
+# 说明：
+# 1. 请求级 AI 检测服务（独立目录 xss_detector）依赖 fastapi / uvicorn / scikit-learn，
+#    使用其自带的 requirements.txt 安装，随主控通过 [services.ai_detect] 自动拉起。
+# 2. 可选子服务 team_center / ai_gateway 复用同一套依赖，无需额外安装。

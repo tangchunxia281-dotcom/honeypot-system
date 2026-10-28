@@ -330,6 +330,21 @@ _SERVICE_ALIASES = {
     "apparmor.service": "apparmor",
     "systemd-logind": "systemd-logind",
     "systemd-logind.service": "systemd-logind",
+    # 虚拟业务主机（与 utils/decoy_profiles.py 的人设保持一致）
+    "nginx": "nginx",
+    "nginx.service": "nginx",
+    "postgresql": "postgresql",
+    "postgresql.service": "postgresql",
+    "postgres": "postgresql",
+    "redis": "redis",
+    "redis-server": "redis",
+    "redis.service": "redis",
+    "erp-api": "erp-api",
+    "erp-api.service": "erp-api",
+    "support-api": "support-api",
+    "support-api.service": "support-api",
+    "backup-worker": "backup-worker",
+    "backup-worker.service": "backup-worker",
 }
 
 _SERVICE_DESCRIPTIONS = {
@@ -344,6 +359,12 @@ _SERVICE_DESCRIPTIONS = {
     "ufw": "Uncomplicated firewall",
     "apparmor": "Load AppArmor profiles",
     "systemd-logind": "User Login Management",
+    "nginx": "A high performance web server and a reverse proxy server",
+    "postgresql": "PostgreSQL RDBMS",
+    "redis": "Advanced key-value store",
+    "erp-api": "ERP business API service",
+    "support-api": "Support portal API service",
+    "backup-worker": "Scheduled backup worker",
 }
 
 _SERVICE_PROCESS_HINTS = {
@@ -358,6 +379,12 @@ _SERVICE_PROCESS_HINTS = {
     "ufw": ["ufw"],
     "apparmor": ["apparmor"],
     "systemd-logind": ["systemd-logind"],
+    "nginx": ["nginx"],
+    "postgresql": ["postgres"],
+    "redis": ["redis-server"],
+    "erp-api": ["erp-api"],
+    "support-api": ["support-api"],
+    "backup-worker": ["backup-worker"],
 }
 
 def _normalize_cmd_for_dedup(cmd: str) -> str:
@@ -590,6 +617,13 @@ _SERVICE_DEFAULT_PROCESS = {
     "ufw": ("/lib/ufw/ufw-init start", "root", "1", None),
     "apparmor": ("/lib/apparmor/apparmor.systemd reload", "root", "1", None),
     "systemd-logind": ("/lib/systemd/systemd-logind", "root", "1", None),
+    # 虚拟业务主机：与 decoy_profiles 的服务清单对应
+    "nginx": ("nginx: master process /usr/sbin/nginx -g daemon on; master_process on;", "root", "1", 80),
+    "postgresql": ("/usr/lib/postgresql/16/bin/postgres -D /var/lib/postgresql/16/main", "postgres", "1", 5432),
+    "redis": ("/usr/bin/redis-server 127.0.0.1:6379", "redis", "1", 6379),
+    "erp-api": ("/opt/erp/bin/erp-api --port 8080", "erp", "1", 8080),
+    "support-api": ("/opt/support/bin/support-api --port 8081", "support", "1", 8081),
+    "backup-worker": ("/opt/backup/bin/backup-worker --daemon", "root", "1", None),
 }
 
 
@@ -1060,7 +1094,9 @@ def execute_command(shell, command_line: str, record_history: bool = True) -> st
     if input_file:
         in_path = shell.normalize_path(input_file)
         shell._stdin_buffer = shell.files_content.get(in_path, VIRTUAL_FILES.get(in_path, ""))
-    output = execute_single_command(shell, clean_cmd)
+    # 执行核心命令（经 shell 钩子进入交互审计；未知命令由模型选择封闭策略）
+    runner = getattr(shell, '_execute_single_command', None)
+    output = runner(clean_cmd) if callable(runner) else execute_single_command(shell, clean_cmd)
     if hasattr(shell, '_stdin_buffer'):
         shell._stdin_buffer = None
     # 记录退出码

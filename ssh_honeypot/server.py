@@ -115,11 +115,35 @@ def _build_ssh_event_session_id(src_ip: str, username: str, client_port: int = N
     return hashlib.sha1(raw.encode('utf-8', errors='ignore')).hexdigest()[:20]
 
 
-def _append_auth_log(entry: str) -> None:
-    """追加 /var/log/auth.log，并同步到已存在会话"""
+def _append_auth_log(entry: str, shell=None) -> None:
+    """追加 /var/log/auth.log。
+
+    - 传入 shell 时只写入该连接自己的虚拟文件系统，避免把某条连接的登录
+      细节同步给同 IP 的其他连接；
+    - 不传 shell 时保留原全局行为（系统级登录/服务日志）。
+    """
     try:
         if not entry:
             return
+
+        if shell is not None:
+            files = getattr(shell, 'files_content', None)
+            if not isinstance(files, dict):
+                return
+            current = str(files.get('/var/log/auth.log', '') or '')
+            content = current + entry
+            if len(content) > _AUTH_LOG_MAX_BYTES:
+                content = content[-_AUTH_LOG_MAX_BYTES:]
+            files['/var/log/auth.log'] = content
+            fs_state = getattr(shell, 'fs_state', None)
+            if isinstance(fs_state, dict) and '/var/log' in fs_state:
+                if 'auth.log' not in fs_state['/var/log']:
+                    fs_state['/var/log'].append('auth.log')
+            sizes = getattr(shell, 'file_sizes', None)
+            if isinstance(sizes, dict):
+                sizes['/var/log/auth.log'] = len(content)
+            return
+
         base = GLOBAL_FILES_CONTENT.get('/var/log/auth.log', VIRTUAL_FILES.get('/var/log/auth.log', ''))
         new_content = (base or '') + entry
 
@@ -155,12 +179,38 @@ def _append_auth_log(entry: str) -> None:
         pass
 
 
+_REBOOT_CONNECTIONS = {}
+_REBOOT_CONNECTIONS_LOCK = threading.Lock()
+
+
+def _mark_connection(client_ip: str) -> float:
+    """记录该 IP 最近一次 TCP 连接建立时间（用于判定重启标记归属）。"""
+    stamp = time.time()
+    with _REBOOT_CONNECTIONS_LOCK:
+        _REBOOT_CONNECTIONS[client_ip] = stamp
+        if len(_REBOOT_CONNECTIONS) > 4096:
+            cutoff = stamp - 3600
+            for key, value in list(_REBOOT_CONNECTIONS.items()):
+                if float(value or 0.0) < cutoff:
+                    _REBOOT_CONNECTIONS.pop(key, None)
+    return stamp
+
+
 def _get_reboot_marker(client_ip: str) -> float:
     with REBOOT_IPS_LOCK:
         try:
-            return float(REBOOT_IPS.get(client_ip, 0.0) or 0.0)
+            marker = float(REBOOT_IPS.get(client_ip, 0.0) or 0.0)
         except Exception:
             return 0.0
+    if marker <= 0:
+        return 0.0
+    with _REBOOT_CONNECTIONS_LOCK:
+        connected_at = float(_REBOOT_CONNECTIONS.get(client_ip, 0.0) or 0.0)
+    # 只有“重启之后新建立的连接”才需要等待；仍在旧连接上下文中的调用
+    # 不应读到别处设置的标记，避免状态串到其他会话。
+    if connected_at >= marker:
+        return marker
+    return 0.0
 
 
 def _set_reboot_marker(client_ip: str, ts: float = None) -> float:
@@ -182,7 +232,9 @@ def _clear_reboot_marker(client_ip: str, expected_ts: float = None) -> bool:
             except Exception:
                 return False
         REBOOT_IPS.pop(client_ip, None)
-        return True
+    with _REBOOT_CONNECTIONS_LOCK:
+        _REBOOT_CONNECTIONS.pop(client_ip, None)
+    return True
 
 def generate_host_key():
     # 优先使用 ED25519 文件
@@ -199,6 +251,9 @@ def generate_host_key():
     # 生成新密钥：优先 ED25519
     logger.info("正在生成新的 ED25519 密钥...")
     try:
+        key_dir = os.path.dirname(os.path.abspath(HOST_KEY_FILE_ED25519))
+        if key_dir and not os.path.isdir(key_dir):
+            os.makedirs(key_dir, exist_ok=True)
         if hasattr(Ed25519Key, 'generate'):
             key = Ed25519Key.generate()
             key.write_private_key_file(HOST_KEY_FILE_ED25519)
@@ -500,8 +555,10 @@ class VirtualShell:
         self.sudo_cache = {}
 
 
-        # 会话持久化按 (IP + 登录用户名) 分桶，减少 NAT 场景下会话互串。
-        persistence_key = f"{self.client_ip}|{self.session_user}"
+        # 会话持久化按“连接”隔离：同一 IP / 同一用户名的并发或重连连接
+        # 不再共享文件、历史与环境变量，避免把某条连接的私有状态带给另一条。
+        connection_nonce = os.urandom(8).hex()
+        persistence_key = f"{self.client_ip}|{self.session_user}|{self.client_port}|{connection_nonce}"
         self.persistence_key = persistence_key
         session_key = str(session_id or _build_ssh_event_session_id(self.client_ip, self.session_user, self.client_port)).strip()
         self.session_key = session_key or persistence_key
@@ -550,6 +607,7 @@ class VirtualShell:
             # 会话缺少权限/所有者元数据时补齐
             self._init_file_timestamps()
             commands.ensure_service_state(self)
+            self._init_decoy_profile()
             self._save_session_state()
 
             logger.info(f"[持久化] 攻击者 {client_ip} 重连，恢复会话状态")
@@ -609,10 +667,19 @@ class VirtualShell:
             self._refresh_ssh_session_env()
 
             self._init_file_timestamps()
+            self._init_decoy_profile()
 
             # 保存到持久化存储
             self._save_session_state()
             logger.info(f"[持久化] 新攻击者 {client_ip} 初始化会话")
+
+    def _init_decoy_profile(self) -> None:
+        """绑定一致的虚拟主机人设（主机名/服务/诱饵日志），供诱饵命令与 AI 策略使用。"""
+        try:
+            from utils import decoy_profiles
+            decoy_profiles.initialize_shell(self)
+        except Exception as e:
+            logger.debug(f"decoy profile init failed: {e}")
 
     def _get_default_env(self) -> dict:
         """生成默认环境变量"""
@@ -1424,7 +1491,15 @@ VPN Gateway: 10.0.12.1 / admin:vpn2024
         return commands.execute_command(self, command_line, record_history=record_history)
 
     def _execute_single_command(self, command_line: str) -> str:
-        return commands.execute_single_command(self, command_line)
+        output = commands.execute_single_command(self, command_line)
+        # 每条命令都进入交互审计；未知命令由模型选择封闭策略（不给自由文本）。
+        try:
+            from utils import ai_interaction
+            replacement = ai_interaction.follow_up(self, command_line, output)
+        except Exception as e:
+            logger.debug(f"interaction follow-up failed: {e}")
+            replacement = None
+        return output if replacement is None else replacement
 
     def _parse_args(self, command_line):
         return commands.parse_args(command_line)
@@ -2924,6 +2999,7 @@ def handle_client(client_socket: socket.socket, client_addr: tuple, host_key):
     client_ip = client_addr[0]
     client_port = client_addr[1] if len(client_addr) > 1 else None
     conn_acquired = False
+    _mark_connection(client_ip)
 
     # 模拟重启延迟
     reboot_time = _get_reboot_marker(client_ip)

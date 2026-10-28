@@ -129,6 +129,12 @@ _ENV_CONFIG_MAP = {
     # AI 推理网关（独立子进程，配置为 JSON 文件路径）
     'AI_GATEWAY_ENABLED': ('ai_gateway', 'enabled'),
     'AI_GATEWAY_CONFIG': ('ai_gateway', 'config'),
+    # 请求级 AI 攻击检测服务（外部模型目录，独立子进程）
+    'AI_DETECT_ENABLED': ('services.ai_detect', 'enabled'),
+    'AI_DETECT_PATH': ('services.ai_detect', 'path'),
+    'AI_DETECT_PYTHON': ('services.ai_detect', 'python'),
+    'AI_DETECT_HOST': ('services.ai_detect', 'host'),
+    'AI_DETECT_PORT': ('services.ai_detect', 'port'),
 
     'WEB_HOST': ('services.web', 'host'),
     'WEB_PORT': ('services.web', 'port'),

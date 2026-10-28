@@ -58,6 +58,35 @@ def _read_json(response,limit,deadline):
     return json.loads(chunks)
 
 
+def _parse_model_json(content):
+    """解析模型返回的 JSON 对象。
+
+    严格模式优先；真实 API 偶尔会在 JSON 外包裹 ```json 围栏或一句说明，
+    这里只提取第一个括号平衡的对象，字段校验仍由调用方完成。
+    """
+    try:
+        return json.loads(content)
+    except (TypeError, ValueError):
+        pass
+    text = str(content or '').strip()
+    start = text.find('{')
+    while start != -1:
+        depth = 0
+        for index in range(start, len(text)):
+            char = text[index]
+            if char == '{':
+                depth += 1
+            elif char == '}':
+                depth -= 1
+                if depth == 0:
+                    try:
+                        return json.loads(text[start:index + 1])
+                    except ValueError:
+                        break
+        start = text.find('{', start + 1)
+    raise ValueError('invalid_model_output')
+
+
 def _transport(messages,schema=None,options=None):
     timeout=(options or {}).get('timeout',SETTINGS['timeout'])
     deadline=time.monotonic()+timeout
@@ -101,10 +130,7 @@ def _transport(messages,schema=None,options=None):
     content=data.get('message',{}).get('content')
     if not isinstance(content,str) or len(content)>4096:
         raise ValueError('invalid_model_output')
-    try:
-        obj=json.loads(content)
-    except (ValueError,TypeError):
-        raise ValueError('invalid_model_output')
+    obj=_parse_model_json(content)
     if schema is not None:
         if not isinstance(obj,dict):raise ValueError('invalid_model_output')
         return TimedOutput(obj,model_timing(data)) if (options or {}).get('include_timing') else obj
@@ -116,7 +142,29 @@ def _transport(messages,schema=None,options=None):
     return reply
 
 
+def _augment_with_schema(messages, schema):
+    """把本地校验用的 JSON Schema 明确写进系统提示。
+
+    Ollama 原生支持 `format=schema`，但 DeepSeek/网关走的是
+    `response_format=json_object`，模型看不到字段约束，容易多输出
+    `type`/`answer` 等键或漏掉 `evidence_id`。这里把 Schema 附加到 system
+    消息，保持用户载荷仍是纯 JSON（审计与测试契约不变），字段校验仍由
+    调用方执行，不放宽任何安全约束。
+    """
+    hint = ('\n\n[输出格式] 只输出一个 JSON 对象，键必须与下面 Schema 的 properties '
+            '完全一致：不得新增、删除或改名，也不要输出 type 字段。\nSchema: '
+            + json.dumps(schema, ensure_ascii=False))
+    out = [dict(message) for message in messages]
+    if out and str(out[0].get('role')) == 'system':
+        out[0]['content'] = str(out[0].get('content') or '') + hint
+        return out
+    out.insert(0, {'role': 'system', 'content': hint.lstrip('\n')})
+    return out
+
+
 def call_model(task,messages,session_id,src_ip='',schema=None,validator=None,budget=None,options=None):
+    if schema is not None and SETTINGS.get('provider') in ('deepseek','gateway'):
+        messages=_augment_with_schema(messages,schema)
     started=time.monotonic()
     store=STORE
     call={'id':secrets.token_hex(12),'task':task,'session_id':str(session_id)[:64],
@@ -246,9 +294,17 @@ def health(force=False):
                         timeout=(2,5),stream=True,allow_redirects=False) as response:
                         data=_read_json(response,2_000_000,time.monotonic()+6)
                     result['service_reachable']=True
-                    result['model_available']=any(m.get('id')==SETTINGS['model'] for m in data.get('data',[]))
+                    listed=[str(m.get('id') or '') for m in data.get('data',[]) if isinstance(m,dict)]
+                    exact=SETTINGS['model'] in listed
+                    # DeepSeek 会用别名把 deepseek-chat 指向当前在售模型，
+                    # /v1/models 可能只列出新代号，因此按同一 family 兜底判断。
+                    family=str(SETTINGS['model']).split('-')[0]
+                    family_match=any(item.split('-')[0]==family for item in listed if item)
+                    result['model_available']=bool(exact or family_match)
                     result['model_loaded']=result['model_available']
-                    result['reason']='ready_for_call' if result['model_available'] else 'model_not_installed'
+                    result['model_listed']=exact
+                    result['available_models']=listed[:20]
+                    result['reason']='ready_for_call' if exact else ('ready_for_call_alias' if family_match else 'model_not_installed')
             except Exception:
                 result['reason']='model_unavailable'
         else:

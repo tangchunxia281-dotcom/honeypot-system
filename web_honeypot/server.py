@@ -964,6 +964,12 @@ def _audit_rejected_request(session_id: str, src_ip: str, query_text: str, heade
         return 0, []
 
 
+def _is_decoy_business_path(path: str) -> bool:
+    """虚拟业务接口自带按 IP 的交互配额，不再叠加扫描器级 429。"""
+    p = str(path or '')
+    return p.startswith('/api/preview') or p.startswith('/api/erp/')
+
+
 # === 全量请求捕获（捕获未知攻击） ===
 @app.before_request
 def _response_jitter():
@@ -1102,9 +1108,11 @@ def _capture_all_requests():
             logger.critical(f"[高危] 分数:{threat_score} {client_ip} {request.method} {request.path} - {', '.join(signals[:3])}")
         elif threat_score >= 20:
             logger.warning(f"[可疑] 分数:{threat_score} {client_ip} {request.method} {request.path} - {', '.join(signals[:2])}")
-        if limited:
+        if limited and not _is_decoy_business_path(request.path):
             logger.warning(f"[限流] 已记录高频请求 {client_ip} {request.method} {request.path} score={threat_score}")
             return _render_http_error(429, 'Too Many Requests', 'Request rate too high.')
+        if limited:
+            logger.warning(f"[限流] 虚拟业务接口继续响应 {client_ip} {request.method} {request.path}")
     except Exception as e:
         logger.debug(f"全量请求捕获失败(不影响正常请求): {e}")
         logger.debug("capture all requests failed", exc_info=True)
@@ -1272,6 +1280,14 @@ errors.register(app, {
     '_log_event': _log_event,
     '_render_http_error': _render_http_error,
     'app_framework': FAKE_SERVER_HEADERS.get('Server', 'nginx'),
+    'logger': logger,
+})
+
+# 虚拟业务接口：Web 受控预览 + 虚拟 ERP（全部为合成数据，按 cookie 隔离）
+from web_honeypot import decoy_api
+decoy_api.register(app, {
+    'get_client_ip': get_client_ip,
+    '_safe_log_event': _safe_log_event,
     'logger': logger,
 })
 

@@ -1629,7 +1629,12 @@ function extractAiLogMeta(log) {
         return null;
     }
 
-    const aiPoints = Number(ai.ai_points);
+    // 显式优先使用服务端"生效加分"：模型判 normal 时该值为 0，
+    // 而 extra.ai.ai_points 仍是模型原始概率映射值。
+    const effectivePoints = Number(extra.ai_points);
+    const aiPoints = Number.isFinite(effectivePoints) && effectivePoints >= 0 && effectivePoints <= 25
+        ? effectivePoints
+        : Number(ai.ai_points);
     if (!Number.isFinite(aiPoints) || aiPoints < 0 || aiPoints > 25) {
         return null;
     }

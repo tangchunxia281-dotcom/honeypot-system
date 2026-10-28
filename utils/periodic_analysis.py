@@ -32,6 +32,10 @@ def metrics(records,total,start,end,previous_total):
 
 
 def make_period(store,kind='hour',now=None,manual=False):
+    from utils import local_ai
+    if not local_ai.SETTINGS.get('configured'):
+        # 未配置模型时不生成永远无法完成的周期任务
+        return {'status':'model_not_configured'}
     now=time.time() if now is None else now;duration=3600 if kind=='hour' else 86400
     end=int((now+8*3600)//duration)*duration-8*3600;start=end-duration
     stamp=lambda n:datetime.fromtimestamp(n,ZONE).strftime('%Y-%m-%d %H:%M:%S')

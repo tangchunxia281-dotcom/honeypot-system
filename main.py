@@ -102,6 +102,39 @@ if _env_bool('REMOTE_HONEYPOT_ENABLED', True):
     })
 
 # ============================================
+# 请求级 AI 攻击检测服务（外部模型目录，可选）
+# 与 honeypot.ini [ai] 配合：服务监听 host:port，蜜罐按 [ai] url 调用。
+# ============================================
+if _env_bool('AI_DETECT_ENABLED', False):
+    _aid_path = _env_str('AI_DETECT_PATH', '').strip()
+    _aid_dir = _aid_path if os.path.isabs(_aid_path) else os.path.join(BASE_DIR, _aid_path)
+    if not _aid_path or not os.path.isdir(_aid_dir):
+        print(f"  ! AI_DETECT_ENABLED 已启用但模型目录无效: {_aid_dir or '(未配置 AI_DETECT_PATH)'}")
+    else:
+        _aid_host = _env_str('AI_DETECT_HOST', '127.0.0.1') or '127.0.0.1'
+        _aid_port = _env_int('AI_DETECT_PORT', 8003, 1, 65535)
+        _aid_python = _env_str('AI_DETECT_PYTHON', '').strip()
+        if not _aid_python:
+            _venv_python = (
+                os.path.join(_aid_dir, '.venv', 'Scripts', 'python.exe')
+                if sys.platform == 'win32'
+                else os.path.join(_aid_dir, '.venv', 'bin', 'python')
+            )
+            _aid_python = _venv_python if os.path.exists(_venv_python) else sys.executable
+        SERVICES.append({
+            'name': 'AI攻击检测',
+            'script': '',
+            'cwd': _aid_dir,
+            'python': _aid_python,
+            'args': ['-m', 'uvicorn', 'src.api:app', '--host', _aid_host, '--port', str(_aid_port)],
+            'host': _aid_host,
+            'port': _aid_port,
+            'description': '请求级攻击检测模型（规则 + ai_points 融合）',
+            'color': '\033[96m',  # 青色
+            'short': 'AI-DET'
+        })
+
+# ============================================
 # round 9 合并：团队数据中心 / AI 推理网关
 # 两者均为独立 JSON 配置的子进程，默认关闭；
 # 仅在 enabled 且配置文件存在时注册。
@@ -411,13 +444,17 @@ def wait_for_summary_creds() -> None:
         time.sleep(0.05)
 
 def start_service(service: Dict, restart: bool = False) -> Optional[subprocess.Popen]:
-    """启动单个服务"""
-    script_path = os.path.join(BASE_DIR, service['script'])
+    """启动单个服务（支持外部目录 + 独立解释器的子服务）"""
     service_name = service['name']
+    script_rel = service.get('script') or ''
+    script_path = os.path.join(BASE_DIR, script_rel) if script_rel else ''
 
-    if not os.path.exists(script_path):
+    if script_rel and not os.path.exists(script_path):
         logger.error(f"脚本文件不存在: {script_path}")
         return None
+
+    workdir = service.get('cwd') or BASE_DIR
+    interpreter = service.get('python') or sys.executable
 
     if not restart:
         port = service.get('port', 0)
@@ -435,7 +472,7 @@ def start_service(service: Dict, restart: bool = False) -> Optional[subprocess.P
             env["HONEYPOT_CONFIG"] = os.environ["HONEYPOT_CONFIG"]
 
         # 构建启动命令
-        cmd = [sys.executable, "-u", script_path]
+        cmd = [interpreter, "-u", script_path] if script_path else [interpreter]
 
         if service.get('args'):
             # 自定义参数模式（如 team_center serve --config / gateway --config）
@@ -460,7 +497,7 @@ def start_service(service: Dict, restart: bool = False) -> Optional[subprocess.P
 
         process = subprocess.Popen(
             cmd, # 使用构建好的带参数命令
-            cwd=BASE_DIR,
+            cwd=workdir,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True, # 文本模式，自动解码
@@ -561,6 +598,11 @@ def print_service_summary():
             urls = [f"http://{display_host}:{port}/"]
         elif short == 'AI-GW':
             urls = [f"http://{display_host}:{port}/v1/status"]
+        elif short == 'AI-DET':
+            urls = [
+                f"http://{display_host}:{port}/health",
+                f"http://{display_host}:{port}/model/info",
+            ]
         else:
             urls = [f"{display_host}:{port}"]
 
