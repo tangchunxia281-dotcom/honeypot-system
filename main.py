@@ -59,133 +59,11 @@ SERVICES: List[Dict] = [
     },
 ]
 
-# ============================================
-# 多协议扩展服务（可通过 honeypot.ini / 环境变量启停）
-# 数据库蜜罐一个进程同时监听 MySQL / Redis 两个端口；
-# 'port' 取 MySQL 端口用于端口检查与汇总展示，Redis 端口在其描述中标注。
-# ============================================
-if _env_bool('DB_HONEYPOT_ENABLED', True):
-    _db_host = _env_str('DB_HONEYPOT_HOST', '0.0.0.0')
-    _mysql_port = _env_int('MYSQL_PORT', 13306, 1, 65535)
-    _redis_port = _env_int('REDIS_PORT', 16379, 1, 65535)
-    SERVICES.append({
-        'name': '数据库蜜罐',
-        'script': os.path.join('db_honeypot', 'server.py'),
-        'host': _db_host,
-        'port': _mysql_port,
-        'redis_port': _redis_port,
-        'description': f'MySQL({_mysql_port}) / Redis({_redis_port}) 协议诱捕',
-        'color': '\033[95m',  # 紫色
-        'short': 'DB'
-    })
-
-if _env_bool('FILE_HONEYPOT_ENABLED', True):
-    SERVICES.append({
-        'name': '文件共享蜜罐',
-        'script': os.path.join('file_honeypot', 'server.py'),
-        'host': _env_str('FTP_HOST', '0.0.0.0'),
-        'port': _env_int('FTP_PORT', 2121, 1, 65535),
-        'description': 'FTP 协议诱捕（SMB 为后续阶段）',
-        'color': '\033[96m',  # 青色
-        'short': 'FTP'
-    })
-
-if _env_bool('REMOTE_HONEYPOT_ENABLED', True):
-    SERVICES.append({
-        'name': '远程管理蜜罐',
-        'script': os.path.join('remote_honeypot', 'server.py'),
-        'host': _env_str('TELNET_HOST', '0.0.0.0'),
-        'port': _env_int('TELNET_PORT', 2223, 1, 65535),
-        'description': 'Telnet(IoT) 协议诱捕（RDP 为后续阶段）',
-        'color': '\033[90m',  # 灰色
-        'short': 'Telnet'
-    })
-
-# ============================================
-# 请求级 AI 攻击检测服务（外部模型目录，可选）
-# 与 honeypot.ini [ai] 配合：服务监听 host:port，蜜罐按 [ai] url 调用。
-# ============================================
-if _env_bool('AI_DETECT_ENABLED', False):
-    _aid_path = _env_str('AI_DETECT_PATH', '').strip()
-    _aid_dir = _aid_path if os.path.isabs(_aid_path) else os.path.join(BASE_DIR, _aid_path)
-    if not _aid_path or not os.path.isdir(_aid_dir):
-        print(f"  ! AI_DETECT_ENABLED 已启用但模型目录无效: {_aid_dir or '(未配置 AI_DETECT_PATH)'}")
-    else:
-        _aid_host = _env_str('AI_DETECT_HOST', '127.0.0.1') or '127.0.0.1'
-        _aid_port = _env_int('AI_DETECT_PORT', 8003, 1, 65535)
-        _aid_python = _env_str('AI_DETECT_PYTHON', '').strip()
-        if not _aid_python:
-            _venv_python = (
-                os.path.join(_aid_dir, '.venv', 'Scripts', 'python.exe')
-                if sys.platform == 'win32'
-                else os.path.join(_aid_dir, '.venv', 'bin', 'python')
-            )
-            _aid_python = _venv_python if os.path.exists(_venv_python) else sys.executable
-        SERVICES.append({
-            'name': 'AI攻击检测',
-            'script': '',
-            'cwd': _aid_dir,
-            'python': _aid_python,
-            'args': ['-m', 'uvicorn', 'src.api:app', '--host', _aid_host, '--port', str(_aid_port)],
-            'host': _aid_host,
-            'port': _aid_port,
-            'description': '请求级攻击检测模型（规则 + ai_points 融合）',
-            'color': '\033[96m',  # 青色
-            'short': 'AI-DET'
-        })
-
-# ============================================
-# round 9 合并：团队数据中心 / AI 推理网关
-# 两者均为独立 JSON 配置的子进程，默认关闭；
-# 仅在 enabled 且配置文件存在时注册。
-# ============================================
-def _load_service_endpoint(config_path):
-    """读取子服务 JSON 配置中的 host/port，失败返回 (None, None)。"""
-    try:
-        import json as _json
-        with open(config_path, 'r', encoding='utf-8-sig') as fh:
-            cfg = _json.load(fh)
-        return str(cfg.get('host', '127.0.0.1')), int(cfg.get('port', 0))
-    except Exception:
-        return None, None
-
-if _env_bool('TEAM_CENTER_ENABLED', False):
-    _tc_config = _env_str('TEAM_CENTER_CONFIG', os.path.join('deployment', 'center', 'center.json'))
-    _tc_path = _tc_config if os.path.isabs(_tc_config) else os.path.join(BASE_DIR, _tc_config)
-    if os.path.exists(_tc_path):
-        _tc_host, _tc_port = _load_service_endpoint(_tc_path)
-        if _tc_port:
-            SERVICES.append({
-                'name': '团队数据中心',
-                'script': os.path.join('scripts', 'team_center.py'),
-                'args': ['serve', '--config', _tc_path],
-                'host': _tc_host,
-                'port': _tc_port,
-                'description': '多设备证据汇聚与协作中心（独立登录）',
-                'color': '\033[92m',  # 亮绿
-                'short': 'Team'
-            })
-    else:
-        print(f"  ! TEAM_CENTER_ENABLED 已启用但配置不存在: {_tc_path}（先运行 python scripts/team_center.py init 初始化）")
-
-if _env_bool('AI_GATEWAY_ENABLED', False):
-    _gw_config = _env_str('AI_GATEWAY_CONFIG', os.path.join('deployment', 'gateway', 'gateway.json'))
-    _gw_path = _gw_config if os.path.isabs(_gw_config) else os.path.join(BASE_DIR, _gw_config)
-    if os.path.exists(_gw_path):
-        _gw_host, _gw_port = _load_service_endpoint(_gw_path)
-        if _gw_port:
-            SERVICES.append({
-                'name': 'AI推理网关',
-                'script': os.path.join('ai_gateway', 'server.py'),
-                'args': ['--config', _gw_path],
-                'host': _gw_host,
-                'port': _gw_port,
-                'description': '多成员共享 AI 推理队列',
-                'color': '\033[96m',  # 青色
-                'short': 'AI-GW'
-            })
-    else:
-        print(f"  ! AI_GATEWAY_ENABLED 已启用但配置不存在: {_gw_path}")
+# Optional protocol adapters inherit the same supervisor and local deployment.
+from utils.integration_settings import protocol_settings
+for extra in protocol_settings():
+    if extra['enabled']:
+        SERVICES.append(dict(name=extra['protocol'].upper()+'蜜罐',script='scripts/protocol_service.py',host=extra['host'],port=extra['port'],args=['--protocol',extra['protocol']],description='受控协议模拟与证据采集',color='\033[96m',short=extra['protocol'].upper()))
 
 # 颜色常量
 RESET = '\033[0m'
@@ -425,7 +303,7 @@ def wait_for_summary_creds() -> None:
     target_pairs = [
         (name, svc.get('short'))
         for name, svc in process_services.items()
-        if svc.get('short') in ('SSH', 'Web', 'DB', 'FTP', 'Telnet')
+        if svc.get('short') in ('SSH', 'Web')
     ]
     targets = {short for _, short in target_pairs}
     if not targets:
@@ -444,17 +322,13 @@ def wait_for_summary_creds() -> None:
         time.sleep(0.05)
 
 def start_service(service: Dict, restart: bool = False) -> Optional[subprocess.Popen]:
-    """启动单个服务（支持外部目录 + 独立解释器的子服务）"""
+    """启动单个服务"""
+    script_path = os.path.join(BASE_DIR, service['script'])
     service_name = service['name']
-    script_rel = service.get('script') or ''
-    script_path = os.path.join(BASE_DIR, script_rel) if script_rel else ''
 
-    if script_rel and not os.path.exists(script_path):
+    if not os.path.exists(script_path):
         logger.error(f"脚本文件不存在: {script_path}")
         return None
-
-    workdir = service.get('cwd') or BASE_DIR
-    interpreter = service.get('python') or sys.executable
 
     if not restart:
         port = service.get('port', 0)
@@ -472,21 +346,17 @@ def start_service(service: Dict, restart: bool = False) -> Optional[subprocess.P
             env["HONEYPOT_CONFIG"] = os.environ["HONEYPOT_CONFIG"]
 
         # 构建启动命令
-        cmd = [interpreter, "-u", script_path] if script_path else [interpreter]
+        cmd = [sys.executable, "-u", script_path] + service.get("args", [])
 
-        if service.get('args'):
-            # 自定义参数模式（如 team_center serve --config / gateway --config）
-            cmd.extend(service['args'])
-        else:
-            # 传递端口参数
-            port = service.get('port')
-            if port:
-                cmd.extend(["--port", str(port)])
+        # 传递端口参数
+        port = service.get('port')
+        if port:
+            cmd.extend(["--port", str(port)])
 
-            # 传递监听地址参数
-            host = service.get('host')
-            if host:
-                cmd.extend(["--host", str(host)])
+        # 传递监听地址参数
+        host = service.get('host')
+        if host:
+            cmd.extend(["--host", str(host)])
 
         creationflags = 0
         startupinfo = None
@@ -497,7 +367,7 @@ def start_service(service: Dict, restart: bool = False) -> Optional[subprocess.P
 
         process = subprocess.Popen(
             cmd, # 使用构建好的带参数命令
-            cwd=workdir,
+            cwd=BASE_DIR,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True, # 文本模式，自动解码
@@ -571,67 +441,67 @@ def print_service_summary():
         short = service['short']
         desc = service['description']
 
-        # 各服务的访问入口（按 short 数据驱动，避免新增协议时漏配）
-        if short == 'SSH':
-            urls = [f"ssh root@{display_host} -p {port}"]
-        elif short == 'Web':
-            urls = [
-                f"http://{display_host}:{port}",
-                f"http://{display_host}:{port}/admin",
-            ]
-        elif short == 'Dash':
-            urls = [f"http://{display_host}:{port}/dashboard"]
-        elif short == 'DB':
-            _redis_port = service.get('redis_port', 16379)
-            urls = [
-                f"mysql -h {display_host} -P {port} -u root -p",
-                f"redis-cli -h {display_host} -p {_redis_port}",
-            ]
-        elif short == 'FTP':
-            urls = [
-                f"ftp://{display_host}:{port}/",
-                f"ftp {display_host} {port}",
-            ]
-        elif short == 'Telnet':
-            urls = [f"telnet {display_host} {port}"]
-        elif short == 'Team':
-            urls = [f"http://{display_host}:{port}/"]
-        elif short == 'AI-GW':
-            urls = [f"http://{display_host}:{port}/v1/status"]
-        elif short == 'AI-DET':
-            urls = [
-                f"http://{display_host}:{port}/health",
-                f"http://{display_host}:{port}/model/info",
-            ]
-        else:
-            urls = [f"{display_host}:{port}"]
-
-        # 凭证展示（管理端使用 [admin] 配置，不在此展示诱饵凭证）
-        creds_lines = []
-        if short != 'Dash':
+        if 'SSH' in name:
+            url = f"ssh root@{display_host} -p {port}"
             if not SHOW_SUMMARY_CREDS:
-                creds_lines = [f"{GRAY}凭证已隐藏{RESET}"]
+                creds = f"{GRAY}凭证已隐藏{RESET}"
             else:
                 creds_list = CAPTURED_CREDS.get(short, [])
                 if creds_list:
+                    creds_lines = []
+                    # 计算用户名列宽用于对齐
                     max_u_len = max(len(c.split('/')[0]) for c in creds_list)
+
+                    for c in creds_list:
+                        u, p = c.split('/')
+                        # 对齐显示: root   : 111111
+                        creds_lines.append(f"{BOLD}{u:<{max_u_len}}{RESET} : {BOLD}{p}{RESET}")
+
+                    if len(creds_lines) == 1:
+                         creds = f"测试: {creds_lines[0]}"
+                    else:
+                         creds = f"凭证列表:"
+                         for line in creds_lines:
+                             creds += f"\n      {line}"
+                else:
+                    creds = f"{GRAY}暂无凭证{RESET}"
+
+        elif name == 'Web蜜罐':
+            url = f"http://{display_host}:{port}"
+            if not SHOW_SUMMARY_CREDS:
+                creds = f"{GRAY}凭证已隐藏{RESET}"
+            else:
+                creds_list = CAPTURED_CREDS.get(short, [])
+                if creds_list:
+                    creds_lines = []
+                    max_u_len = max(len(c.split('/')[0]) for c in creds_list)
+
                     for c in creds_list:
                         u, p = c.split('/')
                         creds_lines.append(f"{BOLD}{u:<{max_u_len}}{RESET} : {BOLD}{p}{RESET}")
 
+                    if len(creds_lines) == 1:
+                         creds = f"测试: {creds_lines[0]}"
+                    else:
+                         creds = f"凭证列表:"
+                         for line in creds_lines:
+                             creds += f"\n      {line}"
+                else:
+                    creds = f"{GRAY}暂无凭证{RESET}"
+
+        elif name == '管理端':
+            url = f"http://{display_host}:{port}/dashboard"
+            creds = ""
+
         # 统一的服务标题格式
         safe_print(f"  {color}> [{name}]{RESET} {desc}")
-        for entry_url in urls:
-            safe_print(f"    {CYAN}{entry_url}{RESET}")
+        safe_print(f"    {CYAN}{url}{RESET}")
+        if name == 'Web蜜罐':
+            safe_print(f"    {CYAN}http://{display_host}:{port}/admin{RESET}")
 
         # 输出凭证信息
-        if creds_lines:
-            if len(creds_lines) == 1 and creds_lines[0].startswith(GRAY):
-                safe_print(f"    {creds_lines[0]}")
-            else:
-                safe_print("    凭证列表:")
-                for line in creds_lines:
-                    safe_print(f"      {line}")
+        if creds:
+            safe_print(f"    {creds}")
 
         safe_print()
 
@@ -687,6 +557,10 @@ def monitor_processes():
     """监控子进程状态"""
     while True:
         time.sleep(2)
+        # Optional local operator control for hidden-console deployments/tests.
+        # No HTTP endpoint can create this sentinel; unset preserves normal Ctrl+C.
+        stop_file=os.environ.get('HONEYPOT_STOP_FILE','')
+        if stop_file and os.path.isfile(stop_file):break
         if not processes: break
 
         for name, process in list(processes.items()):

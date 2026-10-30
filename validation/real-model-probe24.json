@@ -1,0 +1,24 @@
+{
+  "model": "maternion/mimo-v2.6:9b",
+  "created": 1793371815.6767418,
+  "scope": "真实模型调用，数据为项目自编合成验收；不是外部真实流量准确率。",
+  "probe": {
+    "call_id": "752f08a58fde0bcf6df52b5c",
+    "status": "success",
+    "reason": "",
+    "reply": "本地模型连接验收成功。",
+    "latency_ms": 1641
+  },
+  "settings": {
+    "provider": "Ollama",
+    "context_length": 2048,
+    "gpu_layers": 16,
+    "timeout": 30
+  },
+  "verification_scope": "实际产品适配器固定问题的结构化连接验收",
+  "model_metadata": {
+    "family": "qwen35",
+    "parameters": "9.0B",
+    "quantization": "Q4_K_M"
+  }
+}

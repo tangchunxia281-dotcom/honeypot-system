@@ -8,7 +8,7 @@ class ActiveChecks(unittest.TestCase):
     record=tc.CenterChecks.record
     def setup_active(self):
         self.assertIsNotNone(importlib.util.find_spec('utils.active_investigation'),'active engine required')
-        from team_center.jobs import JobStore
+        from investigation_core.jobs import JobStore
         from utils.active_investigation import process_one
         self.jobs=JobStore(self.store);self.process=process_one
         self.analyst=self.store.create_user('analyst','a-long-pass-123','analyst',[self.a['id']])
@@ -23,6 +23,14 @@ class ActiveChecks(unittest.TestCase):
     def test_active_success_and_story(self):
         self.setup_active();job=self.jobs.create(self.analyst['id'],'分析过程',{},'request1');self.process(self.store,self.jobs,self.model)
         row=self.jobs.get(self.analyst['id'],job['id']);self.assertEqual(row['status'],'completed');self.assertEqual(len(row['result']['story']['facts']),1)
+    def test_story_can_use_remaining_job_budget_instead_of_short_plan_timeout(self):
+        self.setup_active();job=self.jobs.create(self.analyst['id'],'分析过程',{},'story-budget');limits={}
+        def model(task,messages,sid,**kw):
+            limits[task]=kw['options']['timeout'];return self.model(task,messages,sid,**kw)
+        self.process(self.store,self.jobs,model)
+        self.assertLessEqual(limits['active_plan'],30)
+        self.assertGreater(limits['active_story'],30)
+        self.assertLessEqual(limits['active_story'],60)
     def test_unauthorized_tool_target_denied(self):
         self.setup_active();job=self.jobs.create(self.analyst['id'],'分析过程',{},'request1')
         def bad(task,messages,sid,**kw):return {'status':'success','data':kw['validator'](self.action('search',{'sensors':[self.b['id']]})),'call_id':'bad'}

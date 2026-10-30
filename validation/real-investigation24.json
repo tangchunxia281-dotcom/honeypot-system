@@ -1,0 +1,819 @@
+{
+  "model": "maternion/mimo-v2.6:9b",
+  "created": 1793371815.6767418,
+  "scope": "真实模型调用，数据为项目自编合成验收；不是外部真实流量准确率。",
+  "code_sha256": "40cc0e27c20e818d94d32aa62cfbf8ae9d7a5add2c50ef5d51667057c0f9175e",
+  "prewarm": {
+    "requested": false
+  },
+  "probe": {
+    "call_id": "752f08a58fde0bcf6df52b5c",
+    "status": "success",
+    "reason": "",
+    "reply": "本地模型连接验收成功。",
+    "latency_ms": 1641
+  },
+  "active_dataset_sha256": "62f4d071fccdba188e64fff5397ae8c868409d3f7b1acd1339038e47133babf1",
+  "active": {
+    "id": "80ac97f21f6b12abee2b27ab",
+    "owner": "bd5a650a67d9079bfadeb6eb",
+    "request_id": "acceptance",
+    "question": "请补查这些最近正常浏览请求前是否存在注入或管理探测，按时间整理过程，缺证据时明确说明。",
+    "status": "completed",
+    "reason": "",
+    "created": 1793371817.9522588,
+    "deadline": 1793371907.9522588,
+    "query": {
+      "sensors": [
+        "879ce6e40aaed2492c23b50c"
+      ],
+      "ip": "127.0.0.1",
+      "origin": "synthetic"
+    },
+    "result": {
+      "story": {
+        "facts": [
+          {
+            "channel": "web",
+            "excerpt": "GET /admin User-Agent=sqlmap",
+            "id": "2836bc51c2dc8315bc64537a",
+            "kind": "http_request",
+            "record_id": 1,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:00:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /products?id=1 UNION SELECT username,password FROM users",
+            "id": "27cc2cbb81abdb9839d21b55",
+            "kind": "http_request",
+            "record_id": 2,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:01:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "POST /api/preview url=http://169.254.169.254/latest/meta-data/",
+            "id": "0630f97d5b380e8b06423443",
+            "kind": "http_request",
+            "record_id": 3,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:02:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=0",
+            "id": "12e733034b29b171f65ed9a3",
+            "kind": "http_request",
+            "record_id": 4,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:03:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=1",
+            "id": "92d9f3caa3cccb3213842a91",
+            "kind": "http_request",
+            "record_id": 5,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:04:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=2",
+            "id": "f40e9d427217b26d458eba03",
+            "kind": "http_request",
+            "record_id": 6,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:05:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=3",
+            "id": "c817da8a61052dbfb267364b",
+            "kind": "http_request",
+            "record_id": 7,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:06:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=4",
+            "id": "720c026e7a838fbe5c99b585",
+            "kind": "http_request",
+            "record_id": 8,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:07:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=5",
+            "id": "2b30b90f167f67d63714553b",
+            "kind": "http_request",
+            "record_id": 9,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:08:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=6",
+            "id": "032f2b5e228d3fb428d57e66",
+            "kind": "http_request",
+            "record_id": 10,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:09:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=7",
+            "id": "8306babfb4ff3a706d899d9b",
+            "kind": "http_request",
+            "record_id": 11,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:10:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=8",
+            "id": "ff7083fb8bbbdc6b08fe8c49",
+            "kind": "http_request",
+            "record_id": 12,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:11:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=9",
+            "id": "c80fb79fb285759f415060a8",
+            "kind": "http_request",
+            "record_id": 13,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:12:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=10",
+            "id": "6c7ca7e70345d4d8c59268ea",
+            "kind": "http_request",
+            "record_id": 14,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:13:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=11",
+            "id": "e7cebdd80cae97331d27b4c5",
+            "kind": "http_request",
+            "record_id": 15,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:14:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=12",
+            "id": "28ef9d82bcdca43058f9cbdc",
+            "kind": "http_request",
+            "record_id": 16,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:15:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=13",
+            "id": "efb529fdb7bb80200c7e1798",
+            "kind": "http_request",
+            "record_id": 17,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:16:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=14",
+            "id": "f6334c2a33172f725c9a9364",
+            "kind": "http_request",
+            "record_id": 18,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:17:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=15",
+            "id": "eb3518e2cdf7717029a2cfe8",
+            "kind": "http_request",
+            "record_id": 19,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:18:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=16",
+            "id": "32cdbe5f3d6bafd105ae301f",
+            "kind": "http_request",
+            "record_id": 20,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:19:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=17",
+            "id": "85203f442b0d95a67ed234f2",
+            "kind": "http_request",
+            "record_id": 21,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:20:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=18",
+            "id": "6a1c8909d3147da450a25770",
+            "kind": "http_request",
+            "record_id": 22,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:21:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=19",
+            "id": "734e5c36f8f9700c172a997b",
+            "kind": "http_request",
+            "record_id": 23,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:22:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=20",
+            "id": "2bb31aad91cf0458a2a44697",
+            "kind": "http_request",
+            "record_id": 24,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:23:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=21",
+            "id": "c13c25902c932af2b6495931",
+            "kind": "http_request",
+            "record_id": 25,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:24:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=22",
+            "id": "1894adda3eb01867def598fe",
+            "kind": "http_request",
+            "record_id": 26,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:25:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=23",
+            "id": "468aad34eeaeb779afa29b2d",
+            "kind": "http_request",
+            "record_id": 27,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:26:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=24",
+            "id": "841de9374479856e376f3ff0",
+            "kind": "http_request",
+            "record_id": 28,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:27:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=25",
+            "id": "77d51b8b3ec78f4b3642ecaa",
+            "kind": "http_request",
+            "record_id": 29,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:28:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          },
+          {
+            "channel": "web",
+            "excerpt": "GET /news page=26",
+            "id": "ab33d708bda0d5bb577669bc",
+            "kind": "http_request",
+            "record_id": 30,
+            "rule_level": "unknown",
+            "sensor_id": "879ce6e40aaed2492c23b50c",
+            "session_id": "accept",
+            "source_id": "acceptance",
+            "src_ip": "127.0.0.1",
+            "table": "raw_request",
+            "timestamp": "2026-10-11 10:29:00",
+            "traffic_origin": "synthetic",
+            "certainty": "observed_record",
+            "simultaneous": false
+          }
+        ],
+        "inferences": [
+          {
+            "name": "injection_attempt",
+            "description": "10:00–10:02出现管理探测与云元数据请求",
+            "refs": [
+              "2836bc51c2dc8315bc64537a",
+              "27cc2cbb81abdb9839d21b55"
+            ],
+            "certainty": "ai_inference",
+            "evidence": [
+              {
+                "id": "2836bc51c2dc8315bc64537a",
+                "quote": "GET /admin User-Agent=sqlmap"
+              },
+              {
+                "id": "27cc2cbb81abdb9839d21b55",
+                "quote": "GET /products?id=1 UNION SELECT username,password FROM users"
+              }
+            ]
+          },
+          {
+            "name": "reconnaissance",
+            "description": "10:07–10:09为正常/news浏览，无新",
+            "refs": [
+              "720c026e7a838fbe5c99b585",
+              "2b30b90f167f67d63714553b"
+            ],
+            "certainty": "ai_inference",
+            "evidence": [
+              {
+                "id": "720c026e7a838fbe5c99b585",
+                "quote": "GET /news page=4"
+              },
+              {
+                "id": "2b30b90f167f67d63714553b",
+                "quote": "GET /news page=5"
+              }
+            ]
+          },
+          {
+            "name": "reconnaissance",
+            "description": "10:24–10:29连续/news浏览，未见",
+            "refs": [
+              "c13c25902c932af2b6495931",
+              "1894adda3eb01867def598fe"
+            ],
+            "certainty": "ai_inference",
+            "evidence": [
+              {
+                "id": "c13c25902c932af2b6495931",
+                "quote": "GET /news page=21"
+              },
+              {
+                "id": "1894adda3eb01867def598fe",
+                "quote": "GET /news page=22"
+              }
+            ]
+          }
+        ],
+        "summary": "10:00–10:02有管理探测与云元数据请求；10:07后为正常/news浏览",
+        "ai_status": "completed",
+        "same_session": true,
+        "host_compromise_confirmed": false,
+        "limitations": "同刻记录不确定先后，同IP不证明同一攻击者；关联不证明因果，虚拟登录或数据访问不证明真实主机被攻破。现有记录仅覆盖10:00–10:29，10:29后无证据；10:",
+        "coverage": {
+          "available": 30,
+          "displayed": 30,
+          "truncated": false,
+          "model_provided": 12
+        }
+      },
+      "calls": [
+        {
+          "task": "active_plan",
+          "status": "success",
+          "reason": "",
+          "call_id": "de8aa7db6fd04f4826b233fc",
+          "latency_ms": 9812,
+          "created": 1793371827.8449407,
+          "model": "maternion/mimo-v2.6:9b",
+          "code_version": "0f11752eee3bfd75",
+          "references_checked": false,
+          "references_valid": false,
+          "model_timing": {
+            "generation_ms": 6892.582,
+            "prompt_ms": 2808.756,
+            "load_ms": 20.453,
+            "model_total_ms": 9780.457,
+            "gateway_queue_ms": null
+          }
+        },
+        {
+          "task": "active_plan",
+          "status": "success",
+          "reason": "",
+          "call_id": "505487dbba59a0c5c84580d9",
+          "latency_ms": 12329,
+          "created": 1793371840.3409216,
+          "model": "maternion/mimo-v2.6:9b",
+          "code_version": "0f11752eee3bfd75",
+          "references_checked": false,
+          "references_valid": false,
+          "model_timing": {
+            "generation_ms": 8711.739,
+            "prompt_ms": 3543.338,
+            "load_ms": 19.931,
+            "model_total_ms": 12304.497,
+            "gateway_queue_ms": null
+          }
+        },
+        {
+          "task": "active_story",
+          "status": "success",
+          "reason": "",
+          "call_id": "5117bf6c902654e806b316a1",
+          "latency_ms": 29000,
+          "created": 1793371869.462796,
+          "model": "maternion/mimo-v2.6:9b",
+          "code_version": "0f11752eee3bfd75",
+          "references_checked": true,
+          "references_valid": true,
+          "model_timing": {
+            "generation_ms": 24562.348,
+            "prompt_ms": 4269.234,
+            "load_ms": 24.033,
+            "model_total_ms": 28975.818,
+            "gateway_queue_ms": null
+          }
+        }
+      ],
+      "supplement_queries": 3,
+      "model_records": 12,
+      "candidate_records": 30,
+      "stop_reason": "no_new_evidence"
+    },
+    "steps": [
+      {
+        "type": "initial",
+        "query": {
+          "sensors": [
+            "879ce6e40aaed2492c23b50c"
+          ],
+          "ip": "127.0.0.1",
+          "origin": "synthetic"
+        },
+        "matched": 30,
+        "selected": 20,
+        "queued_ms": 55
+      },
+      {
+        "type": "model",
+        "task": "active_plan",
+        "status": "success",
+        "reason": "",
+        "call_id": "de8aa7db6fd04f4826b233fc",
+        "latency_ms": 9812,
+        "created": 1793371827.8449407,
+        "model": "maternion/mimo-v2.6:9b",
+        "code_version": "0f11752eee3bfd75",
+        "references_checked": false,
+        "references_valid": false,
+        "model_timing": {
+          "generation_ms": 6892.582,
+          "prompt_ms": 2808.756,
+          "load_ms": 20.453,
+          "model_total_ms": 9780.457,
+          "gateway_queue_ms": null
+        }
+      },
+      {
+        "type": "tool",
+        "action": "search",
+        "reason": "检索10:24前更早请求，排查注入与管理探测",
+        "query": {
+          "sensors": [
+            "879ce6e40aaed2492c23b50c"
+          ],
+          "ip": "127.0.0.1",
+          "origin": "synthetic",
+          "term": "/news page=20"
+        },
+        "matched": 1,
+        "added": 0,
+        "evidence_ids": []
+      },
+      {
+        "type": "tool",
+        "source": "program_coverage_fallback",
+        "action": "search",
+        "reason": "模型建议未增加证据；程序补查原授权范围内未读的更早记录。",
+        "query": {
+          "sensors": [
+            "879ce6e40aaed2492c23b50c"
+          ],
+          "ip": "127.0.0.1",
+          "origin": "synthetic",
+          "end": "2026-10-11 10:09:59"
+        },
+        "matched": 10,
+        "added": 10,
+        "evidence_ids": [
+          "032f2b5e228d3fb428d57e66",
+          "2b30b90f167f67d63714553b",
+          "720c026e7a838fbe5c99b585",
+          "c817da8a61052dbfb267364b",
+          "f40e9d427217b26d458eba03",
+          "92d9f3caa3cccb3213842a91",
+          "12e733034b29b171f65ed9a3",
+          "0630f97d5b380e8b06423443",
+          "27cc2cbb81abdb9839d21b55",
+          "2836bc51c2dc8315bc64537a"
+        ]
+      },
+      {
+        "type": "model",
+        "task": "active_plan",
+        "status": "success",
+        "reason": "",
+        "call_id": "505487dbba59a0c5c84580d9",
+        "latency_ms": 12329,
+        "created": 1793371840.3409216,
+        "model": "maternion/mimo-v2.6:9b",
+        "code_version": "0f11752eee3bfd75",
+        "references_checked": false,
+        "references_valid": false,
+        "model_timing": {
+          "generation_ms": 8711.739,
+          "prompt_ms": 3543.338,
+          "load_ms": 19.931,
+          "model_total_ms": 12304.497,
+          "gateway_queue_ms": null
+        }
+      },
+      {
+        "type": "tool",
+        "action": "search",
+        "reason": "按时间补查10:00前更早行为，确认注入或管理探测是否存在。",
+        "query": {
+          "sensors": [
+            "879ce6e40aaed2492c23b50c"
+          ],
+          "ip": "127.0.0.1",
+          "origin": "synthetic",
+          "end": "2026-10-11 09:59:59"
+        },
+        "matched": 0,
+        "added": 0,
+        "evidence_ids": []
+      },
+      {
+        "type": "model",
+        "task": "active_story",
+        "status": "success",
+        "reason": "",
+        "call_id": "5117bf6c902654e806b316a1",
+        "latency_ms": 29000,
+        "created": 1793371869.462796,
+        "model": "maternion/mimo-v2.6:9b",
+        "code_version": "0f11752eee3bfd75",
+        "references_checked": true,
+        "references_valid": true,
+        "model_timing": {
+          "generation_ms": 24562.348,
+          "prompt_ms": 4269.234,
+          "load_ms": 24.033,
+          "model_total_ms": 28975.818,
+          "gateway_queue_ms": null
+        }
+      }
+    ],
+    "feedback": null
+  }
+}

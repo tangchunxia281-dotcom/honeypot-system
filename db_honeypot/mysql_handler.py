@@ -351,7 +351,7 @@ def _query_response(sql: str, database: str) -> bytes:
 
     # LOAD DATA LOCAL：服务端可主动索取客户端文件
     if low.startswith('load data local'):
-        return _packet(b'\xfb' + b'/etc/passwd', 1)  # LOCAL INFILE 请求
+        return _err_packet(code=1148, message='LOCAL INFILE disabled in virtual honeypot', seq=1)
 
     if low.startswith(('insert', 'update', 'delete', 'create', 'drop', 'alter',
                        'grant', 'revoke', 'rename', 'truncate', 'replace')):

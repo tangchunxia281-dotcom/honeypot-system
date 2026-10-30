@@ -6,7 +6,7 @@ import hashlib
 from pathlib import Path
 from datetime import datetime,timedelta
 from utils.attack_story import STORY_SCHEMA,build_story,validate_interpretation
-from team_center.store import QUERY_FIELDS,stamp
+from investigation_core.store import QUERY_FIELDS,stamp
 
 ACTION_SCHEMA={'type':'object','properties':{'action':{'type':'string','enum':['search','read','stats','finish']},'query':{'type':'object','properties':{k:({'type':'array','items':{'type':'string'}} if k=='sensors' else {'type':'string'}) for k in QUERY_FIELDS},'additionalProperties':False},'ids':{'type':'array','maxItems':12,'items':{'type':'string'}},'reason':{'type':'string','maxLength':160}},'required':['action','query','ids','reason'],'additionalProperties':False}
 PLAN_SCHEMA={'type':'object','properties':{'action':{'type':'string','enum':['search','read','stats','finish']},'selection':{'type':'string','enum':['earlier','keyword','same_scope']},'term':{'type':'string','maxLength':40},'ids':{'type':'array','maxItems':3,'items':{'type':'string'}},'reason':{'type':'string','maxLength':60}},'required':['action','selection','term','ids','reason'],'additionalProperties':False}
@@ -29,7 +29,7 @@ def validate_action(obj):
 def restricted_query(center,user_id,base,proposal):
     query={**base,**proposal}
     if not set(query.get('sensors',[])).issubset(base['sensors']):raise PermissionError('tool_scope_denied')
-    for key in ('ip','session'):
+    for key in ('ip','session','channel'):
         if base.get(key) and query.get(key)!=base[key]:raise PermissionError('tool_scope_denied')
     if base.get('start') and (not query.get('start') or stamp(query['start'])<stamp(base['start'])):raise PermissionError('tool_scope_denied')
     if base.get('end') and (not query.get('end') or stamp(query['end'])>stamp(base['end'])):raise PermissionError('tool_scope_denied')
@@ -54,8 +54,10 @@ def process_one(center,jobs,model_call=None,clock=time.time):
     def call(task,payload,schema,validator):
         check();remaining=min(job['deadline']-clock(),monotonic_deadline-time.monotonic())
         if remaining<1:raise TimeoutError('deadline_exceeded')
+        # Planning is short; a cited story may use the remaining finite job budget.
+        call_limit=30 if task=='active_plan' else 60
         result=model_call(task,[{'role':'system','content':SYSTEM},{'role':'user','content':json.dumps(payload,ensure_ascii=False)}],job['id'],schema=schema,validator=validator,budget=20,
-                          options={'timeout':max(1,min(30,int(remaining))),'gateway_wait':max(1,int(remaining)),'num_predict':256 if task=='active_plan' else 512,'include_timing':True})
+                          options={'timeout':max(1,min(call_limit,int(remaining))),'gateway_wait':max(1,int(remaining)),'num_predict':256 if task=='active_plan' else 768,'include_timing':True})
         from utils import local_ai
         version=hashlib.sha256(Path(__file__).read_bytes()+Path(local_ai.__file__).read_bytes()).hexdigest()[:16]
         detail=result.get('validation_detail','')
@@ -124,8 +126,8 @@ def process_one(center,jobs,model_call=None,clock=time.time):
         if sample:
             import copy
             aliases={f'E{i+1}':r['id'] for i,r in enumerate(sample)}
-            wire=copy.deepcopy(STORY_SCHEMA);wire['properties']['summary']['maxLength']=80;wire['properties']['limitations']['maxLength']=60
-            stage=wire['properties']['stages'];stage['maxItems']=3;stage['items']['properties']['description']['maxLength']=40;stage['items']['properties']['refs']['maxItems']=2
+            wire=copy.deepcopy(STORY_SCHEMA);wire['properties']['summary']['maxLength']=40;wire['properties']['limitations']['maxLength']=32
+            stage=wire['properties']['stages'];stage['maxItems']=3;stage['items']['properties']['description']['maxLength']=24;stage['items']['properties']['refs']['maxItems']=2
             stage['items']['properties']['refs']['items']={'type':'string','enum':list(aliases)}
             compact=[dict(r,id=key) for key,r in zip(aliases,facts())]
             def materialize(obj):
@@ -135,7 +137,7 @@ def process_one(center,jobs,model_call=None,clock=time.time):
                     if not isinstance(item,dict) or not isinstance(item.get('refs'),list) or any(v not in aliases for v in item['refs']):raise ValueError('invalid_model_output')
                     item['refs']=[aliases[v] for v in item['refs']]
                 return validate_interpretation(normalized,sample)
-            interpretation=call('active_story',{'question':job['question'],'records':compact,'tool_results':tools,'coverage':{'candidates':len(rows),'provided':len(sample)},'instruction':'summary最多80字；最多3个推测阶段，每项description最多40字、refs只用E编号；limitations最多60字。不要复制原文，程序会附上。只有正常浏览时stages为空；不要把正常请求标注成注入或凭据尝试。不能声称检查了所有日志或确认真实主机攻破。'},wire,materialize)
+            interpretation=call('active_story',{'question':job['question'],'records':compact,'tool_results':tools,'coverage':{'candidates':len(rows),'provided':len(sample)},'instruction':'简洁JSON：summary最多40字；最多3个推测阶段，每项description最多24字、refs只用E编号；limitations最多32字。不要复制原文，程序会附上。只有正常浏览时stages为空；不要把正常请求标注成注入或凭据尝试。不能声称检查了所有日志或确认真实主机攻破。'},wire,materialize)
         else:interpretation=None;stop='no_evidence'
         check();story=build_story(list(rows.values()),interpretation);story['coverage']['model_provided']=len(sample)
         jobs.finish(job['id'],job['lease'],{'story':story,'calls':calls,'supplement_queries':queries,'model_records':len(sample),'candidate_records':len(rows),'stop_reason':stop})

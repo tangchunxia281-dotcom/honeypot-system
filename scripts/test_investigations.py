@@ -171,8 +171,8 @@ class InvestigationChecks(unittest.TestCase):
 
     def test_each_ai_page_has_one_sidebar_and_required_controls(self):
         client,base,h=self.client()
-        for path in ('/ai','/ai/analysis','/ai/detection','/ai/interactions','/ai/investigations'):
-            response=client.get(path,base_url=base,headers=h);self.assertEqual(response.status_code,200)
+        for path in ('/ai','/ai/analysis','/ai/detection','/ai/interactions','/ai/investigations','/ai/legacy-investigations'):
+            response=client.get(path,base_url=base,headers=h,follow_redirects=True);self.assertEqual(response.status_code,200)
             self.assertEqual(response.text.count('id="aiSidebar"'),1);self.assertIn('ai_shell.js',response.text)
         text=client.get('/ai/analysis',base_url=base,headers=h).text
         for identifier in ('scan','mode','recover','createCase','chatSection'):self.assertEqual(text.count('id="'+identifier+'"'),1)

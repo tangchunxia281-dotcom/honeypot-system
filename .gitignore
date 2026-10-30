@@ -1,55 +1,34 @@
-# ---- 虚拟环境与缓存 ----
+# Runtime secrets and state
+honeypot.ini
+.env
+.env.local
+.secret_key
+ai.local.ini
+database/*
+!database/schema.sql
+logs/
+demo-results/
+deployment/
+ssh_honeypot/state/
+ssh_honeypot/ssh_host_*
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+*.log
+*.pem
+*.key
+id_rsa*
+.venv*/
 venv/
-.venv/
 __pycache__/
 *.py[cod]
 .pytest_cache/
 .mypy_cache/
-.ruff_cache/
-.coverage
-htmlcov/
-__pypackages__/
-*.egg-info/
-dist/
-build/
-
-# ---- 本地真实配置与密钥（严禁入库）----
-honeypot.ini
-ai.local.ini
-.env
-.env.*
-!.env.example
-.secret_key
-scripts/honeypot.env
-deployment/
-*.pem
-*.key
-GeoLite2-City.mmdb
-
-# ---- 运行数据与日志 ----
-logs/
-database/*.db
-database/*.db-shm
-database/*.db-wal
-database/archive/
-database/ai-archives/
-dashboard/state/*.json
-ssh_honeypot/state/
-*.log
-
-# ---- 编辑器与系统文件 ----
-.vscode/
-.idea/
-.trae/
-.history/
 .DS_Store
 Thumbs.db
-desktop.ini
+*.mp4
+*.zip
 
-# ---- 说明 ----
-# requirements.txt 是给不使用 uv 的评审准备的依赖清单，需要提交，故不再忽略。
-# 真实配置请复制 honeypot.ini.example / ai.local.ini.example / .env.example 后本地填写。
-
-# ---- 个人笔记与误生成文件（不入库）----
-蜜罐.txt
-/datetime
+classifier.ini

@@ -1,0 +1,5 @@
+[classifier]
+# 外部模型与权重需另行提供；默认关闭，不把规则冒充模型。
+enabled = false
+url = http://127.0.0.1:8003/api/v1/detect
+timeout = 1

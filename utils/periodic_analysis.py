@@ -6,7 +6,7 @@ import time
 from datetime import datetime,timezone,timedelta
 from contextlib import closing
 from utils.evidence_selection import hints,select
-from utils.team_store import TeamStore
+from utils.workbench_store import WorkbenchStore
 
 ZONE=timezone(timedelta(hours=8))
 
@@ -32,10 +32,6 @@ def metrics(records,total,start,end,previous_total):
 
 
 def make_period(store,kind='hour',now=None,manual=False):
-    from utils import local_ai
-    if not local_ai.SETTINGS.get('configured'):
-        # 未配置模型时不生成永远无法完成的周期任务
-        return {'status':'model_not_configured'}
     now=time.time() if now is None else now;duration=3600 if kind=='hour' else 86400
     end=int((now+8*3600)//duration)*duration-8*3600;start=end-duration
     stamp=lambda n:datetime.fromtimestamp(n,ZONE).strftime('%Y-%m-%d %H:%M:%S')
@@ -45,7 +41,7 @@ def make_period(store,kind='hour',now=None,manual=False):
         records=[dict(r) for r in c.execute('SELECT * FROM analyst_evidence WHERE timestamp>=? AND timestamp<? ORDER BY timestamp,id LIMIT 5000',(stamp(start),stamp(end)))]
     from utils import ai_analyst
     summary=metrics(records,total,start,end,previous);summary['index_lag']=ai_analyst._state.get('lag',0);summary['scan_error']=ai_analyst._state.get('scan_error','')
-    team=TeamStore(store);identifier=team.reserve_period(kind,start,end,summary)
+    team=WorkbenchStore(store);identifier=team.reserve_period(kind,start,end,summary)
     if not identifier:
         with closing(team.connect()) as c:
             existing=c.execute('SELECT id,task_id FROM period_reports WHERE kind=? AND start=? AND end=?',(kind,start,end)).fetchone()
@@ -65,5 +61,5 @@ def make_period(store,kind='hour',now=None,manual=False):
 def tick(store):
     from utils import local_ai
     if not local_ai.SETTINGS.get('periodic_enabled',False):return
-    team=TeamStore(store);cfg=team.period_config()
+    team=WorkbenchStore(store);cfg=team.period_config()
     if cfg['enabled']:make_period(store,cfg['period'])

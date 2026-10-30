@@ -1,7 +1,7 @@
-<!doctype html><html lang="zh-CN"><head>
+<!doctype html><html lang="zh-CN"><head><meta name="color-scheme" content="dark">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}"><title>规则与 AI 攻击研判对照</title>
-<link rel="stylesheet" href="{{ url_for('static',filename='css/ai.css',v=ASSET_VERSION) }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='css/theme.css',v=ASSET_VERSION) }}"><link rel="stylesheet" href="{{ url_for('static',filename='css/ai.css',v=ASSET_VERSION) }}">
 <link rel="stylesheet" href="{{ url_for('static',filename='css/ai_shell.css',v=ASSET_VERSION) }}"></head><body class="ai-workspace">{% include 'ai_sidebar.html' %}<main>
 <header><div><a href="{{ url_for('ai_monitor') }}">← 模型运行监控</a><h1>规则与 AI 攻击研判对照</h1>
 <p>请求先由原规则处理，AI 在后台分析。模型判断属于待核对线索，不代表攻击成功。</p></div>

@@ -20,7 +20,12 @@ _loggers = {}
 
 
 def _harden_permissions(path: str, is_dir: bool) -> None:
-    """最佳努力收敛权限：POSIX chmod + Windows icacls。"""
+    """POSIX limits modes; Windows preserves inherited service-account access.
+
+    Do not remove inherited ACLs based on USERNAME: a scheduled task or restricted
+    process may run with a different identity and lose access to its own files.
+    Windows deployment privacy is inherited from the user's private project folder.
+    """
     if not path:
         return
     try:
@@ -28,13 +33,16 @@ def _harden_permissions(path: str, is_dir: bool) -> None:
             os.chmod(path, 0o700 if is_dir else 0o600)
             return
         if os.name == 'nt':
-            user = os.environ.get('USERNAME') or getpass.getuser() or ''
-            if not user:
+            result = subprocess.run(['whoami','/user','/fo','csv','/nh'],capture_output=True,text=True,check=False)
+            import re
+            match = re.search(r'S-1-5-[0-9-]+', result.stdout or '')
+            if not match:
                 return
+            user = '*'+match.group(0)
             if is_dir:
-                cmd = ['icacls', path, '/inheritance:r', '/grant:r', f'{user}:(OI)(CI)F']
+                cmd = ['icacls', path, '/inheritance:e', '/grant:r', f'{user}:(OI)(CI)F']
             else:
-                cmd = ['icacls', path, '/inheritance:r', '/grant:r', f'{user}:(F)']
+                cmd = ['icacls', path, '/inheritance:e', '/grant:r', f'{user}:(F)']
             subprocess.run(cmd, capture_output=True, check=False)
     except Exception:
         # 权限收敛失败不应阻塞主业务

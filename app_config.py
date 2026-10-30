@@ -72,19 +72,6 @@ _ENV_CONFIG_MAP = {
     'SESSION_ID_WINDOW_SECONDS': ('database', 'session_id_window_seconds'),
     'HAS_REAL_CACHE_TTL': ('database', 'has_real_cache_ttl'),
 
-     # AI request-level attack inference service
-    'AI_XSS_ENABLED': ('ai', 'enabled'),
-    'AI_XSS_URL': ('ai', 'url'),
-    'AI_XSS_INFO_URL': ('ai', 'info_url'),
-    'AI_XSS_TIMEOUT': ('ai', 'timeout'),
-    # Deprecated compatibility key. The v2 detect API uses ai_points,
-    # not a confidence threshold, to participate in honeypot scoring.
-    'AI_XSS_THRESHOLD': ('ai', 'threshold'),
-    'AI_XSS_TEXT_MAX': ('ai', 'text_max'),
-    'AI_XSS_FAILURE_THRESHOLD': ('ai', 'failure_threshold'),
-    'AI_XSS_BACKOFF_SECONDS': ('ai', 'backoff_seconds'),
-    'AI_XSS_MODEL_INFO_TTL': ('ai', 'model_info_ttl'),
-
     # services
     'SSH_HOST': ('services.ssh', 'host'),
     'SSH_PORT': ('services.ssh', 'port'),
@@ -108,33 +95,6 @@ _ENV_CONFIG_MAP = {
     'SSH_SCAN_CONN_THRESHOLD': ('services.ssh', 'scan_conn_threshold'),
     'SSH_SCAN_ALERT_COOLDOWN_SECONDS': ('services.ssh', 'scan_alert_cooldown_seconds'),
     'SSH_SCAN_STALE_KEEP_SECONDS': ('services.ssh', 'scan_stale_keep_seconds'),
-
-    # 多协议蜜罐：数据库协议（MySQL / Redis）
-    'DB_HONEYPOT_ENABLED': ('services.database', 'enabled'),
-    'DB_HONEYPOT_HOST': ('services.database', 'host'),
-    'MYSQL_PORT': ('services.database', 'mysql_port'),
-    'REDIS_PORT': ('services.database', 'redis_port'),
-    # 多协议蜜罐：文件共享协议（FTP / SMB 预留）
-    'FILE_HONEYPOT_ENABLED': ('services.file', 'enabled'),
-    'FTP_HOST': ('services.file', 'host'),
-    'FTP_PORT': ('services.file', 'ftp_port'),
-    # 多协议蜜罐：远程管理协议（Telnet / RDP 预留）
-    'REMOTE_HONEYPOT_ENABLED': ('services.remote', 'enabled'),
-    'TELNET_HOST': ('services.remote', 'host'),
-    'TELNET_PORT': ('services.remote', 'telnet_port'),
-
-    # 团队数据中心（独立子进程，配置为 JSON 文件路径）
-    'TEAM_CENTER_ENABLED': ('team_center', 'enabled'),
-    'TEAM_CENTER_CONFIG': ('team_center', 'config'),
-    # AI 推理网关（独立子进程，配置为 JSON 文件路径）
-    'AI_GATEWAY_ENABLED': ('ai_gateway', 'enabled'),
-    'AI_GATEWAY_CONFIG': ('ai_gateway', 'config'),
-    # 请求级 AI 攻击检测服务（外部模型目录，独立子进程）
-    'AI_DETECT_ENABLED': ('services.ai_detect', 'enabled'),
-    'AI_DETECT_PATH': ('services.ai_detect', 'path'),
-    'AI_DETECT_PYTHON': ('services.ai_detect', 'python'),
-    'AI_DETECT_HOST': ('services.ai_detect', 'host'),
-    'AI_DETECT_PORT': ('services.ai_detect', 'port'),
 
     'WEB_HOST': ('services.web', 'host'),
     'WEB_PORT': ('services.web', 'port'),
@@ -213,13 +173,6 @@ _ENV_CONFIG_MAP = {
     'ARCHIVE_BACKGROUND_INTERVAL_SECONDS': ('archive', 'background_interval_seconds'),
     'ARCHIVE_READ_ENABLED': ('archive', 'read_enabled'),
     'ARCHIVE_QUERY_MAX_FILES': ('archive', 'query_max_files'),
-
-    # risk target annotation
-    'RISK_TARGET_ENABLED': ('risk_target', 'enabled'),
-    'RISK_TARGET_AUTO_DERIVE': ('risk_target', 'auto_derive'),
-    'RISK_TARGET_DERIVE_HOURS': ('risk_target', 'derive_hours'),
-    'RISK_TARGET_MIN_EVENTS': ('risk_target', 'min_events'),
-    'RISK_TARGET_MIN_SEVERITY': ('risk_target', 'min_severity'),
 
     # geoip
     'GEOIP_TIMEOUT': ('geoip', 'timeout'),
@@ -415,29 +368,6 @@ class Config:
     DB_PASS = env_str('DB_PASS', '')
     DB_NAME = env_str('DB_NAME', 'honeypot_db') or 'honeypot_db'
     DB_CHARSET = env_str('DB_CHARSET', 'utf8mb4') or 'utf8mb4'
-
-    # ============================================
-    # AI request-level attack inference service
-    # ============================================
-    AI_XSS_ENABLED = env_bool('AI_XSS_ENABLED', False)
-    AI_XSS_URL = (
-        env_str(
-            'AI_XSS_URL',
-            'http://127.0.0.1:8003/api/v1/detect'
-        ).strip()
-        or 'http://127.0.0.1:8003/api/v1/detect'
-    )
-    AI_XSS_INFO_URL = (
-        env_str('AI_XSS_INFO_URL', 'http://127.0.0.1:8003/model/info').strip()
-        or 'http://127.0.0.1:8003/model/info'
-    )
-    AI_XSS_TIMEOUT = env_float('AI_XSS_TIMEOUT', 1.0, 0.1, 10.0)
-    # Compatibility only; v2 integration does not gate on this value.
-    AI_XSS_THRESHOLD = env_float('AI_XSS_THRESHOLD', 0.90, 0.0, 1.0)
-    AI_XSS_TEXT_MAX = env_int('AI_XSS_TEXT_MAX', 5000, 128, 100000)
-    AI_XSS_FAILURE_THRESHOLD = env_int('AI_XSS_FAILURE_THRESHOLD', 3, 1, 100)
-    AI_XSS_BACKOFF_SECONDS = env_float('AI_XSS_BACKOFF_SECONDS', 30.0, 0.0, 3600.0)
-    AI_XSS_MODEL_INFO_TTL = env_int('AI_XSS_MODEL_INFO_TTL', 300, 0, 86400)
 
     # ============================================
     # 日志配置

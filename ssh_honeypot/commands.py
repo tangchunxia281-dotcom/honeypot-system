@@ -330,21 +330,6 @@ _SERVICE_ALIASES = {
     "apparmor.service": "apparmor",
     "systemd-logind": "systemd-logind",
     "systemd-logind.service": "systemd-logind",
-    # 虚拟业务主机（与 utils/decoy_profiles.py 的人设保持一致）
-    "nginx": "nginx",
-    "nginx.service": "nginx",
-    "postgresql": "postgresql",
-    "postgresql.service": "postgresql",
-    "postgres": "postgresql",
-    "redis": "redis",
-    "redis-server": "redis",
-    "redis.service": "redis",
-    "erp-api": "erp-api",
-    "erp-api.service": "erp-api",
-    "support-api": "support-api",
-    "support-api.service": "support-api",
-    "backup-worker": "backup-worker",
-    "backup-worker.service": "backup-worker",
 }
 
 _SERVICE_DESCRIPTIONS = {
@@ -359,12 +344,6 @@ _SERVICE_DESCRIPTIONS = {
     "ufw": "Uncomplicated firewall",
     "apparmor": "Load AppArmor profiles",
     "systemd-logind": "User Login Management",
-    "nginx": "A high performance web server and a reverse proxy server",
-    "postgresql": "PostgreSQL RDBMS",
-    "redis": "Advanced key-value store",
-    "erp-api": "ERP business API service",
-    "support-api": "Support portal API service",
-    "backup-worker": "Scheduled backup worker",
 }
 
 _SERVICE_PROCESS_HINTS = {
@@ -379,12 +358,6 @@ _SERVICE_PROCESS_HINTS = {
     "ufw": ["ufw"],
     "apparmor": ["apparmor"],
     "systemd-logind": ["systemd-logind"],
-    "nginx": ["nginx"],
-    "postgresql": ["postgres"],
-    "redis": ["redis-server"],
-    "erp-api": ["erp-api"],
-    "support-api": ["support-api"],
-    "backup-worker": ["backup-worker"],
 }
 
 def _normalize_cmd_for_dedup(cmd: str) -> str:
@@ -617,14 +590,15 @@ _SERVICE_DEFAULT_PROCESS = {
     "ufw": ("/lib/ufw/ufw-init start", "root", "1", None),
     "apparmor": ("/lib/apparmor/apparmor.systemd reload", "root", "1", None),
     "systemd-logind": ("/lib/systemd/systemd-logind", "root", "1", None),
-    # 虚拟业务主机：与 decoy_profiles 的服务清单对应
-    "nginx": ("nginx: master process /usr/sbin/nginx -g daemon on; master_process on;", "root", "1", 80),
-    "postgresql": ("/usr/lib/postgresql/16/bin/postgres -D /var/lib/postgresql/16/main", "postgres", "1", 5432),
-    "redis": ("/usr/bin/redis-server 127.0.0.1:6379", "redis", "1", 6379),
-    "erp-api": ("/opt/erp/bin/erp-api --port 8080", "erp", "1", 8080),
-    "support-api": ("/opt/support/bin/support-api --port 8081", "support", "1", 8081),
-    "backup-worker": ("/opt/backup/bin/backup-worker --daemon", "root", "1", None),
 }
+
+
+# Synthetic application units, rendered through the existing process/service
+# state rather than a second contradictory state engine.
+for _unit,_port in {'nginx':80,'erp-api':8080,'postgresql':5432,'redis':6379,'backup-worker':None,'support-api':8081}.items():
+    _SERVICE_DEFAULT_PROCESS[_unit]=(f'/usr/local/bin/{_unit} --foreground','root','1',_port)
+    _SERVICE_DESCRIPTIONS[_unit]='Company '+_unit
+    _SERVICE_PROCESS_HINTS[_unit]=[_unit+' --foreground']
 
 
 def _normalize_service_name(name: str) -> str:
@@ -1094,9 +1068,7 @@ def execute_command(shell, command_line: str, record_history: bool = True) -> st
     if input_file:
         in_path = shell.normalize_path(input_file)
         shell._stdin_buffer = shell.files_content.get(in_path, VIRTUAL_FILES.get(in_path, ""))
-    # 执行核心命令（经 shell 钩子进入交互审计；未知命令由模型选择封闭策略）
-    runner = getattr(shell, '_execute_single_command', None)
-    output = runner(clean_cmd) if callable(runner) else execute_single_command(shell, clean_cmd)
+    output = execute_single_command(shell, clean_cmd)
     if hasattr(shell, '_stdin_buffer'):
         shell._stdin_buffer = None
     # 记录退出码
@@ -1151,6 +1123,16 @@ def execute_command(shell, command_line: str, record_history: bool = True) -> st
 
 
 def execute_single_command(shell, command_line: str) -> str:
+    from utils.ai_interaction import command_lock, record_program
+    with command_lock(shell):
+        shell._interaction_marker = None
+        output = _execute_single_command(shell, command_line)
+        if not getattr(shell, '_interaction_marker', None):
+            record_program(shell, command_line, output)
+        return output
+
+
+def _execute_single_command(shell, command_line: str) -> str:
     """执行单个命令 (无管道/重定向)"""
     args = parse_args(command_line)
     if not args:
@@ -1203,6 +1185,14 @@ def execute_single_command(shell, command_line: str) -> str:
     if cmd in suggestions:
         return f"Command '{cmd}' not found, but can be installed with:\napt install {suggestions[cmd]}\n"
 
+    # Only unknown-command replies are delegated in round 1; output stays simulated text.
+    try:
+        from utils.local_ai import ssh_reply
+        reply = ssh_reply(shell, command_line)
+        if reply is not None:
+            return reply
+    except Exception:
+        pass
     return f"{cmdor}: command not found\n"
 
 
@@ -3601,6 +3591,16 @@ Vulnerabilities:
 
 
 def cmd_systemctl(shell, args: list) -> str:
+    if len(args)>=2:
+        service=_normalize_service_name(args[1])
+        if service in getattr(shell,'decoy_profile',{}).get('services',{}):
+            if args[0]=='status':
+                state='active (running)' if _service_running(shell,service) else 'inactive (dead)'
+                pid,_=_service_pid_cmd(shell,service)
+                return f'{service}.service - Company application\n   Loaded: loaded\n   Active: {state}\n Main PID: {pid or "-"}\n'
+            if args[0] in ('start','stop','restart'):
+                if shell.username!='root':return 'Permission denied\n'
+                _set_service_running(shell,service,args[0]!='stop');return ''
     def _color_enabled() -> bool:
         try:
             flag = str(shell.env.get('SSH_COLOR', '1')).strip().lower()

@@ -1,0 +1,22 @@
+/* One complete dark theme shared by the product, map, login and archives. */
+:root {
+  color-scheme: dark;
+  --base: #0c1420;
+  --panel: #142235;
+  --inset: #0f1c2c;
+  --line: #354b63;
+  --control-border: #66829f;
+  --text: #e3edf7;
+  --muted: #a7bbcf;
+  --accent: #74b8ff;
+  --primary: #275f9c;
+  --primary-hover: #3276ba;
+  --positive: #8cdbc0;
+  --soft-blue: #1b3551;
+  --soft-ink: #1c2c40;
+  font-family: "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+  background: var(--base);
+  color: var(--text);
+}
+body { background: var(--base); color: var(--text); }
+::selection { background: #315f8f; color: #fff; }

@@ -57,6 +57,11 @@ function createSvgIcon(pathD) {
 
 // === 全局变量 ===
 let mapChart = null;
+let _mapZoomCached = 1.10;
+let _mapGestureActive = false;
+let _mapPendingPoints = null;
+let _mapRoamTimer = null;
+let _mapPatchCount = 0;
 
 // SVG 图标定义 - 确保跨平台一致性 (Windows/Linux/Mac)
 function getActivityIcon(type) {
@@ -665,14 +670,19 @@ function formatServerLocation() {
     return normalizeLocationText(country) || '未知';
 }
 
-function getMapZoomLevel() {
+function getMapZoomLevel() { return _mapZoomCached; }
+
+function finishMapGesture() {
+    _mapGestureActive = false;
     try {
-        const opt = mapChart && mapChart.getOption ? mapChart.getOption() : null;
-        const zoom = Number(opt?.geo?.[0]?.zoom || 1);
-        return Number.isFinite(zoom) && zoom > 0 ? zoom : 1;
-    } catch (e) {
-        return 1;
-    }
+        const option = mapChart.getOption();
+        _mapZoomCached = Number(option?.geo?.[0]?.zoom || 1.10);
+    } catch (error) {}
+    const points = _mapPendingPoints || lastGeoData;
+    _mapPendingPoints = null;
+    updateMapCore(points);
+    const container = document.getElementById('worldMap');
+    if (container) { container.dataset.mapZoom = String(_mapZoomCached); container.dataset.mapPatches = String(_mapPatchCount); }
 }
 
 function classifyMapRiskLevel(eventCount, maxCount) {
@@ -731,7 +741,6 @@ if (typeof document !== 'undefined' && document?.addEventListener) {
         }
         setDemoMode(false);
         initWindowSwitcher();
-        initRiskTargets();
         updateTime();
         setInterval(updateTime, 1000);
         initCharts();
@@ -764,12 +773,12 @@ function debounce(fn, wait) {
 function initCharts() {
     const mapContainer = document.getElementById('worldMap');
     if (mapContainer) {
-        mapChart = echarts.init(mapContainer, null, { renderer: 'canvas' });
+        // Country geometry is raster-cached by the dedicated atlas module.
         // 加载本地世界地图JSON数据
         fetch('/static/js/world.json')
             .then(response => response.json())
             .then(worldJson => {
-                echarts.registerMap('world', worldJson);
+                mapChart = new CachedWorldMap(mapContainer, worldJson, COUNTRY_NAME_MAP);
                 initWorldMap();
             })
             .catch(err => {
@@ -813,198 +822,28 @@ function setupPieResizeObserver(el) {
 
 // === 初始化地图 ===
 function initWorldMap() {
-    const option = {
-        backgroundColor: 'transparent',
-        animationDurationUpdate: 0,
-        tooltip: {
-            trigger: 'item',
-            backgroundColor: 'rgba(0, 20, 40, 0.9)',
-            borderColor: '#0096ff',
-            textStyle: { color: '#fff' },
-            formatter: function(params) {
-                if (params.componentType === 'geo') {
-                    return '';
-                }
-                if ((params.seriesType === 'scatter' || params.seriesType === 'effectScatter') && params.data) {
-                    if (params.seriesName === '蜜罐服务器') {
-                        return `本机位置<br/>IP: ${escapeHtml(serverInfo.ip)}<br/>位置: ${escapeHtml(formatServerLocation())}`;
-                    }
-                    const loc = toZhLoc(params.data.location);
-                    const risk = mapRiskLabel(String(params.data.riskLevel || 'low'));
-                    return `IP: ${escapeHtml(params.data.ip)}<br/>位置: ${escapeHtml(loc)}<br/>攻击次数: ${params.data.value[2]}<br/>风险: ${risk}`;
-                }
-                if (params.seriesType === 'lines' && params.data) {
-                    const loc = toZhLoc(params.data.sourceLocation);
-                    const risk = mapRiskLabel(String(params.data.riskLevel || 'low'));
-                    const count = Number(params.data.eventCount || 0);
-                    return `攻击线<br/>来源IP: ${escapeHtml(params.data.sourceIp)}<br/>来源位置: ${escapeHtml(loc)}<br/>攻击次数: ${count}<br/>风险: ${risk}`;
-                }
-                return COUNTRY_NAME_MAP[params.name] || params.name;
-            }
-        },
-        geo: {
-            map: 'world',
-            nameMap: COUNTRY_NAME_MAP,
-            projection: {
-                project: function(point) {
-                    let lng = point[0];
-                    let lat = point[1];
-                    if (lat > 85) lat = 85;
-                    if (lat < -85) lat = -85;
-                    const x = lng;
-                    const rad = lat * Math.PI / 180;
-                    const y = -(180 / Math.PI) * Math.log(Math.tan((Math.PI / 4) + (rad / 2)));
-                    return [x, y];
-                },
-                unproject: function(point) {
-                    const x = point[0];
-                    const y = point[1];
-                    const lng = x;
-                    const lat = (360 / Math.PI) * Math.atan(Math.exp(-y * (Math.PI / 180))) - 90;
-                    return [lng, lat];
-                }
-            },
-            layoutCenter: ['50%', '64%'],
-            layoutSize: '112%',
-            center: [0, 0],
-            zoom: 1.10,
-            roam: true,
-            tooltip: { show: false },
-            scaleLimit: { min: 1.10, max: 10 },
-            label: { show: false },
-            itemStyle: {
-                areaColor: '#0a1f3d',
-                borderColor: '#0096ff',
-                borderWidth: 1,
-                shadowColor: 'rgba(0, 150, 255, 0.5)',
-                shadowBlur: 10
-            },
-            emphasis: {
-                label: { show: true, color: '#fff', fontSize: 14 },
-                itemStyle: { areaColor: '#1a3f6d' }
-            }
-        },
-        series: [
-            {
-                id: 'map_scatter',
-                name: '攻击源',
-                type: 'scatter',
-                coordinateSystem: 'geo',
-                zlevel: 2,
-                data: [],
-                symbolSize: function(val) { return computeAttackSymbolSize(Number(val?.[2] || 1), false); },
-                itemStyle: {
-                    color: function(params) { return getMapRiskColor(params?.data?.riskLevel); },
-                    opacity: 0.9
-                },
-                label: { show: false },
-                emphasis: {
-                    itemStyle: {
-                        shadowBlur: 12,
-                        shadowColor: 'rgba(255,255,255,0.35)'
-                    }
-                }
-            },
-            {
-                id: 'map_focus_points',
-                name: '重点攻击源',
-                type: 'effectScatter',
-                coordinateSystem: 'geo',
-                zlevel: 3,
-                data: [],
-                symbolSize: function(val) { return computeAttackSymbolSize(Number(val?.[2] || 1), true); },
-                showEffectOn: 'render',
-                rippleEffect: { brushType: 'stroke', scale: 3.2, period: 4 },
-                itemStyle: {
-                    color: function(params) { return getMapRiskColor(params?.data?.riskLevel); },
-                    shadowBlur: 16,
-                    shadowColor: 'rgba(255, 107, 107, 0.45)'
-                },
-                label: { show: false }
-            },
-            {
-                id: 'map_lines_low',
-                name: '攻击线-低风险',
-                type: 'lines',
-                coordinateSystem: 'geo',
-                zlevel: 2,
-                data: [],
-                polyline: false,
-                lineStyle: { color: MAP_RISK_COLORS.low, width: 1.8, opacity: 0.52, curveness: 0.2 },
-                effect: { show: false }
-            },
-            {
-                id: 'map_lines_medium',
-                name: '攻击线-中风险',
-                type: 'lines',
-                coordinateSystem: 'geo',
-                zlevel: 2,
-                data: [],
-                polyline: false,
-                lineStyle: { color: MAP_RISK_COLORS.medium, width: 1.8, opacity: 0.55, curveness: 0.2 },
-                effect: { show: true, period: 6, trailLength: 0.15, symbol: 'arrow', symbolSize: 6, color: MAP_RISK_COLORS.medium }
-            },
-            {
-                id: 'map_lines_high',
-                name: '攻击线-高风险',
-                type: 'lines',
-                coordinateSystem: 'geo',
-                zlevel: 3,
-                data: [],
-                polyline: false,
-                lineStyle: { color: MAP_RISK_COLORS.high, width: 2.2, opacity: 0.8, curveness: 0.22 },
-                effect: { show: true, period: 4, trailLength: 0.22, symbol: 'arrow', symbolSize: 8, color: MAP_RISK_COLORS.high }
-            },
-            {
-                id: 'map_server',
-                name: '蜜罐服务器',
-                type: 'effectScatter',
-                coordinateSystem: 'geo',
-                zlevel: 10,
-                z: 100,
-                data: [],
-                symbolSize: 16,
-                showEffectOn: 'render',
-                rippleEffect: { brushType: 'stroke', scale: 4.5, period: 3, color: '#ffd166' },
-                itemStyle: { color: '#f8f9fa', shadowBlur: 18, shadowColor: 'rgba(255, 209, 102, 0.75)' },
-                label: { show: true, position: 'right', formatter: '本机', color: '#ffd166', fontSize: 12, fontWeight: 'bold' }
-            },
-            {
-                id: 'map_hover_line',
-                name: '日志联动线',
-                type: 'lines',
-                coordinateSystem: 'geo',
-                zlevel: 4,
-                data: [],
-                polyline: false,
-                lineStyle: { color: MAP_HIGHLIGHT_COLOR, width: 3, opacity: 0.92, curveness: 0.22 },
-                effect: { show: true, period: 3.2, trailLength: 0.28, symbol: 'arrow', symbolSize: 10, color: MAP_HIGHLIGHT_COLOR }
-            },
-            {
-                id: 'map_hover_point',
-                name: '日志联动点',
-                type: 'effectScatter',
-                coordinateSystem: 'geo',
-                zlevel: 5,
-                data: [],
-                symbolSize: function(val) {
-                    const count = Math.max(1, Number(val?.[2] || 1));
-                    return Math.min(MAP_SYMBOL_MAX + 8, computeAttackSymbolSize(count, true) + 4);
-                },
-                showEffectOn: 'render',
-                rippleEffect: { brushType: 'stroke', scale: 4.2, period: 3 },
-                itemStyle: { color: MAP_HIGHLIGHT_COLOR, shadowBlur: 24, shadowColor: MAP_HIGHLIGHT_SHADOW },
-                label: { show: false }
-            }
-        ]
-    };
 
     if (mapChart) {
-        mapChart.setOption(option, true);
+        const zoomIn = document.getElementById('mapZoomIn'),zoomOut=document.getElementById('mapZoomOut'),effects=document.getElementById('mapEffects');
+        zoomIn?.addEventListener('click',()=>mapChart.scaleBy(1.25));
+        zoomOut?.addEventListener('click',()=>mapChart.scaleBy(.8));
+        effects?.addEventListener('click',()=>{mapChart.effect=!mapChart.effect;effects.setAttribute('aria-pressed',String(mapChart.effect));effects.textContent=mapChart.effect?'关闭动态特效':'开启动态特效';mapChart.schedule();});
         mapChart.off('georoam');
-        mapChart.on('georoam', debounce(function() {
-            updateMapCore(lastGeoData);
-        }, 80));
+        mapChart.on('georoam', function() {
+            _mapGestureActive = true;
+            clearTimeout(_mapRoamTimer);
+            _mapRoamTimer = setTimeout(finishMapGesture, 180);
+        });
+        const zr = mapChart.getZr();
+        zr.on('mousedown', function() { _mapGestureActive = true; });
+        zr.on('mouseup', function() { clearTimeout(_mapRoamTimer); _mapRoamTimer = setTimeout(finishMapGesture, 100); });
+        zr.on('globalout', function() { if (_mapGestureActive) { clearTimeout(_mapRoamTimer); _mapRoamTimer = setTimeout(finishMapGesture, 100); } });
+        const reset = document.getElementById('mapReset');
+        if (reset) reset.addEventListener('click', function() {
+            _mapZoomCached = 1.10;
+            mapChart.reset();
+            finishMapGesture();
+        });
         updateMapCore(lastGeoData);
     }
 }
@@ -1053,24 +892,13 @@ function initPieChart() {
     setPieData(0, 0);
 }
 
-function setPieData(ssh, web) {
+function setPieData(ssh, web, extra = {}) {
     if (!pieChart) return;
-    const s = Number(ssh || 0);
-    const w = Number(web || 0);
-    lastTypeCounts = { SSH: s, Web: w };
-
-    const total = s + w;
-    const renderSSH = total === 0 ? 1 : s;
-    const renderWeb = total === 0 ? 1 : w;
-
-    pieChart.setOption({
-        series: [{
-            data: [
-                { value: renderSSH, realValue: s, name: 'SSH', itemStyle: { color: '#ff6b6b' } },
-                { value: renderWeb, realValue: w, name: 'Web', itemStyle: { color: '#2ed573' } }
-            ]
-        }]
-    });
+    const counts={SSH:Number(ssh||0),Web:Number(web||0),MySQL:Number(extra.MySQL||extra.MYSQL||0),Redis:Number(extra.Redis||extra.REDIS||0),FTP:Number(extra.FTP||0),Telnet:Number(extra.Telnet||extra.TELNET||0)};
+    lastTypeCounts=counts;
+    const colors=['#ff6b6b','#2ed573','#74b8ff','#bd9cf2','#eeb96b','#65c9d0'];
+    const data=Object.entries(counts).filter(([k,v])=>v>0).map(([name,value],i)=>({name,value,realValue:value,itemStyle:{color:colors[Object.keys(counts).indexOf(name)]}}));
+    pieChart.setOption({series:[{data:data.length?data:[{name:'暂无事件',value:1,realValue:0,itemStyle:{color:'#243c57'}}]}]});
 }
 
 function updateTime() {
@@ -1159,6 +987,7 @@ function mapEventTypeToActivityType(eventType, source) {
     const evt = String(eventType || '').trim().toLowerCase();
     const src = String(source || '').trim().toLowerCase();
     // 先尊重后端来源，避免 Web 事件因命令关键词被误归类为 SSH
+    if (['mysql','redis','ftp','telnet'].includes(src)) return src.toUpperCase();
     if (src === 'web') return 'Web';
     if (src === 'ssh') return 'SSH';
     if (evt.includes('scp')) return 'SCP-Capture';
@@ -1270,7 +1099,7 @@ function buildStatsFromEventStats(eventStats, geoPoints) {
     let sshTotal = Number(bySource.ssh || 0);
     let webTotal = Number(bySource.web || 0);
 
-    if (sshTotal === 0 && webTotal === 0 && topTypes.length > 0) {
+    if (Object.keys(bySource).length === 0 && sshTotal === 0 && webTotal === 0 && topTypes.length > 0) {
         topTypes.forEach(item => {
             const count = Number(item?.count || 0);
             if (!count) return;
@@ -1295,7 +1124,7 @@ function buildStatsFromEventStats(eventStats, geoPoints) {
         total: total,
         by_type: {
             SSH: sshTotal,
-            Web: webTotal
+            Web: webTotal, MySQL: Number(bySource.mysql||0), Redis: Number(bySource.redis||0), FTP: Number(bySource.ftp||0), Telnet: Number(bySource.telnet||0)
         },
         top_ips: topIps,
         unique_ips: Number(data.unique_ips || topIps.length || 0)
@@ -1359,6 +1188,7 @@ function updateStats(stats) {
 
     animateNumber('sshAttacks', sshCount);
     animateNumber('webAttacks', webCount);
+    animateNumber('otherProtocolAttacks', ['MySQL','Redis','FTP','Telnet','MYSQL','REDIS','TELNET'].reduce((n,k)=>n+Number(raw[k]||0),0));
     animateNumber('uniqueIPs', Number(stats.unique_ips || stats.top_ips?.length || 0));
 
     const badge = document.getElementById('demoBadge');
@@ -1387,7 +1217,7 @@ function updatePieChart(byType) {
     const agg = aggregateSshWebActivityCounts(byType);
     const sshCount = agg.sshCount;
     const webCount = agg.webCount;
-    setPieData(sshCount, webCount);
+    setPieData(sshCount, webCount, byType);
 }
 
 function updateTopList(topIps) {
@@ -1600,68 +1430,6 @@ function parseExtraJsonMaybe(raw) {
     }
 }
 
-function extractAiLogMeta(log) {
-    const data = log && typeof log === 'object' ? log : {};
-    const extra = parseExtraJsonMaybe(data.extra);
-    const ai = extra && typeof extra.ai === 'object' ? extra.ai : null;
-    if (!ai) return null;
-
-    const attackType = String(
-        ai.attack_type || ai.model_label || ''
-    ).trim().toLowerCase();
-    const allowedTypes = new Set([
-        'xss',
-        'sqli',
-        'path_traversal',
-        'sensitive_path',
-        'scanner',
-        'normal'
-    ]);
-    if (!allowedTypes.has(attackType)) return null;
-
-    const confidence = Number(ai.confidence);
-    if (!Number.isFinite(confidence) || confidence < 0 || confidence > 1) {
-        return null;
-    }
-
-    const attackProb = Number(ai.attack_prob);
-    if (!Number.isFinite(attackProb) || attackProb < 0 || attackProb > 1) {
-        return null;
-    }
-
-    // 显式优先使用服务端"生效加分"：模型判 normal 时该值为 0，
-    // 而 extra.ai.ai_points 仍是模型原始概率映射值。
-    const effectivePoints = Number(extra.ai_points);
-    const aiPoints = Number.isFinite(effectivePoints) && effectivePoints >= 0 && effectivePoints <= 25
-        ? effectivePoints
-        : Number(ai.ai_points);
-    if (!Number.isFinite(aiPoints) || aiPoints < 0 || aiPoints > 25) {
-        return null;
-    }
-
-    const isAttack = ai.is_attack === true;
-    if (isAttack !== (attackType !== 'normal')) return null;
-
-    const reasons = Array.isArray(ai.reasons)
-        ? ai.reasons.map(value => String(value || '').trim()).filter(Boolean)
-        : [];
-    const signals = Array.isArray(ai.signals) ? ai.signals : [];
-
-    return {
-        attackType,
-        isAttack,
-        attackProb,
-        aiPoints,
-        confidence,
-        reasons,
-        signals,
-        modelLabel: String(ai.model_label || '').trim(),
-        applied: extra.ai_applied === true || aiPoints > 0,
-        finalSource: String(extra.final_source || '').trim().toLowerCase(),
-        highRisk: ai.high_risk === true
-    };
-}
-
 function buildRealtimeLogHoverContent(log, displayType, levelText, normalizedTime, payloadFull) {
     const data = log && typeof log === 'object' ? log : {};
     const extra = parseExtraJsonMaybe(data.extra);
@@ -1686,37 +1454,6 @@ function buildRealtimeLogHoverContent(log, displayType, levelText, normalizedTim
     if (signals.length) {
         const signalText = formatDetailBulletLines(signals);
         if (signalText) lines.push(['命中信号', signalText]);
-    }
-
-    const aiMeta = extractAiLogMeta(data);
-    if (aiMeta) {
-        lines.push([
-            'AI判定',
-            aiMeta.attackType === 'normal'
-                ? '正常'
-                : aiMeta.attackType.toUpperCase()
-        ]);
-        lines.push([
-            'AI攻击概率',
-            `${(aiMeta.attackProb * 100).toFixed(1)}%`
-        ]);
-        lines.push(['AI加分', `+${aiMeta.aiPoints}`]);
-        lines.push([
-            'AI置信度',
-            `${(aiMeta.confidence * 100).toFixed(1)}%`
-        ]);
-        if (aiMeta.reasons.length) {
-            lines.push(['AI原因', aiMeta.reasons.join('\n')]);
-        }
-        if (aiMeta.modelLabel) {
-            lines.push(['模型标签', aiMeta.modelLabel]);
-        }
-        lines.push([
-            '最终判定',
-            aiMeta.finalSource === 'rule+ai'
-                ? '规则 + AI 加分'
-                : '原规则结果'
-        ]);
     }
 
     const ua = String(extra?.ua || '').trim();
@@ -1827,44 +1564,6 @@ function createLogItem(log, logId, isNew) {
     ipDiv.style.margin = '3px 0';
     ipDiv.textContent = log.src_ip || '-';
 
-    const aiMeta = extractAiLogMeta(log);
-    let aiDiv = null;
-    if (aiMeta) {
-        aiDiv = document.createElement('div');
-        aiDiv.style.display = 'inline-flex';
-        aiDiv.style.alignItems = 'center';
-        aiDiv.style.margin = '0 0 3px 0';
-        aiDiv.style.padding = '1px 6px';
-        aiDiv.style.borderRadius = '8px';
-        aiDiv.style.fontSize = '10px';
-        aiDiv.style.fontWeight = '600';
-        aiDiv.style.width = 'fit-content';
-
-        const aiDisplayType = aiMeta.attackType === 'normal'
-            ? 'Normal'
-            : aiMeta.attackType.toUpperCase();
-
-        if (aiMeta.isAttack && aiMeta.applied) {
-            aiDiv.textContent =
-                `AI ${aiDisplayType} +${aiMeta.aiPoints}`;
-            aiDiv.style.color = '#00d4ff';
-            aiDiv.style.background = 'rgba(0, 212, 255, 0.12)';
-            aiDiv.style.border = '1px solid rgba(0, 212, 255, 0.45)';
-        } else if (!aiMeta.isAttack) {
-            aiDiv.textContent =
-                `AI Normal +${aiMeta.aiPoints}`;
-            aiDiv.style.color = '#2ed573';
-            aiDiv.style.background = 'rgba(46, 213, 115, 0.10)';
-            aiDiv.style.border = '1px solid rgba(46, 213, 115, 0.35)';
-        } else {
-            aiDiv.textContent =
-                `AI ${aiDisplayType} +0`;
-            aiDiv.style.color = '#ffa502';
-            aiDiv.style.background = 'rgba(255, 165, 2, 0.10)';
-            aiDiv.style.border = '1px solid rgba(255, 165, 2, 0.35)';
-        }
-    }
-
     const payloadDiv = document.createElement('div');
     payloadDiv.style.color = '#888';
     payloadDiv.style.fontSize = '100%';
@@ -1874,9 +1573,7 @@ function createLogItem(log, logId, isNew) {
 
     const hoverContent = buildRealtimeLogHoverContent(log, displayType, levelText, normalizedTime, payloadFull);
 
-    item.append(header, ipDiv);
-    if (aiDiv) item.appendChild(aiDiv);
-    item.appendChild(payloadDiv);
+    item.append(header, ipDiv, payloadDiv);
     bindLogMapHover(item);
     bindPanelDetailHover(item, function() { return hoverContent; });
     return item;
@@ -2835,6 +2532,7 @@ function detectThreatLevel(type, p, severity) {
 // 地图绘制核心逻辑
 function updateMapCore(geoPoints) {
     if (!mapChart) return;
+    if (_mapGestureActive) { _mapPendingPoints = geoPoints; return; }
 
     const focusIpForBuild = getMapFocusIp();
     const points = (Array.isArray(geoPoints) ? geoPoints : []).filter(function(p) {
@@ -3004,6 +2702,7 @@ function updateMapCore(geoPoints) {
 
     if (baseChanged) {
         _lastMapBaseRenderKey = baseRenderKey;
+        _mapPatchCount++;
         mapChart.setOption({
             series: [
                 { id: 'map_scatter', data: scatter },
@@ -3466,317 +3165,6 @@ function updateSessionAnalysis(sessions) {
 }
 
 // 行为分析随主刷新周期自动更新
-
-
-// ==================== 风险目标标注 ====================
-const RISK_TARGET_POLL_INTERVAL_MS = 20000;
-const RISK_TARGET_RISK_COLORS = {
-    critical: '#ff2d55',
-    high: '#ff4757',
-    medium: '#ffa502',
-    low: '#2ed573',
-    unknown: '#6a8caf'
-};
-const RISK_TARGET_RISK_LABELS = {
-    critical: '严重',
-    high: '高',
-    medium: '中',
-    low: '低',
-    unknown: '未知'
-};
-const RISK_TARGET_STATUS_LABELS = {
-    watching: '观察中',
-    banned: '已封禁',
-    handled: '已处置'
-};
-let _riskTargetsCache = [];
-let _riskTargetFetchInFlight = false;
-
-function getDashboardCsrfToken() {
-    const meta = document.querySelector('meta[name="csrf-token"]');
-    if (meta && meta.getAttribute('content')) return meta.getAttribute('content');
-    const input = document.querySelector('input[name="csrf_token"]');
-    if (input && input.value) return input.value;
-    return '';
-}
-
-function riskTargetFetchJson(url, options) {
-    const opts = options || {};
-    return fetch(url, opts).then(function(res) {
-        if (!res.ok) throw new Error('http_' + res.status);
-        return res.json();
-    });
-}
-
-function fetchRiskTargets() {
-    if (typeof document !== 'undefined' && document.hidden) return;
-    if (_riskTargetFetchInFlight) return;
-    _riskTargetFetchInFlight = true;
-    const searchEl = document.getElementById('riskTargetSearch');
-    const kw = encodeURIComponent((searchEl && searchEl.value || '').trim());
-    riskTargetFetchJson('/api/risk_targets?limit=200&q=' + kw, { cache: 'no-store' })
-        .then(function(resp) {
-            const list = resp && resp.code === 0 && Array.isArray(resp.data) ? resp.data : [];
-            _riskTargetsCache = list.slice();
-            updateRiskTargets(list);
-        })
-        .catch(function() {
-            updateRiskTargets(_riskTargetsCache);
-        })
-        .finally(function() { _riskTargetFetchInFlight = false; });
-}
-
-function updateRiskTargets(list) {
-    const container = document.getElementById('riskTargetList');
-    if (!container) return;
-    const items = Array.isArray(list) ? list : [];
-    if (!items.length) {
-        setEmptyMessage(container, '暂无风险目标，点击「识别目标」自动生成', 8);
-        return;
-    }
-    clearElement(container);
-    items.forEach(function(item) {
-        container.appendChild(buildRiskTargetRow(item));
-    });
-}
-
-function buildRiskTargetRow(item) {
-    const id = item.id;
-    const ip = String(item.target_value || '').trim();
-    const risk = String(item.risk_level || 'medium').toLowerCase();
-    const status = String(item.status || 'watching').toLowerCase();
-    const color = RISK_TARGET_RISK_COLORS[risk] || RISK_TARGET_RISK_COLORS.medium;
-    const riskLabel = RISK_TARGET_RISK_LABELS[risk] || risk;
-    const statusLabel = RISK_TARGET_STATUS_LABELS[status] || status;
-    const source = String(item.source || 'auto').toLowerCase();
-    const tags = Array.isArray(item.tags) ? item.tags : [];
-    const note = String(item.note || '').trim();
-    const location = String(item.location || '未知');
-
-    const row = document.createElement('div');
-    row.className = 'log-item';
-    row.style.borderLeft = '3px solid ' + color;
-    row.dataset.riskTargetId = String(id || '');
-
-    const header = document.createElement('div');
-    header.style.display = 'flex';
-    header.style.justifyContent = 'space-between';
-    header.style.alignItems = 'center';
-    header.style.fontSize = '12px';
-
-    const left = document.createElement('div');
-    left.style.display = 'flex';
-    left.style.alignItems = 'center';
-    left.style.gap = '6px';
-
-    const ipSpan = document.createElement('span');
-    ipSpan.style.color = '#00d4ff';
-    ipSpan.textContent = ip || '-';
-
-    const riskBadge = document.createElement('span');
-    riskBadge.style.padding = '1px 6px';
-    riskBadge.style.borderRadius = '10px';
-    riskBadge.style.fontSize = '10px';
-    riskBadge.style.color = color;
-    riskBadge.style.background = 'rgba(255,255,255,0.06)';
-    riskBadge.textContent = riskLabel;
-
-    const statusBadge = document.createElement('span');
-    statusBadge.style.padding = '1px 6px';
-    statusBadge.style.borderRadius = '10px';
-    statusBadge.style.fontSize = '10px';
-    statusBadge.style.color = status === 'banned' ? '#ffa502' : (status === 'handled' ? '#7bed9f' : '#9fc6e7');
-    statusBadge.style.background = 'rgba(255,255,255,0.06)';
-    statusBadge.textContent = statusLabel;
-
-    left.append(ipSpan, riskBadge, statusBadge);
-
-    const actions = document.createElement('div');
-    actions.style.display = 'flex';
-    actions.style.gap = '6px';
-
-    const editBtn = document.createElement('button');
-    editBtn.type = 'button';
-    editBtn.textContent = '编辑';
-    editBtn.style.cssText = 'border:1px solid rgba(0,150,255,0.4);background:rgba(0,150,255,0.12);color:#9fc6e7;border-radius:3px;font-size:10px;padding:1px 6px;cursor:pointer;';
-    editBtn.addEventListener('click', function() { openRiskTargetModal(item); });
-
-    const delBtn = document.createElement('button');
-    delBtn.type = 'button';
-    delBtn.textContent = '删除';
-    delBtn.style.cssText = 'border:1px solid rgba(255,77,79,0.4);background:rgba(255,77,79,0.12);color:#ff6b6b;border-radius:3px;font-size:10px;padding:1px 6px;cursor:pointer;';
-    delBtn.addEventListener('click', function() { deleteRiskTargetById(id, ip); });
-
-    actions.append(editBtn, delBtn);
-    header.append(left, actions);
-
-    const meta = document.createElement('div');
-    meta.style.color = '#6a8caf';
-    meta.style.fontSize = '10px';
-    meta.style.marginTop = '3px';
-    meta.textContent = [
-        location !== '未知' ? location : '',
-        `${item.event_count || 0} 事件`,
-        source === 'manual' ? '人工标注' : '自动识别'
-    ].filter(Boolean).join(' · ') || '-';
-
-    row.append(header, meta);
-
-    if (tags.length) {
-        const tagRow = document.createElement('div');
-        tagRow.style.display = 'flex';
-        tagRow.style.flexWrap = 'wrap';
-        tagRow.style.gap = '3px';
-        tagRow.style.marginTop = '3px';
-        tags.slice(0, 5).forEach(function(t) {
-            const tSpan = document.createElement('span');
-            tSpan.style.padding = '0 5px';
-            tSpan.style.borderRadius = '3px';
-            tSpan.style.fontSize = '9px';
-            tSpan.style.color = '#8fd3ff';
-            tSpan.style.background = 'rgba(0,212,255,0.12)';
-            tSpan.textContent = String(t || '').trim();
-            tagRow.appendChild(tSpan);
-        });
-        row.appendChild(tagRow);
-    }
-
-    if (note) {
-        const noteDiv = document.createElement('div');
-        noteDiv.style.color = '#7c98b6';
-        noteDiv.style.fontSize = '10px';
-        noteDiv.style.marginTop = '3px';
-        noteDiv.style.wordBreak = 'break-word';
-        noteDiv.style.overflowWrap = 'anywhere';
-        noteDiv.textContent = note;
-        row.appendChild(noteDiv);
-    }
-
-    return row;
-}
-
-function openRiskTargetModal(item) {
-    const modal = document.getElementById('riskTargetModal');
-    const title = document.getElementById('riskTargetModalTitle');
-    const idEl = document.getElementById('riskTargetId');
-    const valEl = document.getElementById('riskTargetValue');
-    const levelEl = document.getElementById('riskTargetLevel');
-    const statusEl = document.getElementById('riskTargetStatus');
-    const tagsEl = document.getElementById('riskTargetTags');
-    const noteEl = document.getElementById('riskTargetNote');
-    if (!modal) return;
-    const editing = !!(item && item.id != null);
-    title.textContent = editing ? '编辑风险目标' : '新增风险目标';
-    idEl.value = editing ? String(item.id) : '';
-    valEl.value = editing ? String(item.target_value || '') : '';
-    levelEl.value = editing ? String(item.risk_level || 'medium').toLowerCase() : 'medium';
-    statusEl.value = editing ? String(item.status || 'watching').toLowerCase() : 'watching';
-    tagsEl.value = editing ? (Array.isArray(item.tags) ? item.tags.join(',') : String(item.tags || '')) : '';
-    noteEl.value = editing ? String(item.note || '') : '';
-    modal.style.display = 'flex';
-}
-
-function closeRiskTargetModal() {
-    const modal = document.getElementById('riskTargetModal');
-    if (modal) modal.style.display = 'none';
-}
-
-function submitRiskTarget() {
-    const id = String(document.getElementById('riskTargetId').value || '').trim();
-    const target_value = String(document.getElementById('riskTargetValue').value || '').trim();
-    if (!target_value) {
-        alert('请填写目标 IP');
-        return;
-    }
-    const payload = {
-        target_value: target_value,
-        risk_level: document.getElementById('riskTargetLevel').value,
-        status: document.getElementById('riskTargetStatus').value,
-        tags: String(document.getElementById('riskTargetTags').value || '').split(',').map(function(s) { return s.trim(); }).filter(Boolean),
-        note: String(document.getElementById('riskTargetNote').value || '')
-    };
-    const token = getDashboardCsrfToken();
-    const isEdit = id !== '';
-    const url = isEdit ? ('/api/risk_targets/' + encodeURIComponent(id)) : '/api/risk_targets';
-    riskTargetFetchJson(url, {
-        method: 'POST',
-        cache: 'no-store',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
-        body: JSON.stringify(payload)
-    }).then(function(resp) {
-        if (resp && resp.code === 0) {
-            closeRiskTargetModal();
-            fetchRiskTargets();
-        } else {
-            alert((resp && resp.msg) || '保存失败');
-        }
-    }).catch(function() {
-        alert('请求失败，请重试');
-    });
-}
-
-function deleteRiskTargetById(id, ip) {
-    if (id == null || id === '') return;
-    if (!confirm('确定删除风险目标 ' + (ip || '') + ' 吗？')) return;
-    const token = getDashboardCsrfToken();
-    riskTargetFetchJson('/api/risk_targets/' + encodeURIComponent(String(id)) + '/delete', {
-        method: 'POST',
-        cache: 'no-store',
-        headers: { 'X-CSRF-Token': token }
-    }).then(function(resp) {
-        if (resp && resp.code === 0) {
-            fetchRiskTargets();
-        } else {
-            alert((resp && resp.msg) || '删除失败');
-        }
-    }).catch(function() {
-        alert('请求失败，请重试');
-    });
-}
-
-function deriveRiskTargets() {
-    const btn = document.getElementById('riskTargetDeriveBtn');
-    if (btn) { btn.disabled = true; btn.textContent = '识别中…'; }
-    const token = getDashboardCsrfToken();
-    riskTargetFetchJson('/api/risk_targets/derive', {
-        method: 'POST',
-        cache: 'no-store',
-        headers: { 'X-CSRF-Token': token }
-    }).then(function() {
-        fetchRiskTargets();
-    }).catch(function() {
-        alert('识别失败，请重试');
-    }).finally(function() {
-        if (btn) { btn.disabled = false; btn.textContent = '识别目标'; }
-    });
-}
-
-function initRiskTargets() {
-    const addBtn = document.getElementById('riskTargetAddBtn');
-    const deriveBtn = document.getElementById('riskTargetDeriveBtn');
-    const searchInput = document.getElementById('riskTargetSearch');
-    const saveBtn = document.getElementById('riskTargetSave');
-    const cancelBtn = document.getElementById('riskTargetCancel');
-    const modal = document.getElementById('riskTargetModal');
-
-    if (addBtn) addBtn.addEventListener('click', function() { openRiskTargetModal(null); });
-    if (deriveBtn) deriveBtn.addEventListener('click', deriveRiskTargets);
-    if (searchInput) {
-        searchInput.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') fetchRiskTargets();
-        });
-        searchInput.addEventListener('input', debounce(fetchRiskTargets, 500));
-    }
-    if (saveBtn) saveBtn.addEventListener('click', submitRiskTarget);
-    if (cancelBtn) cancelBtn.addEventListener('click', closeRiskTargetModal);
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) closeRiskTargetModal();
-        });
-    }
-    fetchRiskTargets();
-    setInterval(fetchRiskTargets, RISK_TARGET_POLL_INTERVAL_MS);
-}
 
 
 

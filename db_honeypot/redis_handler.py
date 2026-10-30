@@ -117,7 +117,8 @@ class RedisHoneypot:
     # ---------------- RESP 读取 ----------------
     def _read_command(self, rfile):
         """读取一条 RESP2/内联命令，返回小写命令名 + 参数(bytes)列表；EOF 返回 None。"""
-        line = rfile.readline()
+        line = rfile.readline(4097)
+        if len(line)>4096:raise ValueError("RESP line limit")
         if not line:
             return None
         line = line.rstrip(b'\r\n')
@@ -128,14 +129,19 @@ class RedisHoneypot:
                 count = int(line[1:])
             except ValueError:
                 return ('', [])
-            args = []
-            for _ in range(max(count, 0)):
-                hdr = rfile.readline().rstrip(b'\r\n')
+            if not 1<=count<=64:raise ValueError("RESP argument limit")
+            args = [];total=0
+            for _ in range(count):
+                raw_header=rfile.readline(65)
+                if len(raw_header)>64:raise ValueError('RESP header limit')
+                hdr = raw_header.rstrip(b'\r\n')
                 if not hdr or hdr[:1] != b'$':
                     return ('', [])
                 size = int(hdr[1:])
-                data = rfile.read(size) if size >= 0 else b''
-                rfile.read(2)  # CRLF
+                total+=max(size,0)
+                if not 0<=size<=65536 or total>65536:raise ValueError('RESP bulk limit')
+                data = rfile.read(size)
+                if len(data)!=size or rfile.read(2)!=b'\r\n':raise ValueError('RESP truncated bulk')
                 args.append(data)
             if not args:
                 return ('', [])

@@ -196,17 +196,18 @@ class Demo:
         guide=folder/(self.run_id+'.md')
         guide.write_text('# 本机蜜罐混合演示记录\n\n运行标记：`'+self.run_id+'`\n\n'+
             '\n'.join(f'- {r["phase"]} / {r["label"]}：{r["status"]}'+('，HTTP '+str(r['http_status']) if 'http_status' in r else '') for r in self.records)+
-            '\n\n## 展示 AI\n\n登录管理后台 /ai/analysis，等待新记录索引和报告完成。\n'+
-            '问答来源填写 127.0.0.1，关键词填写本次运行标记。最多检索8条，模型选取最多6条代表证据。\n'+
+            '\n\n## 展示流程\n\n登录管理后台 /workspace/overview，在安全概览点击“索引新记录”。\n'+
+            '进入“攻击事件”，展开范围筛选，来源填写 127.0.0.1，关键词填写本次运行标记。\n'+
             '建议问：这些输入可能有什么目的？哪些证据支持判断？哪些结论不能确认？\n'+
             'AI 是否实际参与，应检查后台的调用编号、完成状态和引用。\n\n'+
             '## 测试最新调查功能\n\n'+
-            '1. 打开完成的 AI 报告，点击“加入调查工作台”，建立调查。\n'+
-            '2. 关联同次演示的另一份报告，检查原规则、AI风险和证据快照。\n'+
-            '3. 点击“让 AI 分析这份调查”，问“攻击过程有哪些阶段？下一步复核什么？”\n'+
-            '4. 将状态设为“调查中”，保存笔记，再改为“已结案”，查看版本与操作历史。\n'+
-            '5. 导出调查记录；在团队工作台查看关联图、分歧复核、周期报告与检测评测。\n'+
-            '6. 首页悬浮国家、拖动、缩放和重置地图；国家提示与来源联动应继续可用。\n',encoding='utf-8')
+            '1. 选中一条事件，并排核对规则、AI及人工意见；没有AI结果不表示正常。\n'+
+            '2. 点击“查看所属会话”，检查同一采集会话内的输入；虚拟交互会话编号另行展示。\n'+
+            '3. 点击“加入新调查”，输入标题建立调查；在“证据调查”核对建案时的证据快照。\n'+
+            '4. 打开“提问与补查”，问“攻击过程有哪些阶段？哪些证据不足？”，核对真实引用。\n'+
+            '5. 在“人工处理与导出”保存调查状态和笔记并导出；在“系统与评测”查看调用与效果统计。\n'+
+            '6. 未启用模型时展示程序事实与备用处理，不能把备用响应或历史记录说成实时AI生成。\n'+
+            '7. 安全概览中的态势大屏可用于检查国家提示、拖动、缩放与视角重置。\n',encoding='utf-8')
         return path,guide
 
 
@@ -254,8 +255,8 @@ def main(argv=None):
         demo.client.close();path,guide=demo.save(args.output)
         print('结果：'+str(path.resolve()),flush=True)
         print('展示提示：'+str(guide.resolve()),flush=True)
-        print(f'后台：http://127.0.0.1:{args.dashboard_port}/ai/analysis',flush=True)
-        print('先等待索引和报告，再在问答中按运行标记筛选。请勿为刷数量连续重跑。',flush=True)
+        print(f'后台：http://127.0.0.1:{args.dashboard_port}/workspace/overview',flush=True)
+        print('先索引新记录，再按运行标记筛选攻击事件，沿会话建立证据调查。请勿为刷数量连续重跑。',flush=True)
 
 
 if __name__=='__main__':

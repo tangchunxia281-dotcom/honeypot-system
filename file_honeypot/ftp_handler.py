@@ -102,7 +102,8 @@ class FTPHoneypot:
         self.conn.sendall(data)
 
     def _read_command(self, rfile) -> str:
-        line = rfile.readline()
+        line = rfile.readline(4097)
+        if len(line)>4096:raise ValueError("FTP command exceeds limit")
         if not line:
             return ''
         return line.decode('utf-8', errors='replace').strip()
@@ -129,7 +130,7 @@ class FTPHoneypot:
 
     @staticmethod
     def _local_ipv4(bind_ip: str) -> str:
-        if bind_ip and bind_ip not in ('0.0.0.0', '::', '127.0.0.1'):
+        if bind_ip and bind_ip not in ('0.0.0.0', '::'):
             return bind_ip
         try:
             probe = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -154,7 +155,10 @@ class FTPHoneypot:
         """按当前状态建立数据连接，返回 socket（失败返回 None）。"""
         if self._pasv_sock is not None:
             try:
-                data, _ = self._pasv_sock.accept()
+                data, peer = self._pasv_sock.accept()
+                if peer[0] != self.conn.getpeername()[0]:
+                    data.close()
+                    return None
                 return data
             except OSError:
                 return None
@@ -341,25 +345,9 @@ class FTPHoneypot:
 
     # ---------------- 主动/被动数据 ----------------
     def _cmd_port(self, arg: str, extended: bool) -> bool:
-        try:
-            if extended:
-                # EPRT: |family|address|port|  family 1=IPv4 2=IPv6
-                fields = arg.strip().strip('|').split('|')
-                if len(fields) != 3:
-                    raise ValueError
-                host = fields[1]
-                port = int(fields[2])
-            else:
-                nums = [int(x) for x in arg.split(',')]
-                if len(nums) != 6:
-                    raise ValueError
-                host = '.'.join(str(x) for x in nums[:4])
-                port = (nums[4] << 8) + nums[5]
-            self._active_addr = (host, port)
-            self._close_pasv_listener()
-            self._send('200 PORT command successful. Consider using PASV.')
-        except (ValueError, OSError):
-            self._send('500 Illegal PORT command.')
+        self._active_addr = None
+        self._close_pasv_listener()
+        self._send('502 Active data connections disabled. Use PASV or EPSV.')
         return True
 
     def _cmd_list(self, names_only: bool = False) -> bool:

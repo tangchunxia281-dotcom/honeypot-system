@@ -1,19 +1,8 @@
 <button class="nav-toggle" id="navToggle" aria-controls="aiSidebar" aria-expanded="false">☰ 导航</button>
-<aside class="ai-sidebar" id="aiSidebar" aria-label="AI 工作区导航">
-  <a class="workspace-brand" href="{{ url_for('ai_analysis_page') }}"><span class="brand-dot"></span>蜜罐 · AI 工作区</a>
-  <p class="nav-caption">观察 → 研判 → 调查</p>
-  <nav>
-    {% for endpoint,label,icon in [('dashboard','态势大屏','◉'),('ai_analysis_page','日志分析与问答','▤'),('ai_team_page','团队研判工作台','⬡'),('ai_investigations_page','调查工作台','◇'),('ai_detection_page','规则与 AI 对照','⇄'),('ai_interactions_page','会话交互回放','↺'),('ai_monitor','模型运行状态','◌')] %}
-    <a class="workspace-link {{ 'active' if request.endpoint==endpoint else '' }}" href="{{ url_for(endpoint) }}" {% if request.endpoint==endpoint %}aria-current="page"{% endif %}><span>{{ icon }}</span>{{ label }}</a>
-    {% endfor %}
-    <a class="workspace-link" href="{{ url_for('ai_center_bridge') }}">⬡ 团队数据中心</a>
-    <a class="workspace-link" href="{{ url_for('ai_center_bridge') }}#active">⌕ 主动补查证据</a>
-    <a class="workspace-link" href="{{ url_for('ai_center_bridge') }}#story">↝ 攻击故事线</a>
-    <a class="workspace-link" href="{{ url_for('ai_center_bridge') }}#effects">▥ AI 效果面板</a>
-  </nav>
-  {% if request.endpoint=='ai_analysis_page' %}
-  <div class="nav-section"><p class="nav-caption">当前页面</p><a href="#overview" data-section="overview">总览</a><a href="#reportSection" data-section="reportSection">分析报告</a><a href="#chatSection" data-section="chatSection">向 AI 提问</a><a href="#coverageSection" data-section="coverageSection">索引与归档</a></div>
-  <div class="nav-section nav-actions"><p class="nav-caption">运行操作</p><button id="scan">分析新记录</button><button id="mode">交互演示模式</button><button id="recover">检查模型并恢复</button></div>
-  {% endif %}
-  <div class="nav-foot"><p>AI 结论有证据可追溯。<br>规则、AI、人工意见独立保存。</p><button id="backTop">↑ 返回顶部</button></div>
-</aside>
+<aside class="ai-sidebar" id="aiSidebar" aria-label="主要功能"><a class="workspace-brand" href="/workspace/overview"><span class="brand-dot"></span>蜜罐分析台</a><p class="nav-caption">证据工作区</p>
+{% set current = request.view_args.get('view','') if request.view_args else '' %}
+{% if not current %}{% set current = {'dashboard':'overview','ai_detection_page':'events','ai_interactions_page':'sessions','ai_workbench_page':'events','ai_analysis_page':'investigate','ai_investigations_page':'investigate','local_page':'investigate','ai_monitor':'settings'}.get(request.endpoint,'') %}{% endif %}
+{% if request.endpoint=='ai_workbench_page' %}{% set current = 'sessions' if request.args.get('tab')=='graph' else 'events' if request.args.get('tab')=='review' else 'settings' %}{% endif %}
+<nav>{% for view,label,icon in [('overview','安全概览','◉'),('events','攻击事件','▤'),('sessions','会话分析','↺'),('investigate','证据调查','◇'),('settings','系统与评测','⚙')] %}<a class="workspace-link {{ 'active' if current==view else '' }}" href="/workspace/{{ view }}" {% if current==view %}aria-current="page"{% endif %}><span>{{ icon }}</span>{{ label }}</a>{% endfor %}</nav>
+{% if request.endpoint=='ai_analysis_page' %}<div class="nav-section nav-actions"><p class="nav-caption">当前报告操作</p><button id="scan">分析新记录</button><button id="mode">调整分析模式</button><button id="recover">检查模型并恢复</button></div>{% endif %}
+<div class="nav-foot"><p>本机运行 · 证据可追溯</p><form action="{{ url_for('logout') }}" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">安全退出</button></form><button id="backTop">↑ 返回顶部</button></div></aside>

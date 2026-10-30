@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI 会话交互回放</title><link rel="stylesheet" href="{{ url_for('static',filename='css/ai.css',v=ASSET_VERSION) }}"><link rel="stylesheet" href="{{ url_for('static',filename='css/ai_shell.css',v=ASSET_VERSION) }}"></head>
+<html lang="zh-CN"><head><meta name="color-scheme" content="dark"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 会话交互回放</title><link rel="stylesheet" href="{{ url_for('static',filename='css/theme.css',v=ASSET_VERSION) }}"><link rel="stylesheet" href="{{ url_for('static',filename='css/ai.css',v=ASSET_VERSION) }}"><link rel="stylesheet" href="{{ url_for('static',filename='css/ai_shell.css',v=ASSET_VERSION) }}"></head>
 <body class="ai-workspace">{% include 'ai_sidebar.html' %}<main>
 <header><div><a href="{{ url_for('ai_monitor') }}">← 本地 AI 运行监控</a><h1>会话交互回放</h1><p>沿同一会话查看输入、回应来源、受控策略与虚拟状态。</p></div>
 <div class="actions"><a href="{{ url_for('ai_detection_page') }}">攻击研判对照 →</a><button id="refresh">刷新</button></div></header>

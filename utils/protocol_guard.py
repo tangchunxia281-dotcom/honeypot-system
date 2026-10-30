@@ -225,6 +225,7 @@ class ProtocolReporter:
 
     def __init__(self, protocol: str, logger=None):
         self.protocol = protocol
+        self.session_id = __import__("uuid").uuid4().hex
         self.logger = logger
         self._lock = threading.Lock()
         self._last_sent: Dict[str, float] = {}
@@ -275,7 +276,7 @@ class ProtocolReporter:
         if not force_alert and self._is_duplicate(key, dedup_window):
             return
         sev = severity or severity_from_score(score)
-        sid = session_id or make_protocol_session_id(self.protocol, src_ip)
+        sid = session_id or self.session_id
         safe_extra = dict(extra or {})
         safe_extra.setdefault('threat_score', int(score))
         safe_extra.setdefault('protocol', self.protocol)

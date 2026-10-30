@@ -116,127 +116,37 @@ def _build_ssh_event_session_id(src_ip: str, username: str, client_port: int = N
 
 
 def _append_auth_log(entry: str, shell=None) -> None:
-    """追加 /var/log/auth.log。
-
-    - 传入 shell 时只写入该连接自己的虚拟文件系统，避免把某条连接的登录
-      细节同步给同 IP 的其他连接；
-    - 不传 shell 时保留原全局行为（系统级登录/服务日志）。
-    """
-    try:
-        if not entry:
-            return
-
-        if shell is not None:
-            files = getattr(shell, 'files_content', None)
-            if not isinstance(files, dict):
-                return
-            current = str(files.get('/var/log/auth.log', '') or '')
-            content = current + entry
-            if len(content) > _AUTH_LOG_MAX_BYTES:
-                content = content[-_AUTH_LOG_MAX_BYTES:]
-            files['/var/log/auth.log'] = content
-            fs_state = getattr(shell, 'fs_state', None)
-            if isinstance(fs_state, dict) and '/var/log' in fs_state:
-                if 'auth.log' not in fs_state['/var/log']:
-                    fs_state['/var/log'].append('auth.log')
-            sizes = getattr(shell, 'file_sizes', None)
-            if isinstance(sizes, dict):
-                sizes['/var/log/auth.log'] = len(content)
-            return
-
-        base = GLOBAL_FILES_CONTENT.get('/var/log/auth.log', VIRTUAL_FILES.get('/var/log/auth.log', ''))
-        new_content = (base or '') + entry
-
-        if len(new_content) > _AUTH_LOG_MAX_BYTES:
-            # 简易滚动：旧内容进 auth.log.1，新内容只保留本次追加
-            rotated = base or ''
-            if rotated:
-                GLOBAL_FILES_CONTENT['/var/log/auth.log.1'] = rotated
-                VIRTUAL_FILES['/var/log/auth.log.1'] = rotated
-            new_content = entry[-_AUTH_LOG_MAX_BYTES:]
-
-        GLOBAL_FILES_CONTENT['/var/log/auth.log'] = new_content
-        VIRTUAL_FILES['/var/log/auth.log'] = new_content
-
-        # 同步已有会话，避免不同会话看到的日志断层
-        with PERSISTENT_SESSIONS_LOCK:
-            for _ip, sess in list(PERSISTENT_SESSIONS.items()):
-                files = sess.get('files_content')
-                if isinstance(files, dict):
-                    files['/var/log/auth.log'] = new_content
-                    if '/var/log' in sess.get('fs_state', {}):
-                        if 'auth.log' not in sess['fs_state']['/var/log']:
-                            sess['fs_state']['/var/log'].append('auth.log')
-                        if 'auth.log.1' in GLOBAL_FILES_CONTENT:
-                            if 'auth.log.1' not in sess['fs_state']['/var/log']:
-                                sess['fs_state']['/var/log'].append('auth.log.1')
-                sizes = sess.get('file_sizes')
-                if isinstance(sizes, dict):
-                    sizes['/var/log/auth.log'] = len(new_content)
-                    if '/var/log/auth.log.1' in GLOBAL_FILES_CONTENT:
-                        sizes['/var/log/auth.log.1'] = len(GLOBAL_FILES_CONTENT.get('/var/log/auth.log.1', ''))
-    except Exception:
-        pass
-
-
-_REBOOT_CONNECTIONS = {}
-_REBOOT_CONNECTIONS_LOCK = threading.Lock()
-
-
-def _mark_connection(client_ip: str) -> float:
-    """记录该 IP 最近一次 TCP 连接建立时间（用于判定重启标记归属）。"""
-    stamp = time.time()
-    with _REBOOT_CONNECTIONS_LOCK:
-        _REBOOT_CONNECTIONS[client_ip] = stamp
-        if len(_REBOOT_CONNECTIONS) > 4096:
-            cutoff = stamp - 3600
-            for key, value in list(_REBOOT_CONNECTIONS.items()):
-                if float(value or 0.0) < cutoff:
-                    _REBOOT_CONNECTIONS.pop(key, None)
-    return stamp
+    """Append only to this connection's fake log; authentication audit uses real event logs."""
+    if shell is None or not entry:
+        return
+    base = shell.files_content.get('/var/log/auth.log', '')
+    content = base + str(entry)
+    if len(content) > _AUTH_LOG_MAX_BYTES:
+        shell.files_content['/var/log/auth.log.1'] = base[-_AUTH_LOG_MAX_BYTES:]
+        content = str(entry)[-_AUTH_LOG_MAX_BYTES:]
+    shell.files_content['/var/log/auth.log'] = content
+    shell.file_sizes['/var/log/auth.log'] = len(content)
 
 
 def _get_reboot_marker(client_ip: str) -> float:
-    with REBOOT_IPS_LOCK:
-        try:
-            marker = float(REBOOT_IPS.get(client_ip, 0.0) or 0.0)
-        except Exception:
-            return 0.0
-    if marker <= 0:
-        return 0.0
-    with _REBOOT_CONNECTIONS_LOCK:
-        connected_at = float(_REBOOT_CONNECTIONS.get(client_ip, 0.0) or 0.0)
-    # 只有“重启之后新建立的连接”才需要等待；仍在旧连接上下文中的调用
-    # 不应读到别处设置的标记，避免状态串到其他会话。
-    if connected_at >= marker:
-        return marker
+    # A reconnect is a fresh connection; one attacker's reboot may not block a NAT peer.
     return 0.0
 
 
 def _set_reboot_marker(client_ip: str, ts: float = None) -> float:
-    marker = float(ts if ts is not None else time.time())
-    with REBOOT_IPS_LOCK:
-        REBOOT_IPS[client_ip] = marker
-    return marker
+    return float(ts if ts is not None else time.time())
 
 
 def _clear_reboot_marker(client_ip: str, expected_ts: float = None) -> bool:
-    with REBOOT_IPS_LOCK:
-        current = REBOOT_IPS.get(client_ip)
-        if current is None:
-            return False
-        if expected_ts is not None:
-            try:
-                if float(current) != float(expected_ts):
-                    return False
-            except Exception:
-                return False
-        REBOOT_IPS.pop(client_ip, None)
-    with _REBOOT_CONNECTIONS_LOCK:
-        _REBOOT_CONNECTIONS.pop(client_ip, None)
-    return True
+    return False
 
 def generate_host_key():
+    # Fresh/share deployments deliberately omit the original private key.
+    # Create its directory before generating a new per-installation identity.
+    parent=os.path.dirname(os.path.abspath(HOST_KEY_FILE_ED25519))
+    os.makedirs(parent,exist_ok=True)
+    from utils.logger import _harden_permissions
+    _harden_permissions(parent,True)
     # 优先使用 ED25519 文件
     if os.path.exists(HOST_KEY_FILE_ED25519):
         try:
@@ -251,9 +161,6 @@ def generate_host_key():
     # 生成新密钥：优先 ED25519
     logger.info("正在生成新的 ED25519 密钥...")
     try:
-        key_dir = os.path.dirname(os.path.abspath(HOST_KEY_FILE_ED25519))
-        if key_dir and not os.path.isdir(key_dir):
-            os.makedirs(key_dir, exist_ok=True)
         if hasattr(Ed25519Key, 'generate'):
             key = Ed25519Key.generate()
             key.write_private_key_file(HOST_KEY_FILE_ED25519)
@@ -268,6 +175,7 @@ def generate_host_key():
             with open(HOST_KEY_FILE_ED25519, 'wb') as f:
                 f.write(pem)
             key = Ed25519Key.from_private_key_file(HOST_KEY_FILE_ED25519)
+        _harden_permissions(HOST_KEY_FILE_ED25519,False)
         logger.info(f"密钥已保存至 {HOST_KEY_FILE_ED25519}")
         return key
     except Exception as e:
@@ -555,131 +463,53 @@ class VirtualShell:
         self.sudo_cache = {}
 
 
-        # 会话持久化按“连接”隔离：同一 IP / 同一用户名的并发或重连连接
-        # 不再共享文件、历史与环境变量，避免把某条连接的私有状态带给另一条。
-        connection_nonce = os.urandom(8).hex()
-        persistence_key = f"{self.client_ip}|{self.session_user}|{self.client_port}|{connection_nonce}"
+        # 每条连接独立；IP 和用户名都不能作为重连身份。
+        persistence_key = __import__('secrets').token_hex(16)
         self.persistence_key = persistence_key
         session_key = str(session_id or _build_ssh_event_session_id(self.client_ip, self.session_user, self.client_port)).strip()
         self.session_key = session_key or persistence_key
-        with PERSISTENT_SESSIONS_LOCK:
-            saved_session = PERSISTENT_SESSIONS.get(persistence_key)
-        if saved_session is not None:
-            # 命中历史会话，恢复状态
-            session_data = copy.deepcopy(saved_session)
-            self.fs_state = session_data.get('fs_state', copy.deepcopy(GLOBAL_FS_STATE))
-            self.files_content = session_data.get('files_content', copy.deepcopy(GLOBAL_FILES_CONTENT))
-            self.history = session_data.get('history', [])
-            self.file_timestamps = session_data.get('file_timestamps', {})
-            self.file_sizes = session_data.get('file_sizes', {})
-            self.file_perms = session_data.get('file_perms', {})  # 恢复权限
-            self.file_owners = session_data.get('file_owners', {}) # 恢复所有者
-            self.killed_pids = session_data.get('killed_pids', set())
-            self.processes = session_data.get('processes', {}) # 恢复进程列表 (防止 ps 为空)
-            # 环境变量按连接复制，避免并发终端互相覆盖 SSH_TTY/SSH_CONNECTION。
-            self.env = copy.deepcopy(session_data.get('env', self._get_default_env()))
-            self.login_history = session_data.get('login_history', [])
-            self._perf_state = session_data.get('perf_state')
-            self._proc_last_ts = session_data.get('proc_last_ts')
-            self.shutdown_deadline = session_data.get('shutdown_deadline')
-            self.sudo_cache = session_data.get('sudo_cache', {})
-            self.services_state = session_data.get('services_state', {})
-            self.service_logs = session_data.get('service_logs', {})
-            self.sshd_pid = str(session_data.get('sshd_pid') or '').strip()
-            self.shell_pid = str(session_data.get('shell_pid') or '').strip()
+        # 首次会话初始化独立文件系统
+        self.fs_state = copy.deepcopy(GLOBAL_FS_STATE)
+        self.files_content = copy.deepcopy(GLOBAL_FILES_CONTENT)
+        self.history = []
+        # 预置常见历史命令，提升初始会话一致性
+        self.history.extend(['ls -la', 'ps -ef', 'ss -tulpn', 'whoami'])
+        self.file_timestamps = {}
+        self.file_sizes = {}
+        self.file_perms = {} # 权限元数据
+        self.file_owners = {} # 所有者 (path -> (user, group))
+        self.killed_pids = set() # 被杀死的进程列表
+        self.login_history = []
+        self._perf_state = None
+        self._proc_last_ts = None
+        self.shutdown_deadline = None
+        self.sudo_cache = {}
+        self.services_state = {}
+        self.service_logs = {}
 
-            if not isinstance(self.file_perms, dict):
-                self.file_perms = {}
-            if not isinstance(self.file_owners, dict):
-                self.file_owners = {}
-            if not isinstance(self.sudo_cache, dict):
-                self.sudo_cache = {}
-            if not isinstance(self.services_state, dict):
-                self.services_state = {}
-            if not isinstance(self.service_logs, dict):
-                self.service_logs = {}
+        # 填充完整文件系统
+        self._populate_full_system()
+        self._sync_virtual_binaries()
 
-            # 清掉上一条连接留下的交互进程，再补当前连接这组新的。
-            self._drop_connection_processes(session_data)
-            self._init_processes()
-            self._refresh_ssh_session_env()
-            self._sync_virtual_binaries()
-            # 会话缺少权限/所有者元数据时补齐
-            self._init_file_timestamps()
-            commands.ensure_service_state(self)
-            self._init_decoy_profile()
-            self._save_session_state()
+        # 初始化进程列表
+        self._init_processes()
+        commands.ensure_service_state(self)
 
-            logger.info(f"[持久化] 攻击者 {client_ip} 重连，恢复会话状态")
-        else:
-            # 检查会话数量，防止 OOM
-            with PERSISTENT_SESSIONS_LOCK:
-                session_count = len(PERSISTENT_SESSIONS)
-                if session_count > 200:
-                    # 简单清理：删除最早加入的 50 个会话
-                    logger.warning(f"[系统] 会话表过载({session_count})，执行清理...")
-                    try:
-                        # 优先清理最久未访问会话，降低活跃会话被回收概率
-                        stale = sorted(
-                            PERSISTENT_SESSIONS.items(),
-                            key=lambda item: float((item[1] or {}).get('last_seen', 0.0))
-                        )
-                        keys_to_remove = [k for k, _ in stale[:50]]
-                        for k in keys_to_remove:
-                            PERSISTENT_SESSIONS.pop(k, None)
-                        logger.info(f"[系统] 已清理 {len(keys_to_remove)} 个过期会话")
-                    except Exception as e:
-                        logger.error(f"[系统] 清理会话失败: {e}")
-                        PERSISTENT_SESSIONS.clear()
+        # 初始化性能态
+        self._init_perf_state()
 
-            # 首次会话初始化独立文件系统
-            self.fs_state = copy.deepcopy(GLOBAL_FS_STATE)
-            self.files_content = copy.deepcopy(GLOBAL_FILES_CONTENT)
-            self.history = []
-            # 预置常见历史命令，提升初始会话一致性
-            self.history.extend(['ls -la', 'ps -ef', 'ss -tulpn', 'whoami'])
-            self.file_timestamps = {}
-            self.file_sizes = {}
-            self.file_perms = {} # 权限元数据
-            self.file_owners = {} # 所有者 (path -> (user, group))
-            self.killed_pids = set() # 被杀死的进程列表
-            self.login_history = []
-            self._perf_state = None
-            self._proc_last_ts = None
-            self.shutdown_deadline = None
-            self.sudo_cache = {}
-            self.services_state = {}
-            self.service_logs = {}
+        # 初始化环境变量
+        self.env = self._get_default_env()
+        self._refresh_ssh_session_env()
 
-            # 填充完整文件系统
-            self._populate_full_system()
-            self._sync_virtual_binaries()
+        from utils.decoy_profiles import initialize_shell
+        initialize_shell(self)
+        self._init_file_timestamps()
 
-            # 初始化进程列表
-            self._init_processes()
-            commands.ensure_service_state(self)
+        # 状态仅保存在当前连接对象中
+        self._save_session_state()
+        logger.info(f"[会话隔离] 新连接 {client_ip} 初始化会话")
 
-            # 初始化性能态
-            self._init_perf_state()
-
-            # 初始化环境变量
-            self.env = self._get_default_env()
-            self._refresh_ssh_session_env()
-
-            self._init_file_timestamps()
-            self._init_decoy_profile()
-
-            # 保存到持久化存储
-            self._save_session_state()
-            logger.info(f"[持久化] 新攻击者 {client_ip} 初始化会话")
-
-    def _init_decoy_profile(self) -> None:
-        """绑定一致的虚拟主机人设（主机名/服务/诱饵日志），供诱饵命令与 AI 策略使用。"""
-        try:
-            from utils import decoy_profiles
-            decoy_profiles.initialize_shell(self)
-        except Exception as e:
-            logger.debug(f"decoy profile init failed: {e}")
 
     def _get_default_env(self) -> dict:
         """生成默认环境变量"""
@@ -759,32 +589,8 @@ class VirtualShell:
             self.killed_pids.discard(pid)
 
     def _save_session_state(self):
-        """保存当前会话状态到持久化存储"""
-        session_key = getattr(self, 'persistence_key', f"{self.client_ip}|{self.session_user}")
-        snapshot = {
-            'fs_state': self.fs_state,
-            'files_content': self.files_content,
-            'history': self.history,
-            'file_timestamps': self.file_timestamps,
-            'file_sizes': self.file_sizes,
-            'file_perms': self.file_perms,
-            'file_owners': self.file_owners,
-            'killed_pids': self.killed_pids,
-            'processes': self.processes,
-            'env': self.env, # 保存环境变量
-            'login_history': self.login_history,
-            'perf_state': self._perf_state,
-            'proc_last_ts': self._proc_last_ts,
-            'shutdown_deadline': self.shutdown_deadline,
-            'sudo_cache': self.sudo_cache,
-            'services_state': getattr(self, 'services_state', {}),
-            'service_logs': getattr(self, 'service_logs', {}),
-            'sshd_pid': getattr(self, 'sshd_pid', ''),
-            'shell_pid': getattr(self, 'shell_pid', ''),
-            'last_seen': time.time(),
-        }
-        with PERSISTENT_SESSIONS_LOCK:
-            PERSISTENT_SESSIONS[session_key] = copy.deepcopy(snapshot)
+        """State stays on this connection's VirtualShell; no IP/user cache sharing."""
+        return None
 
     def _sudo_cache_key(self, user: str) -> str:
         tty = str(getattr(self, 'tty_name', '') or self.env.get('SSH_TTY') or '').strip()
@@ -1488,18 +1294,12 @@ VPN Gateway: 10.0.12.1 / admin:vpn2024
 
 
     def execute_command(self, command_line: str, record_history: bool = True) -> str:
-        return commands.execute_command(self, command_line, record_history=record_history)
+        from utils.ai_interaction import command_lock
+        with command_lock(self):
+            return commands.execute_command(self, command_line, record_history=record_history)
 
     def _execute_single_command(self, command_line: str) -> str:
-        output = commands.execute_single_command(self, command_line)
-        # 每条命令都进入交互审计；未知命令由模型选择封闭策略（不给自由文本）。
-        try:
-            from utils import ai_interaction
-            replacement = ai_interaction.follow_up(self, command_line, output)
-        except Exception as e:
-            logger.debug(f"interaction follow-up failed: {e}")
-            replacement = None
-        return output if replacement is None else replacement
+        return commands.execute_single_command(self, command_line)
 
     def _parse_args(self, command_line):
         return commands.parse_args(command_line)
@@ -2320,7 +2120,7 @@ def handle_ssh_session(channel, client_ip: str, username: str, client_port: int 
         # 记录登录历史 & 追加 auth.log
         shell._record_login(username, client_ip)
         ts = datetime.now().strftime("%b %d %H:%M:%S")
-        _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session opened for user {username} by (uid=0)\n")
+        _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session opened for user {username} by (uid=0)\n", shell=shell)
 
         # 检查是否是 reboot 后重连，模拟启动延迟
         reboot_time = _get_reboot_marker(client_ip)
@@ -2463,8 +2263,8 @@ def handle_ssh_session(channel, client_ip: str, username: str, client_port: int 
                             shell._save_session_state()
                             output = ""
                         elif output == '__REBOOT__':
-                            _set_reboot_marker(client_ip)
-                            logger.info(f"[Reboot] {client_ip} 触发了 reboot，将模拟 {REBOOT_DELAY_SECONDS} 秒启动延迟")
+                            # 模拟 reboot 仅关闭当前通道，不封锁同 IP 的其他连接。
+                            logger.info(f"[Reboot] {client_ip} 触发了 reboot，仅关闭当前会话")
                             channel.send_exit_status(0)
                             channel.close()
                             return
@@ -2556,7 +2356,7 @@ def handle_ssh_session(channel, client_ip: str, username: str, client_port: int 
                         if output == '__EXIT__':
                             shell._record_logout()
                             ts = datetime.now().strftime("%b %d %H:%M:%S")
-                            _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n")
+                            _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n", shell=shell)
                             channel.send(b'logout\r\n')
                             channel.send_exit_status(0)
                             time.sleep(0.1)
@@ -2564,8 +2364,8 @@ def handle_ssh_session(channel, client_ip: str, username: str, client_port: int 
                             return
                         elif output == '__REBOOT__':
                             # 真实的 reboot: 记录 IP 并断开连接
-                            _set_reboot_marker(client_ip)
-                            logger.info(f"[Reboot] {client_ip} 触发了 reboot，将模拟 {REBOOT_DELAY_SECONDS} 秒启动延迟")
+                            # 模拟 reboot 仅关闭当前通道，不封锁同 IP 的其他连接。
+                            logger.info(f"[Reboot] {client_ip} 触发了 reboot，仅关闭当前会话")
 
                             channel.send_exit_status(0)
                             channel.close()
@@ -2610,7 +2410,7 @@ def handle_ssh_session(channel, client_ip: str, username: str, client_port: int 
                     if not command_buffer:
                         shell._record_logout()
                         ts = datetime.now().strftime("%b %d %H:%M:%S")
-                        _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n")
+                        _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n", shell=shell)
                         channel.send(b'logout\r\n')
                         channel.send_exit_status(0)
                         time.sleep(0.1)
@@ -2710,7 +2510,7 @@ def _handle_exec(channel, command: str, client_ip: str, username: str, client_po
     log_event_activity(client_ip, 'SSH-Exec', f"命令: {command}")
     shell._record_login(username, client_ip)
     ts = datetime.now().strftime("%b %d %H:%M:%S")
-    _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session opened for user {username} by (uid=0)\n")
+    _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session opened for user {username} by (uid=0)\n", shell=shell)
 
     output = shell.execute_command(command)
 
@@ -2737,17 +2537,17 @@ def _handle_exec(channel, command: str, client_ip: str, username: str, client_po
         channel.send_exit_status(0)
         shell._record_logout()
         ts = datetime.now().strftime("%b %d %H:%M:%S")
-        _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n")
+        _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n", shell=shell)
         channel.close()
         return
 
     if output == '__REBOOT__':
-        _set_reboot_marker(client_ip)
-        logger.info(f"[Reboot] {client_ip} 触发了 reboot，将模拟 {REBOOT_DELAY_SECONDS} 秒启动延迟")
+        # 模拟 reboot 仅关闭当前通道，不封锁同 IP 的其他连接。
+        logger.info(f"[Reboot] {client_ip} 触发了 reboot，仅关闭当前会话")
         channel.send_exit_status(0)
         shell._record_logout()
         ts = datetime.now().strftime("%b %d %H:%M:%S")
-        _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n")
+        _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n", shell=shell)
         channel.close()
         return
 
@@ -2755,7 +2555,7 @@ def _handle_exec(channel, command: str, client_ip: str, username: str, client_po
         channel.send_exit_status(0)
         shell._record_logout()
         ts = datetime.now().strftime("%b %d %H:%M:%S")
-        _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n")
+        _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n", shell=shell)
         channel.close()
         return
 
@@ -2776,7 +2576,7 @@ def _handle_exec(channel, command: str, client_ip: str, username: str, client_po
     channel.send_exit_status(status)
     shell._record_logout()
     ts = datetime.now().strftime("%b %d %H:%M:%S")
-    _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n")
+    _append_auth_log(f"{ts} {HONEYPOT_IDENTITY['hostname']} sshd[{os.getpid()}]: pam_unix(sshd:session): session closed for user {shell.username}\n", shell=shell)
     channel.close()
 
 def _scp_mode_to_perm(mode_token: str, is_dir: bool = False) -> str:
@@ -2999,7 +2799,6 @@ def handle_client(client_socket: socket.socket, client_addr: tuple, host_key):
     client_ip = client_addr[0]
     client_port = client_addr[1] if len(client_addr) > 1 else None
     conn_acquired = False
-    _mark_connection(client_ip)
 
     # 模拟重启延迟
     reboot_time = _get_reboot_marker(client_ip)

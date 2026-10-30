@@ -157,8 +157,11 @@ class TelnetHoneypot:
         EOF 返回 None。
         """
         line = bytearray()
+        deadline=time.monotonic()+min(timeout,30)
         while True:
-            byte = self._next_byte(timeout)
+            remaining=deadline-time.monotonic()
+            if remaining<=0:raise ValueError("Telnet line deadline")
+            byte = self._next_byte(remaining)
             if byte is None:
                 return None
             text_byte = self._feed_byte(byte, echo)
@@ -166,6 +169,7 @@ class TelnetHoneypot:
                 continue
             if text_byte == b'':
                 return line.decode('utf-8', errors='replace').strip()
+            if len(line)+len(text_byte)>4096:raise ValueError("Telnet line limit")
             line.extend(text_byte)
 
     def _feed_byte(self, byte: int, echo: bool):
@@ -175,6 +179,7 @@ class TelnetHoneypot:
           b''   -> 行结束（\r 或 \n；\r\n 只算一次）
           bytes -> 普通文本字节
         """
+        if len(self._iac_buf)>1024:raise ValueError("Telnet negotiation limit")
         st = self._iac_state
         if st == 'normal':
             if byte == IAC:

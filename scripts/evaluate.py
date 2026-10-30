@@ -10,8 +10,8 @@ if __name__=='__main__':
     folder=Path(args.output);folder.mkdir(parents=True,exist_ok=True);target=folder/(args.mode+'-'+result['run_id']+'.json');target.write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
     if args.save_dashboard:
         from utils.ai_analyst import get_store
-        from utils.team_store import TeamStore
-        TeamStore(get_store()).record_evaluation(result)
+        from utils.workbench_store import WorkbenchStore
+        WorkbenchStore(get_store()).record_evaluation(result)
     print(json.dumps(result['metrics'],ensure_ascii=False,indent=2));print('结果：'+str(target))
     from utils import local_ai
     local_ai._pool.shutdown(wait=True)

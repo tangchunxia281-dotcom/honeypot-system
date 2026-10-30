@@ -1,0 +1,13 @@
+{
+  "pages": 12,
+  "source_target_edit": "passed",
+  "source_to_events": "passed",
+  "protocol_filter": "passed",
+  "classifier_opinion": "passed",
+  "cloud_and_services_tabs": "passed",
+  "map_cached_renderer": "passed",
+  "narrow_layout": "passed",
+  "session_graph": "passed",
+  "case_snapshot": "passed",
+  "page_errors": []
+}

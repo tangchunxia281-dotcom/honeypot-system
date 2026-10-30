@@ -89,9 +89,6 @@ def submit(raw_request_id,src_ip,session_id,method,path,query,headers,body,score
     settings=local_ai.SETTINGS
     if not settings['enabled'] or not settings['detection_enabled']:
         return {'status':'skipped','reason':'disabled'}
-    if not settings.get('configured'):
-        # 未配置模型时不排队，避免产生永远无法完成的空任务
-        return {'status':'skipped','reason':'configuration_invalid'}
     raw_key=hashlib.sha256(f'{db_key}|{raw_request_id}|{request_time}'.encode()).hexdigest()
     if not force and not query and not body and score<20 and int(raw_key[:8],16)%settings['normal_sample_every']:
         return {'status':'not_selected','reason':'normal_sampling'}

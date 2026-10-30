@@ -29,7 +29,7 @@ def _private_host_ip(base_ip: str, host_octet: int, fallback: str) -> str:
 
 # === 会话与状态 ===
 
-# 会话持久化存储（键由 server.py 生成，当前为 IP+登录用户名）
+# 兼容旧模块导出；不再使用 IP/用户名共享虚拟状态。
 PERSISTENT_SESSIONS = {}
 PERSISTENT_SESSIONS_LOCK = threading.RLock()
 

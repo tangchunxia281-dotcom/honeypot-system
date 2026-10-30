@@ -125,9 +125,6 @@ def ingest_once():
 
 
 def queue_report(force=False):
-    if not local_ai.SETTINGS.get('configured'):
-        # 未配置模型时只做索引，不产生无法完成的报告任务
-        return None
     store=get_store();records=store.next_report_records(local_ai.SETTINGS.get('analysis_batch',24))
     if not records:return None
     if not force and len(records)<8 and time.time()-min(r['indexed_at'] for r in records)<local_ai.SETTINGS.get('analysis_flush',60):return None
@@ -225,7 +222,6 @@ def _readable_refs(validated,aliases):
 
 def process_one():
     if not local_ai.SETTINGS['enabled']:return False
-    if not local_ai.SETTINGS.get('configured'):return False
     service=local_ai.STORE.snapshot()
     if service['active'] or service['circuit_open_until']>time.time():return False
     store=get_store();job=store.claim(max(local_ai.SETTINGS.get('analysis_timeout',20),local_ai.SETTINGS.get('gateway_wait',90) if local_ai.SETTINGS.get('provider')=='gateway' else 0),local_ai.STORE.background_paused()>time.time())

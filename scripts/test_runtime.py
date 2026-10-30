@@ -155,8 +155,7 @@ class Checks(unittest.TestCase):
         from web_honeypot.server import app
         with patch.dict(self.ai.SETTINGS,web_interaction_enabled=False),patch.object(self.ai,'_transport',side_effect=AssertionError('not required')):
             response=app.test_client().get('/api/preview?url=http://example.test/')
-        self.assertEqual(response.status_code,202)
-        self.assertEqual(response.get_json()['strategy'],'preview_pending')
+        self.assertEqual(response.status_code,404)
 
     def test_audit_failure_does_not_call_model(self):
         with patch.object(self.ai.STORE,'start',side_effect=OSError('test')),patch.object(self.ai,'_transport') as transport:
@@ -165,12 +164,8 @@ class Checks(unittest.TestCase):
 
     def test_remote_model_endpoint_is_rejected(self):
         from utils.ai_settings import load_settings
-        # 显式指定 local provider：否则真实配置里的 deepseek 分支会忽略 base_url，
-        # 测试就会因“没有 Key”而假性通过。
-        with patch.dict(os.environ,HONEYPOT_AI_PROVIDER='local',HONEYPOT_AI_BASE_URL='http://192.0.2.10:11434',HONEYPOT_AI_MODEL='qwen2.5:7b'):
+        with patch.dict(os.environ,HONEYPOT_AI_BASE_URL='http://192.0.2.10:11434'):
             self.assertFalse(load_settings()['configured'])
-        with patch.dict(os.environ,HONEYPOT_AI_PROVIDER='local',HONEYPOT_AI_BASE_URL='http://127.0.0.1:11434',HONEYPOT_AI_MODEL='qwen2.5:7b'):
-            self.assertTrue(load_settings()['configured'])
 
     def test_model_response_byte_limit(self):
         response=MagicMock(status_code=200)

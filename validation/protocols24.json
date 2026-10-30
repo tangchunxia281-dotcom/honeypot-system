@@ -1,0 +1,32 @@
+{
+  "ports": {
+    "web": 53232,
+    "dashboard": 53233,
+    "ssh": 53234,
+    "mysql": 53235,
+    "redis": 53236,
+    "ftp": 53237,
+    "telnet": 53238
+  },
+  "protocols": {
+    "mysql": "handshake, virtual query, client-file request disabled",
+    "redis": "RESP, virtual info and keys",
+    "ftp": "anonymous login, passive list, virtual decoy download",
+    "telnet": "device login and virtual uname",
+    "ssh": "one synthetic rejected login recorded"
+  },
+  "channels": [
+    "ftp",
+    "mysql",
+    "redis",
+    "ssh",
+    "telnet",
+    "web"
+  ],
+  "classified_evidence": "passed with explicit fake transport",
+  "case_export": "passed",
+  "source_target": "passed",
+  "ui_base": "http://127.0.0.1:53233",
+  "case_id": "e0039fc7749332808c10b7e0",
+  "classifier_model": "transport-fixture-not-trained-model"
+}

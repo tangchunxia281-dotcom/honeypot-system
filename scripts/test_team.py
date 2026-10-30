@@ -21,8 +21,8 @@ class TeamChecks(unittest.TestCase):
         state=patch.dict(self.analyst._state,{'lag':0,'scan_error':''});state.start();self.extra.append(state)
 
     def team(self):
-        from utils.team_store import TeamStore
-        return TeamStore(self.store)
+        from utils.workbench_store import WorkbenchStore
+        return WorkbenchStore(self.store)
 
     def detection(self,score=30,verdict='no_clear_attack',identifier='a'*24):
         from utils.ai_detection_store import DetectionStore
@@ -192,12 +192,9 @@ class TeamChecks(unittest.TestCase):
         with patch.object(self.ai.STORE,'connect',side_effect=connect):self.ai.STORE.release(call['id'])
         self.assertEqual(self.ai.STORE.snapshot()['active'],0);self.assertEqual(calls,2)
 
-    def test_shared_endpoint_settings_require_explicit_lan_http_and_token(self):
+    def test_shared_provider_is_rejected_in_single_host_edition(self):
         from utils.ai_settings import load_settings
-        config=Path(self.folder.name)/'client.ini';config.write_text('[ai]\nenabled=true\nprovider=gateway\nmodel=fixture\ngateway_url=http://192.168.1.10:11500\nclient_token='+'t'*40+'\n',encoding='utf-8')
-        with patch.dict(os.environ,{'HONEYPOT_AI_CONFIG':str(config)},clear=False):
-            self.assertFalse(load_settings()['configured'])
-            with patch.dict(os.environ,{'HONEYPOT_AI_ALLOW_INSECURE_LAN':'true'}):self.assertTrue(load_settings()['configured'])
+        with patch.dict(os.environ,{'HONEYPOT_AI_PROVIDER':'gateway'}):self.assertFalse(load_settings()['configured'])
 
     def test_gateway_connection_failure_is_not_misreported_as_bad_output(self):
         with patch.object(self.ai,'_transport',side_effect=ValueError('model_unavailable')):
@@ -207,62 +204,8 @@ class TeamChecks(unittest.TestCase):
     def test_team_endpoints_require_login_and_mutation_csrf(self):
         from dashboard.server import app
         c=app.test_client();base='http://127.0.0.1:5001'
-        self.assertEqual(c.get('/api/team/graph',base_url=base).status_code,401)
+        self.assertEqual(c.get('/api/workbench/graph',base_url=base).status_code,401)
         with c.session_transaction(base_url=base) as s:s.update(is_admin=True,username='fixture',csrf_token='fixture')
-        self.assertEqual(c.post('/api/team/evaluate-rules',json={},base_url=base,headers={'Origin':base}).status_code,403)
-        self.assertEqual(c.get('/ai/team',base_url=base).status_code,200)
+        self.assertEqual(c.post('/api/workbench/evaluate-rules',json={},base_url=base,headers={'Origin':base}).status_code,403)
+        self.assertEqual(c.get('/ai/workbench',base_url=base).status_code,200)
 
-
-class GatewayChecks(unittest.TestCase):
-    def setUp(self):
-        from ai_gateway.server import Gateway,create_app
-        self.folder=tempfile.TemporaryDirectory();self.tokens={'a':'a'*40,'b':'b'*40};clients={name:{'token_hash':hashlib.sha256(token.encode()).hexdigest(),'max_pending':10,'per_minute':50} for name,token in self.tokens.items()}
-        self.gateway=Gateway(Path(self.folder.name)/'gateway.db','fixture',clients,transport=lambda p:{'done':True,'message':{'content':'{"reply":"ok"}'}});self.app=create_app(self.gateway);self.client=self.app.test_client()
-    def tearDown(self):self.gateway.close();self.folder.cleanup()
-    def payload(self,task='log_report'):return {'request_id':secrets.token_hex(12),'task':task,'messages':[{'role':'user','content':'fixture'}],'schema':None,'options':{}}
-    def headers(self,client='a'):return {'Authorization':'Bearer '+self.tokens[client]}
-    def test_auth_required_and_no_tokens_in_status(self):
-        self.assertEqual(self.client.get('/v1/status').status_code,401);r=self.client.get('/v1/status',headers=self.headers());self.assertEqual(r.status_code,200);self.assertNotIn(self.tokens['a'],r.text)
-    def test_jobs_and_replies_are_client_isolated(self):
-        r=self.client.post('/v1/jobs',json=self.payload(),headers=self.headers());identifier=r.json['data']['id'];self.assertEqual(self.client.get('/v1/jobs/'+identifier,headers=self.headers('b')).status_code,404);self.gateway.process_one();self.assertEqual(self.client.get('/v1/jobs/'+identifier,headers=self.headers()).json['data']['status'],'completed')
-    def test_idempotent_submission_does_not_duplicate_work(self):
-        payload=self.payload();a=self.gateway.enqueue('a',payload);b=self.gateway.enqueue('a',payload);self.assertEqual(a['id'],b['id'])
-    def test_queue_capacity_is_global(self):
-        self.gateway.queue_limit=4
-        for i in range(4):self.gateway.enqueue('a' if i%2 else 'b',self.payload())
-        with self.assertRaises(OverflowError):self.gateway.enqueue('b',self.payload())
-    def test_foreground_priority_and_global_capacity(self):
-        self.gateway.enqueue('a',self.payload('log_report'));high=self.gateway.enqueue('b',self.payload('ssh_reply'));job=self.gateway.claim();self.assertEqual(job['id'],high['id']);self.assertIsNone(self.gateway.claim())
-    def test_cancelled_running_job_retains_capacity_until_inference_finishes(self):
-        j=self.gateway.enqueue('a',self.payload());job=self.gateway.claim();self.gateway.cancel(j['id'],'a');self.gateway.enqueue('b',self.payload());self.assertIsNone(self.gateway.claim());self.gateway.finish(job,{'reply':'late'});self.assertEqual(self.gateway.get(j['id'],'a')['status'],'cancelled');self.assertIsNotNone(self.gateway.claim())
-    def test_restart_stale_lease_cannot_publish_old_output(self):
-        j=self.gateway.enqueue('a',self.payload());job=self.gateway.claim()
-        with closing(self.gateway.connect()) as c,c:c.execute('UPDATE jobs SET lease=? WHERE id=?',('new',j['id']))
-        self.assertFalse(self.gateway.finish(job,{'reply':'stale'}))
-    def test_round_robin_fairness_between_members(self):
-        for _ in range(3):self.gateway.enqueue('a',self.payload())
-        b=self.gateway.enqueue('b',self.payload());first=self.gateway.claim();self.gateway.finish(first,{'ok':1});second=self.gateway.claim();self.assertEqual(second['client'],'b')
-    def test_member_quota_cannot_consume_every_slot(self):
-        self.gateway.clients['a']['max_pending']=1;self.gateway.enqueue('a',self.payload())
-        with self.assertRaises(OverflowError):self.gateway.enqueue('a',self.payload())
-        self.assertTrue(self.gateway.enqueue('b',self.payload())['id'])
-    def test_http_rejects_invalid_tasks_tool_roles_and_oversized_data(self):
-        for p in ({**self.payload(),'task':'run_shell'},{**self.payload(),'messages':[{'role':'tool','content':'x'}]},{**self.payload(),'options':{'endpoint':'http://outside.test'}}):self.assertEqual(self.client.post('/v1/jobs',json=p,headers=self.headers()).status_code,400)
-        self.assertEqual(self.client.post('/v1/jobs',data='x'*30000,headers=self.headers()).status_code,413)
-    def test_global_model_circuit_does_not_drop_queue(self):
-        for _ in range(3):
-            self.gateway.enqueue('a',self.payload('probe'));job=self.gateway.claim();self.gateway.finish(job,{},'model_unavailable')
-        ordinary=self.gateway.enqueue('b',self.payload());self.assertIsNone(self.gateway.claim());self.assertEqual(self.gateway.get(ordinary['id'],'b')['status'],'queued')
-        self.gateway.enqueue('a',self.payload('probe'));probe=self.gateway.claim();self.gateway.finish(probe,{'ok':1});self.assertIsNotNone(self.gateway.claim())
-    def test_semantic_transport_failure_does_not_open_global_network_circuit(self):
-        self.gateway.transport=lambda p:(_ for _ in ()).throw(ValueError('invalid_model_output'))
-        for _ in range(4):self.gateway.enqueue('a',self.payload());self.gateway.process_one()
-        self.assertEqual(self.gateway.status('a')['circuit_open_until'],0)
-    def test_real_http_adapter_consumes_shared_queue_and_cancels_timeout(self):
-        from werkzeug.serving import make_server
-        from utils.gateway_client import transport
-        server=make_server('127.0.0.1',0,self.app,threaded=True);thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start();self.gateway.start()
-        settings={'gateway_url':'http://127.0.0.1:'+str(server.server_port),'client_token':self.tokens['a'],'timeout':5,'gateway_wait':5,'context_length':1024,'think':False}
-        try:
-            data=transport(settings,[{'role':'user','content':'fixture'}],None,{'request_id':secrets.token_hex(12),'task':'probe','timeout':5});self.assertTrue(data['done'])
-        finally:server.shutdown();server.server_close();thread.join(2)

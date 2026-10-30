@@ -1,20 +1,18 @@
 [project]
 name = "honeypot-system"
-version = "1.0.0"
-description = "A high-fidelity SSH Honeypot with Web Dashboard"
+version = "2.4.0"
+description = "Single-host honeypot with evidence investigation and optional local/cloud AI and virtual protocol adapters"
 requires-python = ">=3.11"
 dependencies = [
     "flask>=2.3.3",
     "werkzeug>=2.3.7",
     "paramiko>=4.0.0",
     "pymysql>=1.1.0",
-    "python-dateutil>=2.8.2",
     "psutil>=5.9.6",
     "requests>=2.31.0",
     "cryptography>=41.0.4",
     "bcrypt>=4.0.1",
     "pynacl>=1.5.0",
-    "waitress>=2.1",
 ]
 
 [build-system]
@@ -23,3 +21,4 @@ build-backend = "hatchling.build"
 
 [tool.uv]
 package = false
+

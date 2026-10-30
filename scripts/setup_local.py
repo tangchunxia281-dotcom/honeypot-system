@@ -14,5 +14,6 @@ if __name__=='__main__':
     if not python.exists():venv.EnvBuilder(with_pip=True).create(target)
     with (ROOT/'pyproject.toml').open('rb') as file:dependencies=tomllib.load(file)['project']['dependencies']
     print('正在安装项目声明的依赖；原 .venv、配置和数据库保持原样。',flush=True)
-    subprocess.run([str(python),'-m','pip','install',*dependencies],cwd=ROOT,check=True)
-    print('完成。运行：'+str(python)+' '+str(ROOT/'main.py'),flush=True)
+    locked=ROOT/'requirements-lock.txt'
+    subprocess.run([str(python),'-m','pip','install','-r',str(locked if locked.exists()else ROOT/'requirements.txt')],cwd=ROOT,check=True)
+    print('完成。运行：'+str(python)+' '+str(ROOT/'scripts/competition.py')+' start',flush=True)

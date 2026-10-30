@@ -1,0 +1,642 @@
+test_case_filter_uses_snapshot_before_limit_even_if_live_index_is_gone (test_scope_regressions.ScopeRegressions.test_case_filter_uses_snapshot_before_limit_even_if_live_index_is_gone) ... ok
+test_interaction_end_time_includes_the_whole_displayed_second (test_scope_regressions.ScopeRegressions.test_interaction_end_time_includes_the_whole_displayed_second) ... ok
+test_interaction_source_and_time_are_filtered_before_newest_limit (test_scope_regressions.ScopeRegressions.test_interaction_source_and_time_are_filtered_before_newest_limit) ... ok
+test_overview_cases_match_the_same_source_scope_as_records (test_scope_regressions.ScopeRegressions.test_overview_cases_match_the_same_source_scope_as_records) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 1.140s
+
+OK
+test_target_and_protocol_settings_are_validated (test_integrations24.ApiContracts.test_target_and_protocol_settings_are_validated) ... ok
+test_endpoint_is_local_and_outputs_are_bounded (test_integrations24.ClassifierContracts.test_endpoint_is_local_and_outputs_are_bounded) ... ok
+test_slow_model_is_async_and_cannot_change_another_identity (test_integrations24.ClassifierContracts.test_slow_model_is_async_and_cannot_change_another_identity) ... ok
+test_storage_failure_does_not_kill_worker (test_integrations24.ClassifierContracts.test_storage_failure_does_not_kill_worker) ... ok
+test_cloud_transport_uses_schema_and_auth_without_mutating_messages (test_integrations24.CloudContracts.test_cloud_transport_uses_schema_and_auth_without_mutating_messages) ... ok
+test_https_explicit_consent_and_key_never_returned (test_integrations24.CloudContracts.test_https_explicit_consent_and_key_never_returned) ... ok
+test_ftp_rejects_oversized_lines_and_active_connections (test_integrations24.InputBoundaryContracts.test_ftp_rejects_oversized_lines_and_active_connections) ... ok
+test_redis_rejects_oversized_bulk_before_reading (test_integrations24.InputBoundaryContracts.test_redis_rejects_oversized_bulk_before_reading) ... ok
+test_telnet_caps_line_and_subnegotiation (test_integrations24.InputBoundaryContracts.test_telnet_caps_line_and_subnegotiation) ... ok
+test_event_protocol_names_are_preserved (test_integrations24.ProtocolContracts.test_event_protocol_names_are_preserved) ... ok
+test_mysql_never_requests_client_files (test_integrations24.ProtocolContracts.test_mysql_never_requests_client_files) ... ok
+test_six_channels_survive_index_and_case (test_integrations24.ProtocolContracts.test_six_channels_survive_index_and_case) ... ok
+test_windows_permissions_preserve_inherited_service_access (test_integrations24.ProtocolContracts.test_windows_permissions_preserve_inherited_service_access) ... ok
+test_revision_and_labels_do_not_imply_firewall (test_integrations24.TargetContracts.test_revision_and_labels_do_not_imply_firewall) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 2.395s
+
+OK
+test_no_recording_coaching_inside_product (test_product_ui.ProductUiChecks.test_no_recording_coaching_inside_product) ... ok
+test_real_panels_replace_anchors_and_legacy_cross_routes (test_product_ui.ProductUiChecks.test_real_panels_replace_anchors_and_legacy_cross_routes) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.002s
+
+OK
+test_five_primary_entries (test_workspace.NavigationChecks.test_five_primary_entries) ... ok
+test_archived_raw_request_keeps_matching_ai_result (test_workspace.PortalApiChecks.test_archived_raw_request_keeps_matching_ai_result) ... ok
+test_case_snapshot_and_scope_survive_new_records (test_workspace.PortalApiChecks.test_case_snapshot_and_scope_survive_new_records) ... ok
+test_open_case_scope_is_validated_after_time_boundaries_freeze (test_workspace.PortalApiChecks.test_open_case_scope_is_validated_after_time_boundaries_freeze) ... ok
+test_scope_case_link_and_closed_state (test_workspace.PortalApiChecks.test_scope_case_link_and_closed_state) ... ok
+test_selected_event_remains_in_bounded_busy_case_snapshot (test_workspace.PortalApiChecks.test_selected_event_remains_in_bounded_busy_case_snapshot) ... ok
+test_unknown_evidence_never_creates_a_case (test_workspace.PortalApiChecks.test_unknown_evidence_never_creates_a_case) ... ok
+test_configuration_preserves_values_and_is_not_live_activation (test_workspace.WizardChecks.test_configuration_preserves_values_and_is_not_live_activation) ... ok
+test_download_progress_with_fake_ollama (test_workspace.WizardChecks.test_download_progress_with_fake_ollama) ... ok
+test_local_only_and_curated_downloads (test_workspace.WizardChecks.test_local_only_and_curated_downloads) ... ok
+test_case_snapshot_and_scope_survive_new_records (test_workspace.WorkflowChecks.test_case_snapshot_and_scope_survive_new_records) ... ok
+test_open_case_scope_is_validated_after_time_boundaries_freeze (test_workspace.WorkflowChecks.test_open_case_scope_is_validated_after_time_boundaries_freeze) ... ok
+test_selected_event_remains_in_bounded_busy_case_snapshot (test_workspace.WorkflowChecks.test_selected_event_remains_in_bounded_busy_case_snapshot) ... ok
+test_unknown_evidence_never_creates_a_case (test_workspace.WorkflowChecks.test_unknown_evidence_never_creates_a_case) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 3.754s
+
+OK
+test_bounded_json_and_browser_endpoint_override_rejected (test_ai_setup.APIChecks.test_bounded_json_and_browser_endpoint_override_rejected) ... ok
+test_deeply_nested_browser_json_returns_bounded_json_error (test_ai_setup.APIChecks.test_deeply_nested_browser_json_returns_bounded_json_error) ... ok
+test_every_endpoint_requires_login_and_mutations_require_csrf (test_ai_setup.APIChecks.test_every_endpoint_requires_login_and_mutations_require_csrf) ... ok
+test_size_guard_runs_before_csrf_form_fallback (test_ai_setup.APIChecks.test_size_guard_runs_before_csrf_form_fallback) ... ok
+test_audit_failure_never_leaves_a_phantom_running_task (test_ai_setup.SetupChecks.test_audit_failure_never_leaves_a_phantom_running_task) ... ok
+test_cancelled_before_worker_start_never_sends_pull (test_ai_setup.SetupChecks.test_cancelled_before_worker_start_never_sends_pull) ... ok
+test_candidate_catalog_has_distinct_families_and_verified_registry_links (test_ai_setup.SetupChecks.test_candidate_catalog_has_distinct_families_and_verified_registry_links) ... ok
+test_configuration_preserves_values_and_requires_exact_installed_name (test_ai_setup.SetupChecks.test_configuration_preserves_values_and_requires_exact_installed_name) ... ok
+test_deeply_nested_service_json_is_rejected_as_invalid_data (test_ai_setup.SetupChecks.test_deeply_nested_service_json_is_rejected_as_invalid_data) ... ok
+test_download_stream_completes_without_claiming_model_quality (test_ai_setup.SetupChecks.test_download_stream_completes_without_claiming_model_quality) ... ok
+test_environment_lists_candidates_without_starting_a_task (test_ai_setup.SetupChecks.test_environment_lists_candidates_without_starting_a_task) ... ok
+test_installed_models_use_bounded_direct_loopback_requests (test_ai_setup.SetupChecks.test_installed_models_use_bounded_direct_loopback_requests) ... ok
+test_interrupted_task_is_not_resumed_after_restart (test_ai_setup.SetupChecks.test_interrupted_task_is_not_resumed_after_restart) ... ok
+test_invalid_model_json_is_reachable_but_not_format_valid (test_ai_setup.SetupChecks.test_invalid_model_json_is_reachable_but_not_format_valid) ... ok
+test_invented_reference_and_wrong_verdict_are_distinct_failures (test_ai_setup.SetupChecks.test_invented_reference_and_wrong_verdict_are_distinct_failures) ... ok
+test_job_history_survives_recreation_and_is_bounded (test_ai_setup.SetupChecks.test_job_history_survives_recreation_and_is_bounded) ... ok
+test_low_disk_download_never_starts (test_ai_setup.SetupChecks.test_low_disk_download_never_starts) ... ok
+test_new_family_downloads_use_the_same_whitelist_and_sized_disk_guard (test_ai_setup.SetupChecks.test_new_family_downloads_use_the_same_whitelist_and_sized_disk_guard) ... ok
+test_one_task_and_cancel_keep_slot_until_worker_stops (test_ai_setup.SetupChecks.test_one_task_and_cancel_keep_slot_until_worker_stops) ... ok
+test_rejects_remote_endpoints_and_unknown_downloads_before_network (test_ai_setup.SetupChecks.test_rejects_remote_endpoints_and_unknown_downloads_before_network) ... ok
+test_replace_failure_keeps_original_configuration_and_cleans_temp (test_ai_setup.SetupChecks.test_replace_failure_keeps_original_configuration_and_cleans_temp) ... ok
+test_selected_model_test_is_isolated_and_checks_two_fixed_samples (test_ai_setup.SetupChecks.test_selected_model_test_is_isolated_and_checks_two_fixed_samples) ... ok
+test_service_failure_keeps_previous_config_and_returns_json (test_ai_setup.SetupChecks.test_service_failure_keeps_previous_config_and_returns_json) ... ok
+test_simultaneous_start_admits_only_one_worker (test_ai_setup.SetupChecks.test_simultaneous_start_admits_only_one_worker) ... ok
+test_stream_deadline_and_cancellation_are_checked_before_success (test_ai_setup.SetupChecks.test_stream_deadline_and_cancellation_are_checked_before_success) ... ok
+test_truncated_and_oversized_download_streams_fail (test_ai_setup.SetupChecks.test_truncated_and_oversized_download_streams_fail) ... ok
+test_worker_start_failure_is_reported_and_does_not_occupy_slot (test_ai_setup.SetupChecks.test_worker_start_failure_is_reported_and_does_not_occupy_slot) ... ok
+
+----------------------------------------------------------------------
+Ran 27 tests in 2.396s
+
+OK
+test_actual_success_is_audited_without_prompt (test_runtime.Checks.test_actual_success_is_audited_without_prompt) ... ok
+test_admin_api_auth_origin_and_csrf (test_runtime.Checks.test_admin_api_auth_origin_and_csrf) ... ok
+test_audit_failure_does_not_call_model (test_runtime.Checks.test_audit_failure_does_not_call_model) ... ok
+test_disabled_model_never_calls_transport (test_runtime.Checks.test_disabled_model_never_calls_transport) ... ok
+test_leases_are_shared_between_process_stores (test_runtime.Checks.test_leases_are_shared_between_process_stores) ... ok
+test_model_response_byte_limit (test_runtime.Checks.test_model_response_byte_limit) ... ok
+test_output_controls_and_secret_fields_are_removed (test_runtime.Checks.test_output_controls_and_secret_fields_are_removed) ... ok
+test_output_rejects_tool_calls_and_invalid_json (test_runtime.Checks.test_output_rejects_tool_calls_and_invalid_json) ... ok
+test_remote_model_endpoint_is_rejected (test_runtime.Checks.test_remote_model_endpoint_is_rejected) ... ok
+test_repeated_failures_open_circuit_and_expiry_allows_recovery (test_runtime.Checks.test_repeated_failures_open_circuit_and_expiry_allows_recovery) ... ok
+[Logger] 日志目录已创建: C:\Users\xuz67\AppData\Local\Temp\Project-bhgrvw06\logs
+[2026-10-30 22:50:29] [INFO] [ai_interaction] [交互完成] channel=ssh session=1e44e5e15693ae2cc64396824ac42f76 step=1 source=model strategy=not_found reason= call=4f4d7c02159b0239fbaa2889
+test_same_ssh_session_reentrant_call_falls_back (test_runtime.Checks.test_same_ssh_session_reentrant_call_falls_back) ... ok
+test_session_budget_is_enforced (test_runtime.Checks.test_session_budget_is_enforced) ... ok
+[2026-10-30 22:50:29] [INFO] [ai_interaction] [交互完成] channel=ssh session=07bb548bdc2c31d36d17dcc28af4bf9f step=1 source=model strategy=not_found reason= call=48efd3327796120d2acd55a6
+[2026-10-30 22:50:29] [INFO] [ai_interaction] [交互完成] channel=ssh session=26280cd2709bc86b581b1a5ae46a1143 step=1 source=model strategy=not_found reason= call=59cb8ea1dfb8c25b8d994ca3
+test_ssh_contexts_do_not_mix (test_runtime.Checks.test_ssh_contexts_do_not_mix) ... ok
+test_timeout_keeps_slot_until_worker_finishes (test_runtime.Checks.test_timeout_keeps_slot_until_worker_finishes) ... ok
+test_unavailable_model_falls_back (test_runtime.Checks.test_unavailable_model_falls_back) ... ok
+[2026-10-30 22:50:30] [INFO] [ai_interaction] [交互完成] channel=ssh session=0aef8b9e5c3428f1ac69b99d622bd159 step=1 source=program strategy=virtual_command reason= call=
+test_unknown_ssh_command_retains_original_response_on_failure (test_runtime.Checks.test_unknown_ssh_command_retains_original_response_on_failure) ... ok
+test_web_still_responds_without_model (test_runtime.Checks.test_web_still_responds_without_model) ... ok
+test_background_result_links_request_and_does_not_replace_rule (test_detection.DetectionChecks.test_background_result_links_request_and_does_not_replace_rule) ... ok
+test_cautious_negation_is_allowed (test_detection.DetectionChecks.test_cautious_negation_is_allowed) ... ok
+test_credentials_are_not_sent_to_model (test_detection.DetectionChecks.test_credentials_are_not_sent_to_model) ... ok
+test_encoded_multiword_password_and_session_tokens_are_removed (test_detection.DetectionChecks.test_encoded_multiword_password_and_session_tokens_are_removed) ... ok
+test_failure_and_invalid_output_remain_uncertain (test_detection.DetectionChecks.test_failure_and_invalid_output_remain_uncertain) ... ok
+test_fast_rules_cover_ssrf_ssti_xxe_and_technique_precedes_path (test_detection.DetectionChecks.test_fast_rules_cover_ssrf_ssti_xxe_and_technique_precedes_path) ... ok
+test_fast_rules_do_not_flag_public_preview_or_plain_template_name (test_detection.DetectionChecks.test_fast_rules_do_not_flag_public_preview_or_plain_template_name) ... ok
+test_invented_evidence_unknown_type_and_success_claim_rejected (test_detection.DetectionChecks.test_invented_evidence_unknown_type_and_success_claim_rejected) ... ok
+test_new_api_auth_csrf_and_detail (test_detection.DetectionChecks.test_new_api_auth_csrf_and_detail) ... ok
+test_per_source_budget (test_detection.DetectionChecks.test_per_source_budget) ... ok
+test_queue_bound_and_duplicate_request (test_detection.DetectionChecks.test_queue_bound_and_duplicate_request) ... ok
+test_request_capture_returns_without_waiting_for_model (test_detection.DetectionChecks.test_request_capture_returns_without_waiting_for_model) ... ok
+test_rule_ai_disagreement_is_visible (test_detection.DetectionChecks.test_rule_ai_disagreement_is_visible) ... ok
+test_rule_score_is_bounded (test_detection.DetectionChecks.test_rule_score_is_bounded) ... ok
+test_single_detection_claim_across_stores (test_detection.DetectionChecks.test_single_detection_claim_across_stores) ... ok
+test_supported_types_and_exact_evidence (test_detection.DetectionChecks.test_supported_types_and_exact_evidence) ... ok
+test_truncated_no_attack_is_uncertain (test_detection.DetectionChecks.test_truncated_no_attack_is_uncertain) ... ok
+test_admission_storage_failure_never_calls_model (test_interaction.InteractionChecks.test_admission_storage_failure_never_calls_model) ... ok
+[2026-10-30 22:50:32] [WARNING] [ai_interaction] [交互拒绝] channel=web session= source_ip=192.0.2.61 reason=session_capacity
+[2026-10-30 22:50:32] [INFO] [ai_interaction] [交互完成] channel=web session=7cc4fe356df57771b8228ec0f5173c54 step=1 source=program strategy=fixture reason= call=
+[2026-10-30 22:50:32] [WARNING] [ai_interaction] [交互拒绝] channel=web session=7cc4fe356df57771b8228ec0f5173c54 source_ip=192.0.2.61 reason=step_budget
+test_capacity_and_step_limits (test_interaction.InteractionChecks.test_capacity_and_step_limits) ... ok
+[2026-10-30 22:50:32] [INFO] [ai_interaction] [交互完成] channel=web session=fa97a72bc52bce7dfe82b8cffcd45223 step=1 source=program strategy=fixture reason= call=
+test_cookie_with_different_ip_gets_fresh_state (test_interaction.InteractionChecks.test_cookie_with_different_ip_gets_fresh_state) ... ok
+[2026-10-30 22:50:32] [INFO] [ai_interaction] [交互完成] channel=web session=962a0cacdb98a55dd07c42e994332e84 step=1 source=program strategy=fixture reason= call=
+[2026-10-30 22:50:32] [WARNING] [ai_interaction] [交互拒绝] channel=web session=962a0cacdb98a55dd07c42e994332e84 source_ip=192.0.2.61 reason=session_busy
+test_cross_process_store_competing_claims (test_interaction.InteractionChecks.test_cross_process_store_competing_claims) ... ok
+test_detection_counts_match_source_filter (test_interaction.InteractionChecks.test_detection_counts_match_source_filter) ... ok
+test_expired_state_cannot_commit_late_reply (test_interaction.InteractionChecks.test_expired_state_cannot_commit_late_reply) ... ok
+test_ip_budget_survives_new_session_ids (test_interaction.InteractionChecks.test_ip_budget_survives_new_session_ids) ... ok
+[2026-10-30 22:50:32] [INFO] [ai_interaction] [交互完成] channel=ssh session=1a56e6b7491e32afbcf89d310d12a66a step=1 source=fallback strategy=not_found reason=policy_restricted call=
+test_multiline_input_policy_does_not_call_model (test_interaction.InteractionChecks.test_multiline_input_policy_does_not_call_model) ... ok
+test_multitoken_authorization_and_encoded_secret_redaction (test_interaction.InteractionChecks.test_multitoken_authorization_and_encoded_secret_redaction) ... ok
+[2026-10-30 22:50:33] [INFO] [ssh] [会话隔离] 新连接 192.0.2.61 初始化会话
+[2026-10-30 22:50:33] [INFO] [ai_interaction] [交互完成] channel=ssh session=bdc1c647a70fca28db4dc9ab78b7610c step=1 source=model strategy=profile_summary reason= call=f17f444e41cbefb50537ecd4
+test_profile_summary_is_rendered_from_real_virtual_state (test_interaction.InteractionChecks.test_profile_summary_is_rendered_from_real_virtual_state) ... ok
+[2026-10-30 22:50:34] [CRITICAL] [ssh] [入侵] SSH爆破成功 127.0.0.1: root/fixture-only
+[2026-10-30 22:50:34] [INFO] [ssh] [会话隔离] 新连接 127.0.0.1 初始化会话
+[2026-10-30 22:50:34] [INFO] [ssh] [Exec] 127.0.0.1: sysinfo
+[2026-10-30 22:50:35] [INFO] [ai_interaction] [交互完成] channel=ssh session=c9e5b041ce65ee00e941ab5989c7753f step=1 source=model strategy=profile_summary reason= call=b2878260179bd7fd8447aff2
+test_real_ssh_protocol_exec_uses_controlled_model_reply (test_interaction.InteractionChecks.test_real_ssh_protocol_exec_uses_controlled_model_reply) ... ok
+test_rejected_retries_do_not_extend_throttle_or_consume_budget (test_interaction.InteractionChecks.test_rejected_retries_do_not_extend_throttle_or_consume_budget) ... ok
+test_replay_api_and_page_auth_origin_filters (test_interaction.InteractionChecks.test_replay_api_and_page_auth_origin_filters) ... ok
+[2026-10-30 22:50:35] [INFO] [ssh] [会话隔离] 新连接 192.0.2.61 初始化会话
+[2026-10-30 22:50:36] [INFO] [ai_interaction] [交互完成] channel=ssh session=9053eb2a14f7bceedf1b97c8d27ca643 step=1 source=model strategy=not_found reason= call=91367255faf7e92593431bb8
+test_replay_does_not_include_raw_secrets (test_interaction.InteractionChecks.test_replay_does_not_include_raw_secrets) ... ok
+test_slow_drip_http_obeys_total_read_deadline (test_interaction.InteractionChecks.test_slow_drip_http_obeys_total_read_deadline) ... ok
+[2026-10-30 22:50:36] [INFO] [ssh] [会话隔离] 新连接 192.0.2.61 初始化会话
+[2026-10-30 22:50:36] [INFO] [ssh] [会话隔离] 新连接 192.0.2.61 初始化会话
+test_ssh_fake_auth_log_and_reboot_do_not_affect_other_connection (test_interaction.InteractionChecks.test_ssh_fake_auth_log_and_reboot_do_not_affect_other_connection) ... ok
+[2026-10-30 22:50:36] [INFO] [ssh] [会话隔离] 新连接 192.0.2.61 初始化会话
+[2026-10-30 22:50:36] [INFO] [ssh] [会话隔离] 新连接 192.0.2.61 初始化会话
+test_ssh_same_ip_and_username_never_reuse_state (test_interaction.InteractionChecks.test_ssh_same_ip_and_username_never_reuse_state) ... ok
+[2026-10-30 22:50:36] [WARNING] [ai_interaction] [交互拒绝] channel=web session=7550f326d69e3492644d7aef1c2cab52 source_ip=192.0.2.61 reason=session_busy
+[2026-10-30 22:50:36] [INFO] [ai_interaction] [交互完成] channel=web session=7550f326d69e3492644d7aef1c2cab52 step=1 source=program strategy=fixture reason= call=
+test_store_single_turn_reservation_and_sequence (test_interaction.InteractionChecks.test_store_single_turn_reservation_and_sequence) ... ok
+test_structured_data_discarded_when_audit_finish_fails (test_interaction.InteractionChecks.test_structured_data_discarded_when_audit_finish_fails) ... ok
+[2026-10-30 22:50:36] [INFO] [ssh] [会话隔离] 新连接 192.0.2.61 初始化会话
+[2026-10-30 22:50:36] [INFO] [ai_interaction] [交互完成] channel=ssh session=9985ab69d8e82d8ab4e0c3af92e30a20 step=1 source=fallback strategy=not_found reason=invalid_model_output call=66dcc5216187f4afe64732b7
+[2026-10-30 22:50:36] [INFO] [ssh] [会话隔离] 新连接 192.0.2.61 初始化会话
+[2026-10-30 22:50:36] [INFO] [ai_interaction] [交互完成] channel=ssh session=cbec619451212c17dc0f9b89791f1599 step=1 source=fallback strategy=not_found reason=invalid_model_output call=d12f904c305bb50b22900459
+[2026-10-30 22:50:36] [INFO] [ssh] [会话隔离] 新连接 192.0.2.61 初始化会话
+[2026-10-30 22:50:37] [INFO] [ai_interaction] [交互完成] channel=ssh session=5a5ea237872b48faa7f6bd5776525a98 step=1 source=fallback strategy=not_found reason=invalid_model_output call=4e0f14486058291cc5491977
+test_unknown_command_cannot_request_profile_or_free_text (test_interaction.InteractionChecks.test_unknown_command_cannot_request_profile_or_free_text) ... ok
+[2026-10-30 22:50:37] [INFO] [ssh] [会话隔离] 新连接 192.0.2.61 初始化会话
+[2026-10-30 22:50:37] [INFO] [ai_interaction] [交互完成] channel=ssh session=a89e38c1e92dae4792c92ce88a8ba576 step=1 source=program strategy=virtual_command reason= call=
+[2026-10-30 22:50:37] [INFO] [ai_interaction] [交互完成] channel=ssh session=a89e38c1e92dae4792c92ce88a8ba576 step=2 source=program strategy=virtual_command reason= call=
+[2026-10-30 22:50:37] [INFO] [ai_interaction] [交互完成] channel=ssh session=a89e38c1e92dae4792c92ce88a8ba576 step=3 source=program strategy=virtual_command reason= call=
+[2026-10-30 22:50:37] [INFO] [ai_interaction] [交互完成] channel=ssh session=a89e38c1e92dae4792c92ce88a8ba576 step=4 source=program strategy=virtual_command reason= call=
+test_virtual_write_read_cd_consistency_without_model (test_interaction.InteractionChecks.test_virtual_write_read_cd_consistency_without_model) ... ok
+[2026-10-30 22:50:37] [INFO] [ai_interaction] [交互完成] channel=web session=7bd50951f831c974df2ffcd9acc8b084 step=1 source=model strategy=format_error reason= call=4f00f994ed1821e5fa0efc9b
+[2026-10-30 22:50:38] [INFO] [ai_interaction] [交互完成] channel=web session=7bd50951f831c974df2ffcd9acc8b084 step=2 source=model strategy=format_error reason= call=a9604b64f0e984fef0138fbe
+test_web_invalid_payload_and_large_payload (test_interaction.InteractionChecks.test_web_invalid_payload_and_large_payload) ... ok
+[2026-10-30 22:50:38] [WARNING] [web] [可疑] 分数:38 127.0.0.1 GET /api/preview - 头异常: 头字段数量偏少(<=2), 疑似SSRF内网访问
+[2026-10-30 22:50:38] [INFO] [ai_interaction] [交互完成] channel=web session=cbe69914960cfbd5e1d4797f4f6dba48 step=1 source=model strategy=preview_pending reason= call=6582189178a21223e0b62836
+[2026-10-30 22:50:38] [INFO] [ai_interaction] [交互完成] channel=web session=8e99583d63d56ecab1ce04b618a8bb9a step=1 source=program strategy=job_lookup reason= call=
+[2026-10-30 22:50:38] [INFO] [ai_interaction] [交互完成] channel=web session=cbe69914960cfbd5e1d4797f4f6dba48 step=2 source=program strategy=job_lookup reason= call=
+[2026-10-30 22:50:38] [WARNING] [web] [可疑] 分数:35 127.0.0.1 GET /api/preview - 疑似SSRF内网访问
+[2026-10-30 22:50:39] [INFO] [ai_interaction] [交互完成] channel=web session=cbe69914960cfbd5e1d4797f4f6dba48 step=3 source=model strategy=preview_pending reason= call=11a2973e2e711ba0ca12bdda
+[2026-10-30 22:50:39] [INFO] [ai_interaction] [交互完成] channel=web session=cbe69914960cfbd5e1d4797f4f6dba48 step=4 source=model strategy=preview_pending reason= call=cc2cf166744b68ffad730a8f
+[2026-10-30 22:50:39] [INFO] [ai_interaction] [交互完成] channel=web session=cbe69914960cfbd5e1d4797f4f6dba48 step=5 source=program strategy=job_lookup reason= call=
+test_web_job_consistency_and_other_cookie_cannot_read (test_interaction.InteractionChecks.test_web_job_consistency_and_other_cookie_cannot_read) ... ok
+[2026-10-30 22:50:39] [INFO] [ai_interaction] [交互完成] channel=web session=54df9bd5aa9fcce830ac99cb2479268b step=1 source=fallback strategy=preview_pending reason=disabled call=8ba20cbe7304a63a4c5ad4e5
+[2026-10-30 22:50:39] [INFO] [ai_interaction] [交互完成] channel=web session=54df9bd5aa9fcce830ac99cb2479268b step=2 source=program strategy=job_lookup reason= call=
+[2026-10-30 22:50:40] [INFO] [ai_interaction] [交互完成] channel=web session=a5f6876b77676bc7cdcd10fbc2d0f186 step=1 source=fallback strategy=preview_pending reason=model_unavailable call=261b0217a56d837249cf3bfa
+[2026-10-30 22:50:40] [INFO] [ai_interaction] [交互完成] channel=web session=a5f6876b77676bc7cdcd10fbc2d0f186 step=2 source=program strategy=job_lookup reason= call=
+test_web_model_offline_and_disabled_still_returns_consistent_job (test_interaction.InteractionChecks.test_web_model_offline_and_disabled_still_returns_consistent_job) ... ok
+[2026-10-30 22:50:40] [INFO] [ai_interaction] [交互完成] channel=web session=ed3f4f266bdb55222dfae0f131751e87 step=1 source=fallback strategy=preview_pending reason=invalid_model_output call=513799a80477c53cb07b9919
+test_web_output_extra_fields_are_rejected_and_template_used (test_interaction.InteractionChecks.test_web_output_extra_fields_are_rejected_and_template_used) ... ok
+test_analysis_api_login_csrf_and_chat_owner (test_analyst.AnalystChecks.test_analysis_api_login_csrf_and_chat_owner) ... ok
+test_background_waits_for_foreground_waiter (test_analyst.AnalystChecks.test_background_waits_for_foreground_waiter) ... ok
+test_chat_empty_context_can_explain_missing_evidence (test_analyst.AnalystChecks.test_chat_empty_context_can_explain_missing_evidence) ... ok
+test_chat_hourly_budget_and_input_limit (test_analyst.AnalystChecks.test_chat_hourly_budget_and_input_limit) ... ok
+test_chat_prioritized_over_report_and_claim_exclusive (test_analyst.AnalystChecks.test_chat_prioritized_over_report_and_claim_exclusive) ... ok
+test_chat_retrieves_saved_risk_without_overwriting_it (test_analyst.AnalystChecks.test_chat_retrieves_saved_risk_without_overwriting_it) ... ok
+test_demo_mode_api_requires_login_and_csrf (test_analyst.AnalystChecks.test_demo_mode_api_requires_login_and_csrf) ... ok
+test_demo_mode_pauses_reports_but_question_remains_eligible (test_analyst.AnalystChecks.test_demo_mode_pauses_reports_but_question_remains_eligible) ... ok
+test_fabricated_reference_or_quote_rejected (test_analyst.AnalystChecks.test_fabricated_reference_or_quote_rejected) ... ok
+[2026-10-30 22:50:42] [INFO] [ai_analyst] [AI分析] task=report id=2173d647707ba86d1a6b8510 status=fallback reason=invalid_model_output evidence=1 call=60e8e9eb5c4bd0c34bcccb7c
+test_failed_report_does_not_invent_ai_risk (test_analyst.AnalystChecks.test_failed_report_does_not_invent_ai_risk) ... ok
+test_foreground_can_wait_briefly_for_capacity (test_analyst.AnalystChecks.test_foreground_can_wait_briefly_for_capacity) ... ok
+test_index_full_batches_resume_and_linked_web_events_deduplicated (test_analyst.AnalystChecks.test_index_full_batches_resume_and_linked_web_events_deduplicated) ... ok
+[2026-10-30 22:50:42] [INFO] [ai_analyst] [AI分析] task=report id=bb12abc1233274394e5b196e status=fallback reason=invalid_model_output evidence=1 call=6a2554f4040f04c03247b21f
+[2026-10-30 22:50:43] [INFO] [ai_analyst] [AI分析] task=report id=bb12abc1233274394e5b196e status=fallback reason=invalid_model_output evidence=1 call=f2c60dec5b91ec2404fe7253
+test_invalid_output_correction_is_bounded (test_analyst.AnalystChecks.test_invalid_output_correction_is_bounded) ... ok
+test_owner_isolation_and_conversation_history (test_analyst.AnalystChecks.test_owner_isolation_and_conversation_history) ... ok
+test_parameterized_search_filters (test_analyst.AnalystChecks.test_parameterized_search_filters) ... ok
+test_passwords_redacted_before_index (test_analyst.AnalystChecks.test_passwords_redacted_before_index) ... ok
+[2026-10-30 22:50:43] [INFO] [ai_analyst] [AI分析] task=report id=421c0a918bd25eac5b15a30e status=success reason= evidence=1 call=78bf325cc7578be3ac63983f
+test_processing_requires_validated_data (test_analyst.AnalystChecks.test_processing_requires_validated_data) ... ok
+test_real_compromise_claim_and_claim_all_logs_rejected (test_analyst.AnalystChecks.test_real_compromise_claim_and_claim_all_logs_rejected) ... ok
+test_report_export_requires_completed_task_and_escapes_html (test_analyst.AnalystChecks.test_report_export_requires_completed_task_and_escapes_html) ... ok
+test_report_grounding_and_independent_risk (test_analyst.AnalystChecks.test_report_grounding_and_independent_risk) ... ok
+test_report_job_linking_survives_restart_without_duplicates (test_analyst.AnalystChecks.test_report_job_linking_survives_restart_without_duplicates) ... ok
+test_sqlite_archive_is_included (test_analyst.AnalystChecks.test_sqlite_archive_is_included) ... ok
+test_truncated_output_reason_and_diagnostic_persisted (test_analyst.AnalystChecks.test_truncated_output_reason_and_diagnostic_persisted) ... ok
+test_bounded_case_set_and_marker (test_demo.DemoChecks.test_bounded_case_set_and_marker) ... ok
+test_cli_does_not_accept_remote_hosts_or_unbounded_speed (test_demo.DemoChecks.test_cli_does_not_accept_remote_hosts_or_unbounded_speed) ... usage: verify_project.py [-h] [--web-port WEB_PORT] [--ssh-port SSH_PORT]
+                         [--dashboard-port DASHBOARD_PORT] [--ssh]
+                         [--ssh-user SSH_USER] [--auth-failure-demo]
+                         [--business] [--quick] [--gap GAP]
+                         [--timeout TIMEOUT] [--output OUTPUT] [--list]
+verify_project.py: error: unrecognized arguments: --host 192.0.2.1
+usage: verify_project.py [-h] [--web-port WEB_PORT] [--ssh-port SSH_PORT]
+                         [--dashboard-port DASHBOARD_PORT] [--ssh]
+                         [--ssh-user SSH_USER] [--auth-failure-demo]
+                         [--business] [--quick] [--gap GAP]
+                         [--timeout TIMEOUT] [--output OUTPUT] [--list]
+verify_project.py: error: gap需1～30，timeout需5～60
+usage: verify_project.py [-h] [--web-port WEB_PORT] [--ssh-port SSH_PORT]
+                         [--dashboard-port DASHBOARD_PORT] [--ssh]
+                         [--ssh-user SSH_USER] [--auth-failure-demo]
+                         [--business] [--quick] [--gap GAP]
+                         [--timeout TIMEOUT] [--output OUTPUT] [--list]
+verify_project.py: error: gap需1～30，timeout需5～60
+usage: verify_project.py [-h] [--web-port WEB_PORT] [--ssh-port SSH_PORT]
+                         [--dashboard-port DASHBOARD_PORT] [--ssh]
+                         [--ssh-user SSH_USER] [--auth-failure-demo]
+                         [--business] [--quick] [--gap GAP]
+                         [--timeout TIMEOUT] [--output OUTPUT] [--list]
+verify_project.py: error: --auth-failure-demo需要同时使用--ssh
+ok
+test_driver_refuses_absolute_request_path (test_demo.DemoChecks.test_driver_refuses_absolute_request_path) ... ok
+[01] 受控交互 / offline：transport_error
+test_network_failure_saved_as_transport_failure (test_demo.DemoChecks.test_network_failure_saved_as_transport_failure) ... ok
+test_real_web_and_same_ssh_channel_in_temporary_services (test_demo.DemoChecks.test_real_web_and_same_ssh_channel_in_temporary_services) ... 127.0.0.1 - - [30/Oct/2026 22:50:44] "GET /search?q=python%20tutorial&demo_run=hp_demo_fixture HTTP/1.1" 200 -
+[01] 正常访问 / 正常搜索对照：response_received · HTTP 200
+127.0.0.1 - - [30/Oct/2026 22:50:44] "GET /admin?demo_run=hp_demo_fixture HTTP/1.1" 200 -
+[02] 入口探测 / 管理入口：response_received · HTTP 200
+[2026-10-30 22:50:44] [WARNING] [web] [可疑] 分数:37 127.0.0.1 GET /admin - 敏感路径: /admin, 扫描工具特征: sqlmap
+127.0.0.1 - - [30/Oct/2026 22:50:44] "GET /admin?demo_run=hp_demo_fixture HTTP/1.1" 200 -
+[03] 入口探测 / 扫描工具特征：response_received · HTTP 200
+[2026-10-30 22:50:44] [WARNING] [web] [可疑] 分数:34 127.0.0.1 GET /search - 特殊字符异常: 7个, 疑似XSS特征
+[2026-10-30 22:50:44] [INFO] [web] [检测] XSS攻击 127.0.0.1: <script>alert("honeypot-demo")</script>
+127.0.0.1 - - [30/Oct/2026 22:50:44] "GET /search?q=<script>alert("honeypot-demo")</script>&demo_run=hp_demo_fixture HTTP/1.1" 200 -
+[04] 输入探测 / XSS 脚本输入：response_received · HTTP 200
+[2026-10-30 22:50:44] [WARNING] [web] [可疑] 分数:25 127.0.0.1 GET /products - 疑似SQL注入特征
+127.0.0.1 - - [30/Oct/2026 22:50:44] "GET /products?id=1%20UNION%20SELECT%20username,password%20FROM%20users&demo_run=hp_demo_fixture HTTP/1.1" 200 -
+[05] 输入探测 / SQL 联合查询输入：response_received · HTTP 200
+[2026-10-30 22:50:45] [WARNING] [web] [可疑] 分数:22 127.0.0.1 GET /download - 目录穿越/LFI特征
+[2026-10-30 22:50:45] [INFO] [web] [note:web_activity_note] 探测路径: /download - IP: 127.0.0.1
+[2026-10-30 22:50:45] [WARNING] [web] 探测路径: /download - IP: 127.0.0.1
+127.0.0.1 - - [30/Oct/2026 22:50:45] "GET /download?file=../../etc/passwd&demo_run=hp_demo_fixture HTTP/1.1" 404 -
+[06] 输入探测 / 路径遍历输入：response_received · HTTP 404
+127.0.0.1 - - [30/Oct/2026 22:50:45] "GET /search?q=为什么%20script%20标签需要转义，如何选择%20SQL%20教程&demo_run=hp_demo_fixture HTTP/1.1" 200 -
+[07] 正常访问 / 安全讨论关键词对照：response_received · HTTP 200
+[2026-10-30 22:50:45] [WARNING] [web] [可疑] 分数:28 127.0.0.1 GET /tools - 疑似命令执行/WebShell特征
+[2026-10-30 22:50:45] [INFO] [web] [note:web_activity_note] 探测路径: /tools - IP: 127.0.0.1
+[2026-10-30 22:50:45] [WARNING] [web] 探测路径: /tools - IP: 127.0.0.1
+127.0.0.1 - - [30/Oct/2026 22:50:45] "GET /tools?cmd=whoami;cat%20/etc/passwd&demo_run=hp_demo_fixture HTTP/1.1" 404 -
+[08] 输入探测 / 命令拼接输入：response_received · HTTP 404
+[2026-10-30 22:50:45] [WARNING] [web] [可疑] 分数:30 127.0.0.1 GET /search - 疑似模板注入SSTI
+127.0.0.1 - - [30/Oct/2026 22:50:45] "GET /search?name={{7*7}}&demo_run=hp_demo_fixture HTTP/1.1" 200 -
+[09] 输入探测 / 模板表达式输入：response_received · HTTP 200
+[2026-10-30 22:50:45] [WARNING] [web] [可疑] 分数:35 127.0.0.1 POST /api/preview - 疑似XML外部实体XXE
+[2026-10-30 22:50:46] [INFO] [ai_interaction] [交互完成] channel=web session=d30483b09758b480b2a230bbd3821170 step=1 source=fallback strategy=format_error reason=disabled call=8ed700c3e6511710eba0c3dc
+127.0.0.1 - - [30/Oct/2026 22:50:46] "POST /api/preview?demo_run=hp_demo_fixture HTTP/1.1" 400 -
+[10] 输入探测 / XML 外部实体声明：response_received · HTTP 400
+[2026-10-30 22:50:46] [WARNING] [web] [可疑] 分数:35 127.0.0.1 GET /api/preview - 疑似SSRF内网访问
+[2026-10-30 22:50:46] [INFO] [ai_interaction] [交互完成] channel=web session=d30483b09758b480b2a230bbd3821170 step=2 source=fallback strategy=preview_pending reason=disabled call=ad76b4f9fcfcce75bd94c5af
+127.0.0.1 - - [30/Oct/2026 22:50:46] "GET /api/preview?url=http://169.254.169.254/latest/meta-data/&demo_run=hp_demo_fixture HTTP/1.1" 202 -
+[11] 输入探测 / 内网目标预览输入：response_received · HTTP 202
+[2026-10-30 22:50:46] [INFO] [ai_interaction] [交互完成] channel=web session=d30483b09758b480b2a230bbd3821170 step=3 source=program strategy=job_lookup reason= call=
+127.0.0.1 - - [30/Oct/2026 22:50:46] "GET /api/preview/jobs/d74e2480c5c6be76e817205d?demo_run=hp_demo_fixture HTTP/1.1" 200 -
+[12] 受控交互 / 查询同会话模拟任务：response_received · HTTP 200
+[2026-10-30 22:50:46] [INFO] [ai_interaction] [交互完成] channel=web session=d30483b09758b480b2a230bbd3821170 step=4 source=fallback strategy=preview_pending reason=disabled call=d2cd368cb81038f1ec5e3353
+127.0.0.1 - - [30/Oct/2026 22:50:46] "GET /api/preview?url=https://example.test/demo&demo_run=hp_demo_fixture HTTP/1.1" 202 -
+[13] 受控交互 / 外部示例目标的模拟预览：response_received · HTTP 202
+[2026-10-30 22:50:46] [INFO] [ai_interaction] [交互完成] channel=web session=d30483b09758b480b2a230bbd3821170 step=5 source=program strategy=job_lookup reason= call=
+127.0.0.1 - - [30/Oct/2026 22:50:46] "GET /api/preview/jobs/1eeca05a388fb7810766e7c4?demo_run=hp_demo_fixture HTTP/1.1" 200 -
+[14] 受控交互 / 查询同会话模拟任务：response_received · HTTP 200
+[2026-10-30 22:50:48] [INFO] [ssh] [失败] SSH认证失败 127.0.0.1: demo_invalid_user/7c2513104cf7865bcff2b84e
+[15] SSH认证对照 / 一次虚构账号尝试：expected_auth_rejection
+[2026-10-30 22:50:49] [CRITICAL] [ssh] [入侵] SSH爆破成功 127.0.0.1: root/fixture-private-credential
+[16] SSH认证 / 使用启动窗口的已知测试账号：virtual_login_accepted
+[2026-10-30 22:50:49] [INFO] [ssh] [会话隔离] 新连接 127.0.0.1 初始化会话
+[2026-10-30 22:50:50] [INFO] [ai_interaction] [交互完成] channel=ssh session=b28ff014e08d8046245793665ebc358c step=1 source=program strategy=virtual_command reason= call=
+[17] SSH交互 / 当前身份：response_received
+[2026-10-30 22:50:50] [INFO] [ai_interaction] [交互完成] channel=ssh session=b28ff014e08d8046245793665ebc358c step=2 source=program strategy=virtual_command reason= call=
+[18] SSH交互 / 准备虚拟演示目录：response_received
+[2026-10-30 22:50:50] [INFO] [ai_interaction] [交互完成] channel=ssh session=b28ff014e08d8046245793665ebc358c step=3 source=program strategy=virtual_command reason= call=
+[19] SSH交互 / 进入虚拟目录：response_received
+[2026-10-30 22:50:50] [INFO] [ai_interaction] [交互完成] channel=ssh session=b28ff014e08d8046245793665ebc358c step=4 source=program strategy=virtual_command reason= call=
+[20] SSH交互 / 写入虚拟演示文件：response_received
+[2026-10-30 22:50:50] [INFO] [ai_interaction] [交互完成] channel=ssh session=b28ff014e08d8046245793665ebc358c step=5 source=program strategy=virtual_command reason= call=
+[21] SSH交互 / 读回虚拟文件：response_received
+[2026-10-30 22:50:50] [INFO] [ai_interaction] [交互完成] channel=ssh session=b28ff014e08d8046245793665ebc358c step=6 source=program strategy=virtual_command reason= call=
+[22] SSH交互 / 模型主机概览：response_received
+[2026-10-30 22:50:51] [INFO] [ai_interaction] [交互完成] channel=ssh session=b28ff014e08d8046245793665ebc358c step=7 source=program strategy=virtual_command reason= call=
+[23] SSH交互 / 模型未知命令策略：response_received
+[2026-10-30 22:50:51] [INFO] [ai_interaction] [交互完成] channel=ssh session=b28ff014e08d8046245793665ebc358c step=8 source=program strategy=virtual_command reason= call=
+[24] SSH交互 / 虚拟服务列表：response_received
+[2026-10-30 22:50:51] [INFO] [ai_interaction] [交互完成] channel=ssh session=b28ff014e08d8046245793665ebc358c step=9 source=program strategy=virtual_command reason= call=
+[25] SSH交互 / 主机诊断：response_received
+[2026-10-30 22:50:51] [INFO] [ai_interaction] [交互完成] channel=ssh session=b28ff014e08d8046245793665ebc358c step=10 source=program strategy=virtual_command reason= call=
+ok
+test_untrusted_poll_addresses_rejected (test_demo.DemoChecks.test_untrusted_poll_addresses_rejected) ... ok
+test_cancel_drops_late_result_and_owner_isolation (__main__.FinalChecks.test_cancel_drops_late_result_and_owner_isolation) ... ok
+[2026-10-30 22:50:52] [INFO] [ai_analyst] [AI分析] task=report id=ca7be543f956f65cbdcd111e status=fallback reason=invalid_model_output evidence=1 call=e2bb1cadeef0297f0756e6e6
+test_fabricated_short_reference_is_rejected_without_cooldown (__main__.FinalChecks.test_fabricated_short_reference_is_rejected_without_cooldown) ... ok
+test_history_archives_before_pruning_derived_index (__main__.FinalChecks.test_history_archives_before_pruning_derived_index) ... ok
+test_list_payload_is_small_and_excludes_raw_log_bodies (__main__.FinalChecks.test_list_payload_is_small_and_excludes_raw_log_bodies) ... ok
+test_manual_review_preserves_original_ai_result (__main__.FinalChecks.test_manual_review_preserves_original_ai_result) ... ok
+test_multiple_os_processes_share_capacity (__main__.FinalChecks.test_multiple_os_processes_share_capacity) ... ok
+test_network_outage_holds_jobs_and_actual_probe_recovers (__main__.FinalChecks.test_network_outage_holds_jobs_and_actual_probe_recovers) ... ok
+test_pagination_same_timestamp_does_not_skip_reports (__main__.FinalChecks.test_pagination_same_timestamp_does_not_skip_reports) ... ok
+test_plain_chat_reads_no_log_evidence_or_log_history (__main__.FinalChecks.test_plain_chat_reads_no_log_evidence_or_log_history) ... ok
+test_semantic_failures_never_disable_healthy_service (__main__.FinalChecks.test_semantic_failures_never_disable_healthy_service) ... ok
+[2026-10-30 22:51:00] [INFO] [ai_analyst] [AI分析] task=report id=0a67b4119a6ef7c120485b4d status=success reason= evidence=1 call=eae344f1a9c6072d2945e401
+test_short_references_are_materialized_from_true_evidence (__main__.FinalChecks.test_short_references_are_materialized_from_true_evidence) ... ok
+test_stale_worker_cannot_overwrite_restarted_job (__main__.FinalChecks.test_stale_worker_cannot_overwrite_restarted_job) ... ok
+test_threaded_model_burst_never_exceeds_configured_capacity (__main__.FinalChecks.test_threaded_model_burst_never_exceeds_configured_capacity) ... ok
+test_web_traffic_burst_is_bounded_and_recovers (__main__.FinalChecks.test_web_traffic_burst_is_bounded_and_recovers) ... 127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-0 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-2 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-10 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-8 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-11 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-5 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-9 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-13 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-3 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-15 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-7 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-12 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-1 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-6 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-14 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-4 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-16 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-18 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-20 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-22 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-23 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-17 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-24 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-26 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:02] "GET /search?q=fixture-28 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-19 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-21 HTTP/1.1" 200 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-30 HTTP/1.1" 429 -
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-25 HTTP/1.1" 200 -
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-27 HTTP/1.1" 200 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-31 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-32 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-35 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-33 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-39 HTTP/1.1" 429 -
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-29 HTTP/1.1" 200 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-42 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-37 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-34 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-41 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-43 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-38 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-40 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-36 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-44 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-47 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-46 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-49 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-45 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-55 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-54 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-52 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-48 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-53 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-56 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-59 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-50 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-58 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-57 HTTP/1.1" 429 -
+[2026-10-30 22:51:03] [WARNING] [web] [限流] 已记录高频请求 127.0.0.1 GET /search score=0
+127.0.0.1 - - [30/Oct/2026 22:51:03] "GET /search?q=fixture-51 HTTP/1.1" 429 -
+ok
+[2026-10-30 22:51:04] [INFO] [investigation] [调查审计] case=afe2953196d439bfabb553dd action=created revision=1
+[2026-10-30 22:51:04] [INFO] [investigation] [调查审计] case=afe2953196d439bfabb553dd action=updated revision=2
+test_api_conflict_returns_409_and_history_unchanged (test_investigations.InvestigationChecks.test_api_conflict_returns_409_and_history_unchanged) ... ok
+test_case_api_rejects_unknown_ids_and_bad_types (test_investigations.InvestigationChecks.test_case_api_rejects_unknown_ids_and_bad_types) ... ok
+[2026-10-30 22:51:05] [INFO] [investigation] [调查审计] case=3565c9bc36f8d4589190a13a action=created revision=1
+test_case_chat_uses_server_snapshots (test_investigations.InvestigationChecks.test_case_chat_uses_server_snapshots) ... ok
+test_case_pagination_handles_equal_timestamps (test_investigations.InvestigationChecks.test_case_pagination_handles_equal_timestamps) ... ok
+[2026-10-30 22:51:05] [INFO] [investigation] [调查审计] case=22a184a52f7162563fecdeac action=created revision=1
+[2026-10-30 22:51:05] [INFO] [investigation] [调查审计] case=c54050c3be8fa1a43c5a5ec5 action=created revision=1
+test_case_title_search_treats_percent_as_literal (test_investigations.InvestigationChecks.test_case_title_search_treats_percent_as_literal) ... ok
+[2026-10-30 22:51:06] [INFO] [investigation] [调查审计] case=653e512390ec295d63e48dd3 action=created revision=1
+test_create_keeps_ai_rule_and_human_risk_separate (test_investigations.InvestigationChecks.test_create_keeps_ai_rule_and_human_risk_separate) ... ok
+[2026-10-30 22:51:06] [INFO] [investigation] [调查审计] case=d7d7a69bbc2913d5a3a67452 action=created revision=1
+[2026-10-30 22:51:06] [INFO] [investigation] [调查审计] case=e07436e3142d93e55b7015f7 action=created revision=1
+test_different_case_history_never_enters_current_case_prompt (test_investigations.InvestigationChecks.test_different_case_history_never_enters_current_case_prompt) ... ok
+[2026-10-30 22:51:07] [INFO] [investigation] [调查审计] case=0be499c6b9959de00a913f6b action=created revision=1
+test_duplicate_report_is_idempotent (test_investigations.InvestigationChecks.test_duplicate_report_is_idempotent) ... ok
+test_each_ai_page_has_one_sidebar_and_required_controls (test_investigations.InvestigationChecks.test_each_ai_page_has_one_sidebar_and_required_controls) ... ok
+[2026-10-30 22:51:08] [INFO] [investigation] [调查审计] case=95cdf99e1ea9eaee838c2ae0 action=created revision=1
+test_empty_case_can_query_current_source (test_investigations.InvestigationChecks.test_empty_case_can_query_current_source) ... ok
+[2026-10-30 22:51:08] [INFO] [investigation] [调查审计] case=7ca0ad454d1e445e1f9a3201 action=created revision=1
+[2026-10-30 22:51:08] [INFO] [investigation] [调查审计] case=7ca0ad454d1e445e1f9a3201 action=updated revision=2
+test_export_escapes_active_html_and_backticks (test_investigations.InvestigationChecks.test_export_escapes_active_html_and_backticks) ... ok
+[2026-10-30 22:51:08] [INFO] [investigation] [调查审计] case=4bb1d750d7b5185c83ccb696 action=created revision=1
+test_export_keeps_older_history_beyond_ui_limit (test_investigations.InvestigationChecks.test_export_keeps_older_history_beyond_ui_limit) ... ok
+[2026-10-30 22:51:09] [INFO] [investigation] [调查审计] case=bbd5e902b0b91b59fb4c8a2a action=created revision=1
+test_file_logger_failure_does_not_undo_committed_update (test_investigations.InvestigationChecks.test_file_logger_failure_does_not_undo_committed_update) ... Investigation audit file unavailable; committed revision=2
+ok
+[2026-10-30 22:51:09] [INFO] [investigation] [调查审计] case=d10892c2608a5e493a867867 action=created revision=1
+test_invalid_changes_leave_no_partial_write (test_investigations.InvestigationChecks.test_invalid_changes_leave_no_partial_write) ... ok
+[2026-10-30 22:51:09] [INFO] [investigation] [调查审计] case=66cc6e8ad287d73a85e627db action=created revision=1
+[2026-10-30 22:51:09] [INFO] [ai_analyst] [AI分析] task=chat id=cb0c9eab7dc8b64a744151a7 status=success reason= evidence=1 call=f2bf594c4811f79a55df7a81
+test_legacy_model_short_prose_refs_are_readable (test_investigations.InvestigationChecks.test_legacy_model_short_prose_refs_are_readable) ... ok
+test_markdown_export_cannot_inject_image_or_heading (test_investigations.InvestigationChecks.test_markdown_export_cannot_inject_image_or_heading) ... ok
+[2026-10-30 22:51:10] [INFO] [investigation] [调查审计] case=703a661abb1f5971105087c9 action=created revision=1
+test_mutation_requires_csrf_and_reports_invalid_input (test_investigations.InvestigationChecks.test_mutation_requires_csrf_and_reports_invalid_input) ... ok
+[2026-10-30 22:51:10] [INFO] [investigation] [调查审计] case=11263696aae1de27b0d31c29 action=created revision=1
+test_no_auth_cannot_view_cases_or_export (test_investigations.InvestigationChecks.test_no_auth_cannot_view_cases_or_export) ... ok
+[2026-10-30 22:51:10] [INFO] [investigation] [调查审计] case=864621fdad5ecaf8de568299 action=created revision=1
+[2026-10-30 22:51:10] [INFO] [investigation] [调查审计] case=864621fdad5ecaf8de568299 action=updated revision=2
+test_notes_never_become_attack_evidence (test_investigations.InvestigationChecks.test_notes_never_become_attack_evidence) ... ok
+[2026-10-30 22:51:10] [INFO] [investigation] [调查审计] case=964d6cf897fcb98ee1769731 action=created revision=1
+test_plain_chat_ignores_case_records (test_investigations.InvestigationChecks.test_plain_chat_ignores_case_records) ... ok
+[2026-10-30 22:51:10] [INFO] [investigation] [调查审计] case=0c6e8ba58bc67d367bca9a2d action=created revision=1
+[2026-10-30 22:51:11] [INFO] [investigation] [调查审计] case=0c6e8ba58bc67d367bca9a2d action=report_added revision=2
+test_report_addition_saves_distinct_snapshot (test_investigations.InvestigationChecks.test_report_addition_saves_distinct_snapshot) ... ok
+[2026-10-30 22:51:11] [INFO] [investigation] [调查审计] case=8bdd36b3eed2ca9a44aef928 action=created revision=1
+test_snapshots_survive_live_report_and_evidence_removal (test_investigations.InvestigationChecks.test_snapshots_survive_live_report_and_evidence_removal) ... ok
+test_source_profile_is_scoped_and_labels_sample_limit (test_investigations.InvestigationChecks.test_source_profile_is_scoped_and_labels_sample_limit) ... ok
+[2026-10-30 22:51:11] [INFO] [investigation] [调查审计] case=ebe454a0579d44609d9921c6 action=created revision=1
+[2026-10-30 22:51:11] [INFO] [investigation] [调查审计] case=ebe454a0579d44609d9921c6 action=updated revision=2
+test_two_operators_same_version_one_wins (test_investigations.InvestigationChecks.test_two_operators_same_version_one_wins) ... ok
+[2026-10-30 22:51:11] [INFO] [investigation] [调查审计] case=db568954aeb73fd6c9ba9334 action=created revision=1
+[2026-10-30 22:51:11] [INFO] [investigation] [调查审计] case=db568954aeb73fd6c9ba9334 action=updated revision=2
+test_update_audits_without_overwriting_model (test_investigations.InvestigationChecks.test_update_audits_without_overwriting_model) ... ok
+[2026-10-30 22:51:11] [INFO] [ai_interaction] [交互完成] channel=web session=76f98c3f24952a8f094902dfe0e5bb2b step=1 source=model strategy=business_orders reason= call=36312d1bf5e0d28b43635174
+[2026-10-30 22:51:11] [INFO] [ai_interaction] [交互完成] channel=web session=76f98c3f24952a8f094902dfe0e5bb2b step=2 source=model strategy=business_login reason= call=72ad375ca83472c934e9e919
+[2026-10-30 22:51:12] [INFO] [ai_interaction] [交互完成] channel=web session=76f98c3f24952a8f094902dfe0e5bb2b step=3 source=model strategy=business_orders reason= call=500445c931b62c263d1f985a
+[2026-10-30 22:51:12] [INFO] [ai_interaction] [交互完成] channel=web session=abda23edbd62008d7d7e40403371467a step=1 source=model strategy=business_orders reason= call=504bae4f57b9b6ac283dcb77
+[2026-10-30 22:51:12] [INFO] [ai_interaction] [交互完成] channel=web session=76f98c3f24952a8f094902dfe0e5bb2b step=4 source=model strategy=business_export reason= call=c54bc51674e932cf547d682e
+[2026-10-30 22:51:12] [INFO] [ai_interaction] [交互完成] channel=web session=abda23edbd62008d7d7e40403371467a step=2 source=program strategy=job reason= call=
+[2026-10-30 22:51:12] [INFO] [ai_interaction] [交互完成] channel=web session=76f98c3f24952a8f094902dfe0e5bb2b step=5 source=program strategy=job reason= call=
+test_business_sessions_and_jobs_do_not_leak (test_team.TeamChecks.test_business_sessions_and_jobs_do_not_leak) ... ok
+test_completed_lease_cleanup_retries_a_transient_write_lock (test_team.TeamChecks.test_completed_lease_cleanup_retries_a_transient_write_lock) ... ok
+test_dataset_loader_rejects_family_leakage (test_team.TeamChecks.test_dataset_loader_rejects_family_leakage) ... ok
+test_disagreement_uncertainty_is_not_called_normal (test_team.TeamChecks.test_disagreement_uncertainty_is_not_called_normal) ... ok
+test_evidence_selection_preserves_rare_tail_after_repetitive_requests (test_team.TeamChecks.test_evidence_selection_preserves_rare_tail_after_repetitive_requests) ... ok
+test_exact_graph_node_context_excludes_other_evidence (test_team.TeamChecks.test_exact_graph_node_context_excludes_other_evidence) ... ok
+test_failed_ai_call_is_not_true_negative (test_team.TeamChecks.test_failed_ai_call_is_not_true_negative) ... ok
+test_failed_attack_call_counts_against_system_recall (test_team.TeamChecks.test_failed_attack_call_counts_against_system_recall) ... ok
+[2026-10-30 22:51:13] [INFO] [ssh] 正在生成新的 ED25519 密钥...
+[2026-10-30 22:51:13] [INFO] [ssh] 密钥已保存至 C:\Users\xuz67\AppData\Local\Temp\tmpa1avy8uw\fresh\state\host_key
+test_fresh_deployment_creates_host_key_directory_and_keeps_identity (test_team.TeamChecks.test_fresh_deployment_creates_host_key_directory_and_keeps_identity) ... ok
+test_gateway_connection_failure_is_not_misreported_as_bad_output (test_team.TeamChecks.test_gateway_connection_failure_is_not_misreported_as_bad_output) ... ok
+test_graph_does_not_connect_different_sources_or_assert_same_time_order (test_team.TeamChecks.test_graph_does_not_connect_different_sources_or_assert_same_time_order) ... ok
+test_long_body_keeps_attack_window_and_marks_omission (test_team.TeamChecks.test_long_body_keeps_attack_window_and_marks_omission) ... ok
+test_noise_distinct_routes_and_sources_not_merged (test_team.TeamChecks.test_noise_distinct_routes_and_sources_not_merged) ... ok
+test_noise_suppression_shared_and_escalation_bypasses_window (test_team.TeamChecks.test_noise_suppression_shared_and_escalation_bypasses_window) ... ok
+test_noise_window_reports_only_new_suppressed_events (test_team.TeamChecks.test_noise_window_reports_only_new_suppressed_events) ... ok
+test_old_timezone_is_normalized_before_window_queries (test_team.TeamChecks.test_old_timezone_is_normalized_before_window_queries) ... ok
+test_partitions_cover_every_distinct_behavior (test_team.TeamChecks.test_partitions_cover_every_distinct_behavior) ... ok
+test_period_grouping_preserves_important_distinct_features (test_team.TeamChecks.test_period_grouping_preserves_important_distinct_features) ... ok
+test_period_waits_for_index_and_retries_after_capacity_returns (test_team.TeamChecks.test_period_waits_for_index_and_retries_after_capacity_returns) ... ok
+test_period_window_idempotence_and_bounded_ai_sampling (test_team.TeamChecks.test_period_window_idempotence_and_bounded_ai_sampling) ... ok
+[2026-10-30 22:51:14] [INFO] [ssh] [会话隔离] 新连接 192.0.2.1 初始化会话
+[2026-10-30 22:51:14] [INFO] [ai_interaction] [交互完成] channel=ssh session=cec7c8ceb5b3222874cf9c690db13acc step=1 source=program strategy=virtual_command reason= call=
+[2026-10-30 22:51:15] [INFO] [ai_interaction] [交互完成] channel=ssh session=cec7c8ceb5b3222874cf9c690db13acc step=2 source=program strategy=virtual_command reason= call=
+[2026-10-30 22:51:15] [INFO] [ai_interaction] [交互完成] channel=ssh session=cec7c8ceb5b3222874cf9c690db13acc step=3 source=program strategy=virtual_command reason= call=
+test_persona_native_commands_and_file_metadata_agree (test_team.TeamChecks.test_persona_native_commands_and_file_metadata_agree) ... ok
+test_question_retrieval_prioritizes_requested_type (test_team.TeamChecks.test_question_retrieval_prioritizes_requested_type) ... ok
+test_review_does_not_replace_rule_or_ai_and_conflicting_edits_fail (test_team.TeamChecks.test_review_does_not_replace_rule_or_ai_and_conflicting_edits_fail) ... ok
+test_review_snapshot_survives_detection_retention (test_team.TeamChecks.test_review_snapshot_survives_detection_retention) ... ok
+test_review_types_rejected (test_team.TeamChecks.test_review_types_rejected) ... ok
+test_shared_provider_is_rejected_in_single_host_edition (test_team.TeamChecks.test_shared_provider_is_rejected_in_single_host_edition) ... ok
+test_synthetic_dataset_has_no_group_or_normalized_split_leakage (test_team.TeamChecks.test_synthetic_dataset_has_no_group_or_normalized_split_leakage) ... ok
+test_team_endpoints_require_login_and_mutation_csrf (test_team.TeamChecks.test_team_endpoints_require_login_and_mutation_csrf) ... ok
+test_unconfirmed_samples_are_not_exported (test_team.TeamChecks.test_unconfirmed_samples_are_not_exported) ... ok
+[2026-10-30 22:51:15] [INFO] [ssh] [会话隔离] 新连接 192.0.2.1 初始化会话
+[2026-10-30 22:51:15] [INFO] [ssh] [会话隔离] 新连接 192.0.2.1 初始化会话
+test_virtual_profile_is_stable_between_connections (test_team.TeamChecks.test_virtual_profile_is_stable_between_connections) ... ok
+[2026-10-30 22:51:16] [INFO] [ssh] [会话隔离] 新连接 192.0.2.1 初始化会话
+[2026-10-30 22:51:16] [INFO] [ssh] [会话隔离] 新连接 192.0.2.1 初始化会话
+[2026-10-30 22:51:16] [INFO] [ai_interaction] [交互完成] channel=ssh session=efac3f8dd84730f59120b602953c90cc step=1 source=program strategy=virtual_command reason= call=
+test_virtual_service_changes_match_systemctl_and_are_isolated (test_team.TeamChecks.test_virtual_service_changes_match_systemctl_and_are_isolated) ... ok
+
+----------------------------------------------------------------------
+Ran 158 tests in 48.138s
+
+OK
+test_login_and_csrf (test_competition.ApiChecks.test_login_and_csrf) ... ok
+test_single_site_navigation (test_competition.ApiChecks.test_single_site_navigation) ... ok
+test_disabled_model_keeps_program_timeline (test_competition.LauncherChecks.test_disabled_model_keeps_program_timeline) ... ok
+test_first_run_and_idempotence (test_competition.LauncherChecks.test_first_run_and_idempotence) ... ok
+test_archived_first_record_does_not_stop_new_records (test_competition.LocalIndexChecks.test_archived_first_record_does_not_stop_new_records) ... ok
+test_incremental_restart_and_no_source_mutation (test_competition.LocalIndexChecks.test_incremental_restart_and_no_source_mutation) ... ok
+test_missing_source_is_visible (test_competition.LocalIndexChecks.test_missing_source_is_visible) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 2.360s
+
+OK
+初始化完成。后台账号 admin，密码为你刚设置的密码。默认仅本机监听，AI关闭。
+test_active_success_and_story (test_active.ActiveChecks.test_active_success_and_story) ... ok
+test_backward_wall_clock_cannot_expand_active_budget (test_active.ActiveChecks.test_backward_wall_clock_cannot_expand_active_budget) ... ok
+test_cancelled_or_revoked_job_never_publishes (test_active.ActiveChecks.test_cancelled_or_revoked_job_never_publishes) ... ok
+test_coverage_fallback_reads_unseen_earlier_evidence (test_active.ActiveChecks.test_coverage_fallback_reads_unseen_earlier_evidence) ... ok
+test_expired_job_keeps_program_timeline (test_active.ActiveChecks.test_expired_job_keeps_program_timeline) ... ok
+test_idempotency_input_conflict_rejected (test_active.ActiveChecks.test_idempotency_input_conflict_rejected) ... ok
+test_invalid_tool_value_types_rejected (test_active.ActiveChecks.test_invalid_tool_value_types_rejected) ... ok
+test_prompt_tool_command_invalid (test_active.ActiveChecks.test_prompt_tool_command_invalid) ... ok
+test_queue_wait_consumes_deadline (test_active.ActiveChecks.test_queue_wait_consumes_deadline) ... ok
+test_repeated_query_stops_and_limits (test_active.ActiveChecks.test_repeated_query_stops_and_limits) ... ok
+test_stats_are_supplied_to_next_model_call (test_active.ActiveChecks.test_stats_are_supplied_to_next_model_call) ... ok
+test_story_can_use_remaining_job_budget_instead_of_short_plan_timeout (test_active.ActiveChecks.test_story_can_use_remaining_job_budget_instead_of_short_plan_timeout) ... ok
+test_unauthorized_tool_target_denied (test_active.ActiveChecks.test_unauthorized_tool_target_denied) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 19.540s
+
+OK
+test_failures_not_benign_and_feedback_revision (test_effectiveness.EffectChecks.test_failures_not_benign_and_feedback_revision) ... ok
+test_member_replay_not_double_counted_or_accuracy (test_effectiveness.EffectChecks.test_member_replay_not_double_counted_or_accuracy) ... ok
+test_replay_requires_real_denominators (test_effectiveness.EffectChecks.test_replay_requires_real_denominators) ... ok
+test_scope_and_synthetic_separated (test_effectiveness.EffectChecks.test_scope_and_synthetic_separated) ... ok
+test_zero_reviews_no_accuracy (test_effectiveness.EffectChecks.test_zero_reviews_no_accuracy) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 7.369s
+
+OK
+test_equal_time_and_multi_sensor_not_identity (test_story.StoryChecks.test_equal_time_and_multi_sensor_not_identity) ... ok
+test_no_model_timeline_still_visible (test_story.StoryChecks.test_no_model_timeline_still_visible) ... ok
+test_unknown_reference_rejected (test_story.StoryChecks.test_unknown_reference_rejected) ... ok
+test_virtual_success_not_host_compromise (test_story.StoryChecks.test_virtual_success_not_host_compromise) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.220s
+
+OK
+test_native_timing_units_and_unavailable_values (test_model_timing.TimingChecks.test_native_timing_units_and_unavailable_values) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.328s
+
+OK
+{"status":"passed","checks":["zoom_anchor","zoom_max","zoom_min","reset","unchanged_panel","deferred_panel","coalesced_latest"]}
+✔ a pending event cannot restore itself after the source filter changes (8.9581ms)
+✔ a completed event and its actions are cleared when the filter changes (2.3994ms)
+✔ clearing the scope also discards a pending event response (1.8636ms)
+✔ moving to the next page discards a pending detail from the previous page (1.5696ms)
+✔ an in-flight review saves its target but cannot reselect it after filtering (1.8223ms)
+✔ reload or Back restores matching cursor pagination and the previous-page action (1.2757ms)
+✔ saved pagination never overrides a URL with a different explicit scope (0.9414ms)
+✔ matching saved pagination does not replace the explicit selected event (1.9537ms)
+✔ saving case status refreshes the left list while retaining the review tab (20.0943ms)
+✔ settings sidebar preserves the incoming evidence scope without filter inputs (1.8897ms)
+✔ a pending case cannot restore its old scope after the filter changes (2.1521ms)
+✔ changing scope clears the selected case and its previous review actions (1.7557ms)
+✔ overview open-events link carries the active scope instead of restoring an older event filter (1.5337ms)
+✔ unsaved case note survives switching away and back to review (2.6059ms)
+✔ question draft survives switching tabs and failed submit can create a new task (2.8776ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 61.0105
+✔ graph labels fit narrow nodes without splitting unicode characters (1.05ms)
+✔ section belongs to its parent and invalid tabs recover to default (0.7858ms)
+✔ graph preserves capture boundaries and bounded grouped facts (8.9214ms)
+✔ virtual replies stay readable and never imply a real host compromise (0.2838ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 16.554
+✔ closed narrow-screen navigation cannot receive keyboard focus (1.7057ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7.3395
+本轮检查全部通过；不包含真实模型准确率、独立盲测或无限压力认证。

@@ -32,7 +32,7 @@ def snapshot(center,jobs,user_id,filters):
     start=filters.get('start');end=filters.get('end');origin=filters.get('origin')
     def time_ok(value):
         from datetime import datetime
-        from team_center.store import ZONE,stamp
+        from investigation_core.store import ZONE,stamp
         return (not start or value>=datetime.fromisoformat(stamp(start)).replace(tzinfo=ZONE).timestamp()) and (not end or value<=datetime.fromisoformat(stamp(end)).replace(tzinfo=ZONE).timestamp())
     precise={k:v for k,v in filters.items() if k in ('ip','session','kind','term') and v}
     visible=[j for j in jobrows if set(j['query']['sensors']).issubset(selected) and time_ok(j['created']) and (not origin or j['query'].get('origin')==origin) and all(j['query'].get(k)==v for k,v in precise.items())]

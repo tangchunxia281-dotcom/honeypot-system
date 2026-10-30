@@ -41,44 +41,23 @@ def load_settings():
         valid = False
     configured = bool(valid and model and len(model) <= 160 and not error)
     provider=value('provider','local').strip().lower()
-    gateway=value('gateway_url','http://127.0.0.1:11500').strip().rstrip('/')
-    token=value('client_token','').strip()
     api_key=value('api_key','').strip()
-    deepseek_base=value('deepseek_base_url','https://api.deepseek.com').strip().rstrip('/')
-    deepseek_model=value('deepseek_model','deepseek-chat').strip()
-    if provider=='gateway':
-        try:
-            remote=urlsplit(gateway);addr=ipaddress.ip_address(remote.hostname)
-            safe_addr=addr.is_loopback or addr.version==4 and any(addr in ipaddress.ip_network(n) for n in ('10.0.0.0/8','172.16.0.0/12','192.168.0.0/16')) or addr.version==6 and addr in ipaddress.ip_network('fc00::/7')
-            valid_remote=remote.scheme in ('http','https') and safe_addr and not remote.username and not remote.password and not remote.query and not remote.fragment and remote.path in ('','/') and (remote.port is None or 1<=remote.port<=65535)
-            valid_remote=valid_remote and (addr.is_loopback or remote.scheme=='https' or boolean('allow_insecure_lan',False))
-        except ValueError:valid_remote=False
-        configured=bool(valid_remote and re.fullmatch(r'[A-Za-z0-9_-]{32,256}',token) and model and not error)
-    elif provider=='deepseek':
-        try:
-            durl=urlsplit(deepseek_base)
-            valid_deepseek=(durl.scheme=='https' and durl.hostname and not durl.username and not durl.password
-                            and not durl.query and not durl.fragment and durl.path in ('','/')
-                            and (durl.port is None or 1<=durl.port<=65535))
-        except ValueError:
-            valid_deepseek=False
-        if not model:
-            model=deepseek_model
-        base=deepseek_base
-        configured=bool(valid_deepseek and re.fullmatch(r'sk-[A-Za-z0-9]{20,}',api_key)
-                        and model and len(model)<=160 and not error)
+    if provider in ('deepseek','openai'):
+        from utils.integration_settings import cloud_endpoint
+        try:cloud_endpoint(base);valid=True
+        except ValueError:valid=False
+        configured=bool(valid and model and len(model)<=160 and api_key and len(api_key)<=512 and not any(ord(c)<33 or ord(c)>126 for c in api_key) and not error)
     elif provider!='local':configured=False
     db_path = Path(os.environ.get('HONEYPOT_AI_DB', value('runtime_db', 'database/ai_runtime.db')))
     if not db_path.is_absolute():
         db_path = ROOT / db_path
     return dict(enabled=boolean('enabled', False) and not error, ssh_enabled=boolean('ssh_enabled', False),
-                base_url=base, model=model[:160], configured=configured,provider=provider,gateway_url=gateway,client_token=token,
-                api_key=api_key,
+                base_url=base, model=model[:160], configured=configured,provider=provider,api_key=api_key,
                 configuration_error=error or ('' if configured else 'local_endpoint_or_model_invalid'),
-                timeout=integer('timeout', 30 if provider=='deepseek' else 10, 1, 30), concurrency=integer('concurrency', 1, 1, 4),
+                timeout=integer('timeout', 10, 1, 30), concurrency=integer('concurrency', 1, 1, 4),
                 max_calls_per_session=integer('max_calls_per_session', 10, 1, 100),
                 min_interval=integer('min_interval', 2, 0, 60), think=boolean('think', False),
-                context_length=integer('context_length', 4096, 512, 8192),
+                context_length=integer('context_length', 4096, 512, 8192),gpu_layers=integer('gpu_layers',-1,-1,256),
                 max_output_tokens=integer('max_output_tokens', 256, 64, 512), db_path=str(db_path),
                 analysis_enabled=boolean('analysis_enabled', False),periodic_enabled=boolean('periodic_enabled',True),
                 analysis_timeout=integer('analysis_timeout',20,5,30),gateway_wait=integer('gateway_wait',90,10,120),

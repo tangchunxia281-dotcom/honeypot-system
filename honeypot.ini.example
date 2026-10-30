@@ -26,7 +26,7 @@ user = admin
 password =
 
 [services.ssh]
-host = 0.0.0.0
+host = 127.0.0.1
 port = 2222
 internal_ip = 10.0.12.10
 max_workers = 80
@@ -50,7 +50,7 @@ scan_alert_cooldown_seconds = 120
 scan_stale_keep_seconds = 1800
 
 [services.web]
-host = 0.0.0.0
+host = 127.0.0.1
 port = 5000
 max_content_length = 2097152
 max_form_memory_size = 524288
@@ -89,25 +89,6 @@ login_audit_max = 200
 login_audit_recent = 30
 asset_version =
 
-# 多协议扩展：数据库协议蜜罐（MySQL + Redis 同一进程）
-[services.database]
-enabled = true
-host = 0.0.0.0
-mysql_port = 13306
-redis_port = 16379
-
-# 多协议扩展：文件共享协议蜜罐（FTP；SMB 后续阶段）
-[services.file]
-enabled = true
-host = 0.0.0.0
-ftp_port = 2121
-
-# 多协议扩展：远程管理协议蜜罐（Telnet；RDP 后续阶段）
-[services.remote]
-enabled = true
-host = 0.0.0.0
-telnet_port = 2223
-
 [database]
 type = sqlite
 # 相对路径按项目根目录解析
@@ -123,36 +104,6 @@ sqlite_busy_retry = 3
 sqlite_busy_backoff = 0.05
 session_id_window_seconds = 3600
 has_real_cache_ttl = 0.5
-
-# AI 组「请求级攻击检测」模型服务（外部模型目录，随主控一起启动）
-# 启用前准备：在模型目录内创建虚拟环境并安装依赖
-#   python -m venv .venv
-#   .venv\Scripts\python.exe -m pip install -r requirements.txt
-[services.ai_detect]
-enabled = false
-# 模型服务根目录（含 src/api.py 与 models/）
-path =
-# 留空时自动使用 <path>\.venv\Scripts\python.exe，再退回到主控解释器
-python =
-host = 127.0.0.1
-port = 8003
-
-[ai]
-# AI 组请求级攻击检测服务（与 [services.ai_detect] 配套）。
-# 主接口：POST /api/v1/detect
-# 请求：path、query、body、method、user_agent、source、ip、session_id、extra
-# 响应：attack_type、is_attack、attack_prob、ai_points、confidence、
-#       high_risk、reasons、signals、model_label
-enabled = true
-url = http://127.0.0.1:8003/api/v1/detect
-info_url = http://127.0.0.1:8003/model/info
-timeout = 1.0
-# 兼容旧配置；v2 使用 ai_points 参与规则分累加。
-threshold = 0.90
-text_max = 5000
-failure_threshold = 3
-backoff_seconds = 30
-model_info_ttl = 300
 
 [alerting]
 enabled = false
@@ -189,26 +140,6 @@ check_interval_seconds = 300
 background_interval_seconds = 3600
 read_enabled = true
 query_max_files = 60
-
-# 风险目标标注（risk_target）：以攻击源 IP 为维度，自动识别 + 人工标注
-[risk_target]
-enabled = true
-auto_derive = true
-derive_hours = 24
-min_events = 2
-min_severity = medium
-
-# 团队数据中心（round 9 合并，独立子进程；默认关闭）
-# 启用前先运行 python scripts/team_center.py init 生成 JSON 配置
-[team_center]
-enabled = false
-config = ./deployment/center/center.json
-
-# AI 推理网关（round 9 合并，独立子进程；默认关闭）
-# 配置文件为 JSON，内含 provider/model/model_url/api_key/clients 等
-[ai_gateway]
-enabled = false
-config = ./deployment/gateway/gateway.json
 
 [geoip]
 timeout = 2.5
@@ -249,3 +180,23 @@ send_interval = 0.4
 settle_seconds = 2.0
 query_hours = 2
 timeout = 4.0
+
+[services.mysql]
+enabled = true
+host = 127.0.0.1
+port = 13306
+
+[services.redis]
+enabled = true
+host = 127.0.0.1
+port = 16379
+
+[services.ftp]
+enabled = true
+host = 127.0.0.1
+port = 2121
+
+[services.telnet]
+enabled = true
+host = 127.0.0.1
+port = 2223

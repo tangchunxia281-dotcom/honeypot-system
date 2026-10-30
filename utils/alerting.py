@@ -265,6 +265,15 @@ def alert_event(title: str, src_ip: str = '', summary: str = '', extra: str = ''
             safe_tags.append(x)
     now_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
     key = dedup_key or _hash_key(f"{title}|{src_ip}|{summary}")
+    try:
+        from utils.alert_noise import NoiseGate
+        from utils import local_ai
+        weight=4 if score>=60 or level=='严重' else 3 if score>=40 or level in ('高危','critical','high') else 2
+        decision=NoiseGate(local_ai.STORE).admit(src_ip,event_type or category,subject,weight)
+        if not decision['allowed']:return False
+    except Exception:
+        # Preserve the original notifier on storage failure; never alter capture.
+        decision={'allowed':True,'merged':0}
     if not _should_send(key, category=category):
         return False
     if not level and score >= 0:
@@ -272,7 +281,7 @@ def alert_event(title: str, src_ip: str = '', summary: str = '', extra: str = ''
     if not level:
         level = '提示'
     level = _normalize_level(level)
-    merged = _dedup_count.pop(key, 0)
+    merged = _dedup_count.pop(key, 0)+decision.get('merged',0)
     lines = []
     if layout == 'multi':
         icon = _level_icon(level)

@@ -21,7 +21,7 @@ from test_interaction import InteractionChecks
 from test_analyst import AnalystChecks
 from test_demo import DemoChecks
 from test_investigations import InvestigationChecks
-from test_team import TeamChecks,GatewayChecks
+from test_team import TeamChecks
 
 
 def lease_process(path,settings,worker):
@@ -193,7 +193,7 @@ if __name__=='__main__':
         import app_config
         app_config.Config.LOG_DIR=str(temp/'logs')
         from utils import ai_detection,ai_analyst,local_ai
-        suite=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromTestCase(c) for c in (Checks,DetectionChecks,InteractionChecks,AnalystChecks,DemoChecks,FinalChecks,InvestigationChecks,TeamChecks,GatewayChecks))
+        suite=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromTestCase(c) for c in (Checks,DetectionChecks,InteractionChecks,AnalystChecks,DemoChecks,FinalChecks,InvestigationChecks,TeamChecks))
         result=unittest.TextTestRunner(verbosity=2).run(suite)
         ai_analyst.stop_worker();ai_detection.stop_worker();local_ai._pool.shutdown(wait=True);logging.shutdown()
         raise SystemExit(0 if result.wasSuccessful() else 1)

@@ -1,6 +1,6 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="zh-CN"><head><meta name="color-scheme" content="dark"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="csrf-token" content="{{ csrf_token() }}"><title>AI 攻击日志分析中心</title>
-<link rel="stylesheet" href="{{ url_for('static',filename='css/ai.css',v=ASSET_VERSION) }}">
+<link rel="stylesheet" href="{{ url_for('static',filename='css/theme.css',v=ASSET_VERSION) }}"><link rel="stylesheet" href="{{ url_for('static',filename='css/ai.css',v=ASSET_VERSION) }}">
 <link rel="stylesheet" href="{{ url_for('static',filename='css/ai_analysis.css',v=ASSET_VERSION) }}"><link rel="stylesheet" href="{{ url_for('static',filename='css/ai_shell.css',v=ASSET_VERSION) }}"></head>
 <body class="ai-workspace">{% include 'ai_sidebar.html' %}<main><header><div><a href="{{ url_for('dashboard') }}">← 态势大屏</a><p class="eyebrow">本地模型 · 有证据的研判</p><h1>AI 攻击日志分析中心</h1>
 <p>把零散日志整理为攻击过程、独立风险判断与可追溯问答。</p></div></header>

@@ -81,10 +81,13 @@ class InteractionStore(CallStore):
         except Exception:
             pass  # SQLite remains authoritative; file logger failure must not undo a committed turn.
 
-    def listing(self, limit=50, session_id='', channel=''):
+    def listing(self, limit=50, session_id='', channel='', *, src_ip='', start=None, end=None):
         conditions=[];values=[]
         if session_id:conditions.append('session_id=?');values.append(session_id)
         if channel:conditions.append('channel=?');values.append(channel)
+        if src_ip:conditions.append('src_ip=?');values.append(src_ip)
+        if start is not None:conditions.append('created_at>=?');values.append(start)
+        if end is not None:conditions.append('created_at<?');values.append(end)
         where=' WHERE '+' AND '.join(conditions) if conditions else ''
         with closing(self.connect()) as conn:
             counts={r[0]:r[1] for r in conn.execute('SELECT source,COUNT(*) FROM ai_interactions'+where+' GROUP BY source',values)}

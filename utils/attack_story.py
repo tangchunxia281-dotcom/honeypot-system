@@ -1,6 +1,6 @@
 """Observed order is program data. Model stages are explicitly inferences."""
 from collections import Counter
-from team_center.store import clean
+from investigation_core.store import clean
 
 STAGES=('reconnaissance','credential_attempt','injection_attempt','access_attempt','collection','unknown')
 STORY_SCHEMA={'type':'object','properties':{'summary':{'type':'string','maxLength':240},'stages':{'type':'array','maxItems':6,'items':{'type':'object','properties':{'name':{'type':'string','enum':list(STAGES)},'description':{'type':'string','maxLength':160},'refs':{'type':'array','maxItems':4,'items':{'type':'string'}}},'required':['name','description','refs'],'additionalProperties':False}},'limitations':{'type':'string','maxLength':240}},'required':['summary','stages','limitations'],'additionalProperties':False}

@@ -3,6 +3,7 @@
 原始请求捕获与会话分析
 """
 import json
+import html
 import os
 import time
 import hashlib
@@ -23,10 +24,6 @@ from utils.alerting import (
     ALERT_RISK_THRESHOLD,
     ALERT_HIGH_THRESHOLD,
     ALERT_CRITICAL_THRESHOLD,
-)
-from utils.ai_client import (
-    detect_request,
-    get_ai_metrics,
 )
 from .event_logs import log_event
 from .connection import (
@@ -73,6 +70,11 @@ _XSS_MARKER_RE = re.compile(
     re.IGNORECASE,
 )
 
+_SSRF_TARGET_RE = re.compile(r'(?:https?://(?:localhost\b|127\.|10\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.|169\.254\.169\.254|\[::1\])|file://)',re.IGNORECASE)
+_REMOTE_VALUE_RE = re.compile(r'''(?:^|[&?\s{,])['"]?(?:url|target|endpoint)['"]?\s*[:=]''',re.IGNORECASE)
+_SSTI_PROBE_RE = re.compile(r'\{\{[^{}\n]{0,120}(?:\d+\s*[*+/-]\s*\d+|__class__|constructor|config)[^{}\n]{0,120}\}\}',re.IGNORECASE)
+_XXE_PROBE_RE = re.compile(r'<!DOCTYPE[\s\S]{0,500}<!ENTITY\s+[^>]{0,240}\s(?:SYSTEM|PUBLIC)\s',re.IGNORECASE)
+
 _JNDI_INJECTION_RE = re.compile(
     r"""\$\{[^}]{0,240}?jndi\s*:\s*(?:ldap|ldaps|rmi|dns|iiop|http|https|nis|corba|nds|jar)\s*://""",
     re.IGNORECASE,
@@ -81,32 +83,6 @@ _JNDI_INJECTION_RE = re.compile(
 _EXPR_INJECTION_RE = re.compile(
     r"""(?:\$\{[^}]{1,240}\}|#\{[^}]{1,240}\})""",
     re.IGNORECASE,
-)
-
-# SSRF：必须同时出现“URL 形态参数”与“内网/云元数据目标”，
-# 仅在文本中提及一个地址不构成 SSRF 证据。
-_SSRF_PARAM_RE = re.compile(
-    r"""(?i)(?:^|[?&;,\s])["']?(?:url|uri|target|dest|destination|redirect|redirect_uri|next|callback|cb|fetch|preview|link|src|source|host|domain|path|file|proxy|image|avatar)["']?\s*="""
-)
-_SSRF_JSON_PARAM_RE = re.compile(
-    r"""(?i)"(?:url|uri|target|dest|destination|redirect|next|callback|src|source|host|domain|path|file|proxy)"\s*:"""
-)
-_SSRF_TARGET_RE = re.compile(
-    r"""(?i)(?:"""
-    r"""(?:https?|ftp|gopher|dict|ldap|file)://(?:169\.254\.169\.254|metadata\.google\.internal|metadata\.azure\.com|100\.100\.100\.200|127\.0\.0\.1|localhost|\[::1\]|0\.0\.0\.0|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})"""
-    r"""|/latest/meta-data|/metadata/v1|computemetadata|169\.254\.169\.254"""
-    r""")"""
-)
-
-# SSTI：只认表达式/算术模板，普通占位名（如 {{username}}）不算。
-_SSTI_RE = re.compile(
-    r"""(?i)(?:\{\{\s*\d+\s*[-+*/%]\s*\d+\s*\}\}|\$\{\s*\d+\s*[-+*/%]\s*\d+\s*\}|#\{\s*\d+\s*[-+*/%]\s*\d+\s*\}"""
-    r"""|\{\{\s*(?:config|self|request|application|session|__class__|__mro__|__globals__)\b|\b__class__\b|\b__mro__\b|\b__globals__\b|\blipsum\b|\bcycler\b|\bjoiner\b)"""
-)
-
-# XXE：DTD 外部实体声明。
-_XXE_RE = re.compile(
-    r"""(?is)<!DOCTYPE[^>]{0,400}<!ENTITY|<!ENTITY\s+(?:%|[\w.-]+)\s+(?:SYSTEM|PUBLIC)\b"""
 )
 
 _SCANNER_HEADER_FINGERPRINTS = {
@@ -145,7 +121,7 @@ _COMMAND_EXEC_MARKER_RE = re.compile(
 )
 
 _SHELL_META_HINT_RE = re.compile(
-    r"""(?:;|\|\||&&|`|\$\(|\b(?:whoami|uname\s+-a|cat\s+/etc/passwd|ipconfig|ifconfig)\b)""",
+    r"""(?:;|\||&&|`|\$\(|\b(?:whoami|uname\s+-a|cat\s+/etc/passwd|ipconfig|ifconfig)\b)""",
     re.IGNORECASE,
 )
 
@@ -541,7 +517,7 @@ def _decode_for_match(text: str) -> str:
     prev = s
     for _ in range(2):
         try:
-            cur = unquote_plus(prev)
+            cur = html.unescape(unquote_plus(prev))
         except Exception:
             break
         if cur == prev:
@@ -675,34 +651,6 @@ def _detect_expression_signals(query_decoded: str, body_decoded: str, header_blo
     return hits
 
 
-def _detect_ssrf_signals(query_raw: str, query_decoded: str, body_raw: str, body_decoded: str) -> list:
-    """SSRF 探测：URL 形态参数携带内网/云元数据目标时才命中。"""
-    for text in (query_raw, query_decoded, body_raw, body_decoded):
-        value = str(text or '')
-        if not value:
-            continue
-        has_param = bool(_SSRF_PARAM_RE.search(value) or _SSRF_JSON_PARAM_RE.search(value))
-        if has_param and _SSRF_TARGET_RE.search(value):
-            return ['ssrf']
-    return []
-
-
-def _detect_ssti_signals(query_decoded: str, body_decoded: str) -> list:
-    """SSTI：模板表达式/算术求值特征。"""
-    merged = '\n'.join(part for part in (str(query_decoded or ''), str(body_decoded or '')) if part)
-    if merged and _SSTI_RE.search(merged):
-        return ['ssti']
-    return []
-
-
-def _detect_xxe_signals(query_decoded: str, body_raw: str, body_decoded: str) -> list:
-    """XXE：XML 外部实体声明。"""
-    merged = '\n'.join(part for part in (str(body_raw or ''), str(body_decoded or ''), str(query_decoded or '')) if part)
-    if merged and _XXE_RE.search(merged):
-        return ['xxe']
-    return []
-
-
 def _has_lfi_traversal_signal(path: str, query_raw: str, body_raw: str, query_decoded: str, body_decoded: str) -> bool:
     """
     目录穿越/LFI 判定（收敛版）：
@@ -768,10 +716,10 @@ def _event_label(event_type: str) -> str:
     mapping = {
         'sqli_probe': '疑似SQL注入',
         'xss_probe': '疑似XSS攻击',
-        'lfi_probe': '疑似目录穿越',
         'ssrf_probe': '疑似SSRF探测',
-        'ssti_probe': '疑似模板注入',
-        'xxe_probe': '疑似XXE注入',
+        'ssti_probe': '疑似模板注入探测',
+        'xxe_probe': '疑似XXE探测',
+        'lfi_probe': '疑似目录穿越',
         'file_probe': '疑似敏感文件访问',
         'admin_probe': '疑似后台探测',
         'upload_probe': '疑似上传探测',
@@ -821,12 +769,6 @@ def _is_redundant_signal(event_type: str, signal: str) -> bool:
         return True
     if et == 'webshell_probe' and ('webshell' in s or '命令执行' in s):
         return True
-    if et == 'ssrf_probe' and 'ssrf' in s:
-        return True
-    if et == 'ssti_probe' and ('ssti' in s or '模板' in s):
-        return True
-    if et == 'xxe_probe' and 'xxe' in s:
-        return True
     return False
 
 
@@ -841,7 +783,7 @@ def generate_session_id(ip: str, user_agent: str) -> str:
 
 def calculate_threat_score(method: str, path: str, query: str, headers: dict, body: str) -> tuple:
     """
-    计算风险分数（基于行为特征，非规则匹配）。
+    依据检测规则和请求行为计算风险分数；命中不代表利用成功。
     返回: (risk_score, is_suspicious, signals)。
     """
     risk_score = 0
@@ -852,7 +794,7 @@ def calculate_threat_score(method: str, path: str, query: str, headers: dict, bo
         risk_score += header_score
         suspicious_signals.extend(header_signals)
 
-    path_lower = path.lower()
+    path_lower = _decode_for_match(path)
     sensitive_paths = ['/admin', '/backup', '/config', '/.env', '/.git', '/wp-', '/phpmyadmin', '/shell', '/cmd']
     for sp in sensitive_paths:
         if sp in path_lower:
@@ -863,19 +805,21 @@ def calculate_threat_score(method: str, path: str, query: str, headers: dict, bo
     bl = _decode_for_match(body) if body else ''
     header_blob = _build_header_match_blob(headers)
 
+    combined=(ql+'\n'+bl)[:20000]
+    if (_SSRF_TARGET_RE.search(ql) and (_REMOTE_VALUE_RE.search(ql) or path_lower in ('/api/preview','/api/fetch'))) \
+            or (_SSRF_TARGET_RE.search(bl) and _REMOTE_VALUE_RE.search(bl)):
+        risk_score+=35
+        suspicious_signals.append('疑似SSRF内网访问')
+    if _SSTI_PROBE_RE.search(combined) or re.search(r'\$\{[^}\n]{0,100}\d+\s*[*+/-]\s*\d+[^}\n]{0,100}\}',combined):
+        risk_score+=30
+        suspicious_signals.append('疑似模板注入SSTI')
+    if _XXE_PROBE_RE.search(bl):
+        risk_score+=35
+        suspicious_signals.append('疑似XML外部实体XXE')
+
     if _has_lfi_traversal_signal(path, query, body, ql, bl):
         risk_score += 22
         suspicious_signals.append("目录穿越/LFI特征")
-
-    if _detect_ssrf_signals(query, ql, body, bl):
-        risk_score += 30
-        suspicious_signals.append("疑似SSRF特征(内网/云元数据)")
-    if _detect_ssti_signals(ql, bl):
-        risk_score += 20
-        suspicious_signals.append("疑似SSTI模板注入")
-    if _detect_xxe_signals(ql, body, bl):
-        risk_score += 24
-        suspicious_signals.append("疑似XXE外部实体注入")
 
     if query:
         if len(query) > 500:
@@ -959,7 +903,7 @@ def calculate_threat_score(method: str, path: str, query: str, headers: dict, bo
         risk_score += 15
         suspicious_signals.append("超长User-Agent")
 
-    scanner_hits = _detect_scanner_from_headers(headers)
+    scanner_hits = _detect_scanner_from_headers({k:_decode_for_match(v) for k,v in headers.items()})
     if scanner_hits:
         risk_score += 22
         suspicious_signals.append(f"扫描工具特征: {','.join(scanner_hits)}")
@@ -972,9 +916,9 @@ def calculate_threat_score(method: str, path: str, query: str, headers: dict, bo
         risk_score += 10
         suspicious_signals.append("多层代理")
 
-    # 分数统一封顶 100：多特征叠加（敏感路径 × 多种注入）不应越界，
-    # 否则严重度映射与前端色条会失真。
-    risk_score = max(0, min(100, int(risk_score)))
+    if path_lower.rstrip('/') in ('/actuator/env','/actuator/configprops','/actuator/beans'):
+        risk_score+=22;suspicious_signals.append('扫描路径特征: 管理配置探测')
+    risk_score=min(100,risk_score)
     is_suspicious = risk_score >= 20
     return risk_score, is_suspicious, suspicious_signals
 
@@ -985,14 +929,20 @@ def _classify_web_event_type(method: str, path: str, query_string: str, body: st
     b = _decode_for_match(body)
     sig = ' '.join(str(x or '').lower() for x in (signals or []))
 
-    # 攻击技术优先于路径形状：/admin 上的 XSS/SSTI 必须记录技术类型，
-    # 否则后台探测会掩盖真实攻击手法。
-    if 'ssrf' in sig:
-        return 'ssrf_probe'
-    if 'ssti' in sig or '模板注入' in sig:
-        return 'ssti_probe'
-    if 'xxe' in sig:
-        return 'xxe_probe'
+    # Technique is independent of the target path, which remains a separate signal.
+    for marker,kind in (('疑似ssrf','ssrf_probe'),('疑似模板注入ssti','ssti_probe'),
+                        ('疑似xml外部实体xxe','xxe_probe'),('疑似命令执行','webshell_probe'),
+                        ('疑似sql注入','sqli_probe'),('sql注释组合','sqli_probe'),
+                        ('疑似xss','xss_probe'),('目录穿越/lfi','lfi_probe'),('扫描工具特征','scanner_probe')):
+        if marker in sig:return kind
+
+    sensitive_files = ('.env', '.git', 'config.php', '.bak', 'backup', 'dump.sql')
+    if any(x in p for x in sensitive_files):
+        return 'file_probe'
+    if '/admin' in p:
+        return 'admin_probe'
+    if '/upload' in p:
+        return 'upload_probe'
     if '疑似webshell路径' in sig or '疑似命令执行/webshell特征' in sig or '疑似命令执行特征' in sig:
         return 'webshell_probe'
     if '疑似jndi注入特征' in sig or '疑似表达式注入特征' in sig:
@@ -1008,15 +958,6 @@ def _classify_web_event_type(method: str, path: str, query_string: str, body: st
         return 'sqli_probe'
     if any(x in q for x in ('<script', 'javascript:', 'onerror=')) or any(x in b for x in ('<script', 'javascript:', 'onerror=')):
         return 'xss_probe'
-
-    sensitive_files = ('.env', '.git', 'config.php', '.bak', 'backup', 'dump.sql')
-    if any(x in p for x in sensitive_files):
-        return 'file_probe'
-    if '/admin' in p:
-        return 'admin_probe'
-    if '/upload' in p:
-        return 'upload_probe'
-
     if any(x in q for x in ('../', '..\\')) or any(x in p for x in ('../', '..\\')):
         return 'lfi_probe'
     if '扫描工具特征' in sig or '扫描路径特征' in sig:
@@ -1039,14 +980,14 @@ def _signals_to_tags(signals: list, event_type: str) -> list:
         '疑似表达式注入特征': 'expr_injection',
         '疑似JNDI注入特征': 'jndi_injection',
         '疑似XSS特征': 'xss',
+        '疑似SSRF内网访问': 'ssrf',
+        '疑似模板注入SSTI': 'ssti',
+        '疑似XML外部实体XXE': 'xxe',
         '疑似WebShell路径': 'webshell_path',
         '疑似命令执行/WebShell特征': 'cmd_exec',
         '疑似命令执行特征': 'cmd_exec',
         '可疑命令参数滥用': 'cmd_param',
         '疑似SQL注入弱特征': 'sqli_weak',
-        '疑似SSRF特征(内网/云元数据)': 'ssrf',
-        '疑似SSTI模板注入': 'ssti',
-        '疑似XXE外部实体注入': 'xxe',
         '无User-Agent': 'missing_ua',
         '超长User-Agent': 'long_ua',
         '扫描工具特征': 'scanner',
@@ -1063,58 +1004,6 @@ def _signals_to_tags(signals: list, event_type: str) -> list:
                 tags.append(v)
                 break
     return tags[:12]
-
-
-def _resolve_web_final_decision(
-    rule_score: int,
-    rule_is_suspicious: bool,
-    ai_result
-) -> tuple:
-    """
-    AI v2 加权融合：
-    final_score = rule_score + ai_points
-
-    ai_points 是 AI 返回的 0~25 加权分，不覆盖原规则分数。
-    """
-    if isinstance(ai_result, dict):
-        try:
-            ai_points = int(ai_result.get('ai_points') or 0)
-        except Exception:
-            ai_points = 0
-        ai_points = max(0, min(25, ai_points))
-        ai_is_attack = bool(ai_result.get('is_attack'))
-        ai_high_risk = bool(ai_result.get('high_risk'))
-        ai_type = str(ai_result.get('attack_type') or '').strip().lower()
-        # 模型判 normal 时不加分：normal 的 ai_points 是概率映射值，
-        # 直接累加会把正常流量（例如静态资源路径命中 "/admin" 子串）
-        # 推过 20 分可疑阈值。AI 仍参与判定，只是加分为 0。
-        effective_points = ai_points if (ai_is_attack or ai_type not in ('', 'normal')) else 0
-        final_score = min(
-            100,
-            max(0, int(rule_score or 0) + effective_points)
-        )
-        # AI 内部已完成规则+模型融合；如果它明确判定攻击，
-        # 用双阈值下界保证蜜罐不会因两套规则差异而漏掉该事件。
-        if ai_is_attack:
-            final_score = max(final_score, 20)
-        if ai_high_risk:
-            final_score = max(final_score, 40)
-        ai_applied = ai_points > 0 or ai_is_attack or ai_high_risk
-        return (
-            final_score,
-            final_score >= 20,
-            'rule+ai' if ai_applied else 'rule',
-            ai_applied,
-            effective_points,
-        )
-
-    return (
-        int(rule_score or 0),
-        bool(rule_is_suspicious),
-        'rule',
-        False,
-        0,
-    )
 
 
 def log_raw_request(session_id: str, src_ip: str, method: str, path: str,
@@ -1187,144 +1076,29 @@ def log_raw_request(session_id: str, src_ip: str, method: str, path: str,
                     c.execute(sql, params)
                     return c.lastrowid
                 raw_request_id = _sqlite_run_with_retry(conn, _insert_action)
-            rule_risk_score = int(risk_score or 0)
-            rule_is_suspicious = bool(is_suspicious)
-
-            ai_result = detect_request(
-                path=path,
-                query=query_string,
-                body=body,
-                method=method,
-                user_agent=user_agent,
-                source='web',
-                ip=src_ip,
-                session_id=session_id,
-                request_id=(
-                    f'raw_request:{raw_request_id}'
-                    if raw_request_id else ''
-                )
-            )
-
-            (
-                risk_score,
-                is_suspicious,
-                final_source,
-                ai_applied,
-                ai_points,
-            ) = _resolve_web_final_decision(
-                rule_score=rule_risk_score,
-                rule_is_suspicious=rule_is_suspicious,
-                ai_result=ai_result
-            )
-
-            if (
-                raw_request_id
-                and (
-                    risk_score != rule_risk_score
-                    or is_suspicious != rule_is_suspicious
-                )
-            ):
-                update_sql = (
-                    "UPDATE raw_request "
-                    f"SET is_suspicious = {placeholder}, "
-                    f"threat_score = {placeholder} "
-                    f"WHERE id = {placeholder}"
-                )
-                update_params = (
-                    1 if is_suspicious else 0,
-                    risk_score,
-                    raw_request_id,
-                )
-                if USE_MYSQL:
-                    cursor.execute(update_sql, update_params)
-                    conn.commit()
-                else:
-                    def _update_action(c):
-                        c.execute(update_sql, update_params)
-                    _sqlite_run_with_retry(conn, _update_action)
-
-            if ai_applied and ai_result:
-                attack_type = str(
-                    ai_result.get('attack_type') or 'unknown'
-                )
-                ai_signal = (
-                    f"AI判定{attack_type}(+{ai_points}分)"
-                )
-                reasons = ai_result.get('reasons') or []
-                if isinstance(reasons, list) and reasons:
-                    ai_signal += f": {str(reasons[0])[:200]}"
-                if ai_signal not in signals:
-                    signals.append(ai_signal)
-            
             update_session_track(session_id, src_ip, path, is_suspicious, risk_score)
             # 仅可疑请求进入统一事件流，避免 event_log 被普通流量淹没
             if is_suspicious:
-                if ai_applied and ai_result and ai_result.get('is_attack'):
-                    ai_attack_type = str(
-                        ai_result.get('attack_type') or 'normal'
-                    )
-                    event_type_map = {
-                        'xss': 'xss_ai_detected',
-                        'sqli': 'sqli_ai_detected',
-                        'path_traversal': 'path_traversal_ai_detected',
-                        'sensitive_path': 'sensitive_path_ai_detected',
-                        'scanner': 'scanner_ai_detected',
-                    }
-                    event_type = event_type_map.get(
-                        ai_attack_type,
-                        'web_ai_detected'
-                    )
-                    event_tags = ['web', ai_attack_type, 'ai']
-                    label = f"AI判定{ai_attack_type}"
-                else:
-                    event_type = _classify_web_event_type(method, path, query_string, body, signals)
-                    event_tags = _signals_to_tags(signals, event_type)
-                    label = _event_label(event_type)
+                event_type = _classify_web_event_type(method, path, query_string, body, signals)
+                event_tags = _signals_to_tags(signals, event_type)
+                label = _event_label(event_type)
                 method_text = str(method or '').upper()
                 decoded_query = _decode_for_display(query_string)
                 safe_decoded_query = _truncate_text(_redact_sensitive_text(decoded_query), 180)
                 payload = f"[{label}] {method_text} {path}"
                 if safe_decoded_query:
                     payload += f"?{safe_decoded_query}"
-                if ai_applied and ai_result:
-                    reasons = ai_result.get('reasons') or []
-                    if isinstance(reasons, list) and reasons:
-                        payload += f" | {str(reasons[0])[:240]}"
-                elif signals:
+                if signals:
                     for sig in signals:
                         if not _is_redundant_signal(event_type, sig):
                             payload += f" | {str(sig)}"
                             break
-                ai_metrics = get_ai_metrics()
                 extra = {
                     'score': int(risk_score),
                     'signals': [str(x) for x in (signals or [])[:6]],
                     'method': str(method or '').upper(),
                     'path': str(path or '')[:240],
                     'ua': str(user_agent or '')[:200],
-                    'rule': {
-                        'score': int(rule_risk_score),
-                        'is_suspicious': bool(rule_is_suspicious),
-                    },
-                    'ai': ai_result or {},
-                    'ai_applied': bool(ai_applied),
-                    'ai_points': int(ai_points),
-                    'ai_service_points': int((ai_result or {}).get('ai_points') or 0),
-                    'ai_input': {
-                        'path_length': len(str(path or '')),
-                        'query_length': len(str(query_string or '')),
-                        'body_length': len(str(body or '')),
-                        'user_agent_length': len(str(user_agent or '')),
-                    },
-                    'ai_error': (
-                        ''
-                        if ai_result
-                        else str(ai_metrics.get('last_error') or '')
-                    ),
-                    'ai_backoff_remaining_seconds': float(
-                        ai_metrics.get('backoff_remaining_seconds') or 0.0
-                    ),
-                    'final_source': final_source,
                 }
                 log_event(
                     source='web',
@@ -1342,37 +1116,30 @@ def log_raw_request(session_id: str, src_ip: str, method: str, path: str,
         finally:
             conn.close()
 
+        # Queue evidence-linked review after the original audit succeeds; no model wait on this path.
+        if raw_request_id:
+            try:
+                from utils.ai_detection import submit
+                from .connection import _config
+                db_key = str(getattr(_config,'DB_PATH','')) if not USE_MYSQL else str(getattr(_config,'DB_HOST',''))+'|'+str(getattr(_config,'DB_NAME',''))
+                submit(raw_request_id,src_ip,session_id,method,path,query_string,headers,body,
+                       risk_score,signals,now_text,db_key)
+            except Exception as error:
+                logger.debug('AI review queue unavailable: %s',type(error).__name__)
+
+        if raw_request_id:
+            try:
+                from utils.classifier import submit as classify
+                classify(dict(source=db_key,raw_request_id=raw_request_id,request_time=now_text,ip=src_ip,session_id=session_id,
+                              path=path,query=safe_query,body=body_truncated,method=method,user_agent=user_agent,rule_score=risk_score))
+            except Exception as error:
+                logger.debug('Classifier queue unavailable: %s',type(error).__name__)
+
         if risk_score >= ALERT_RISK_THRESHOLD:
             try:
                 alert_web_high_risk(src_ip, method, path, risk_score, signals, headers.get('User-Agent', ''))
             except Exception:
                 pass
-
-        # 规则先落库，AI 复核异步排队（不阻塞请求、不改变规则分数）。
-        try:
-            if raw_request_id:
-                from utils import ai_detection as _ai_detection
-                from .connection import _config as _db_config
-                if USE_MYSQL:
-                    db_key = str(getattr(_db_config, 'DB_HOST', '')) + '|' + str(getattr(_db_config, 'DB_NAME', ''))
-                else:
-                    db_key = str(getattr(_db_config, 'DB_PATH', ''))
-                _ai_detection.submit(
-                    raw_request_id,
-                    src_ip,
-                    session_id,
-                    method,
-                    path,
-                    query_string,
-                    headers if isinstance(headers, dict) else {},
-                    body,
-                    int(rule_risk_score),
-                    list(signals or []),
-                    now_text,
-                    db_key,
-                )
-        except Exception as ai_error:
-            logger.debug(f"AI 复核入队失败(保留规则结果): {ai_error}")
 
         return risk_score, signals
     except Exception as e:
