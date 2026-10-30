@@ -61,6 +61,7 @@ honeypot-system/
 ├─ scripts/protocol_service.py# 六类协议的统一进程入口
 ├─ dashboard/                 # 管理端：安全概览、攻击事件、调查、系统与评测
 ├─ investigation_core/        # 本地证据索引与调查工作流
+├─ team_center/               # 可选：团队数据中心（多机证据汇聚、角色权限、传感器上报、审计）
 ├─ db/                        # 数据层：事件、原始请求、会话、地理、风险标注
 ├─ utils/                     # 治理层与工具：限流封禁、日志、告警、AI 封装、分类适配
 ├─ detector/                  # 请求级检测服务与模型（src/、models/、data/）
