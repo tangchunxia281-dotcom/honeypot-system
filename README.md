@@ -39,7 +39,7 @@ Linux命令：`python3 -m venv .venv-local`，安装锁定依赖后执行`.venv-
 
 - **本机模型**：安装并启动Ollama，进入“系统与评测 / 模型配置”，选择或下载模型，执行真实调用验收，再保存并启用。
 - **云端模型**：进入“云端模型”，填写HTTPS地址、模型名及个人API密钥，确认数据发送与计费选项后保存并重启；使用“验收当前运行模型”检查真实连接。
-- **分类模型**：部署AI组提供的分类服务与权重；进入“分类模型”，配置本机`/api/v1/detect`地址并启用。协议详见`docs/分类模型字段对接.md`。
+- **分类模型**：检测服务与模型已随仓库放在 detector/ 目录（含 src/、models/、requirements.txt）；进入“分类模型”，配置本机`/api/v1/detect`地址并启用。协议详见`docs/分类模型字段对接.md`。
 
 配置模板：honeypot.ini.example、ai.local.ini.example、classifier.ini.example、.env.example。环境变量优先于对应配置；程序不会自动加载.env。真实配置、密钥、运行库和模型权重不提交仓库。
 
