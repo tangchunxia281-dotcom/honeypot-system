@@ -231,6 +231,20 @@ bash scripts/run_prod.sh
 
 脚本会检查根目录 `honeypot.ini`，不存在时从 `honeypot.ini.example` 生成。脚本不再重复维护端口、数据库、告警等默认值，统一由 `app_config.py` 读取根目录配置。
 
+### 团队数据中心（可选）
+
+团队中心用于多机证据汇聚，不随主控启动，需要单独初始化与运行：
+
+`
+python scripts/team_center.py init      # 生成 deployment/center/center.json 与 center.sqlite，设置管理员密码（≥12 位）
+python scripts/team_center.py serve     # 启动，默认 http://127.0.0.1:5169（独立登录账号）
+`
+
+- 必填配置在 deployment/center/center.json：init 会自动写入 database、secret、host、port、llow_lan_http、i_config，不要手工改 secret。
+- 采集端（各蜜罐节点）使用 collect 动作，需要 spool、sources、sensor_id、endpoint、	oken、i_database 六项。
+- 只允许本机或私网 IPv4 监听；对局域网提供 HTTP 需显式加 --allow-lan-http；请求体上限 256 KB，登录限速 10 次 / 5 分钟。
+- 不启动该服务时，主控与其他页面不受影响，仅「团队研判」页不可用。
+
 ## systemd 部署
 
 适用于云服务器常驻运行：
