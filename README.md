@@ -1,6 +1,6 @@
 # 蜜迹：证据驱动的智能蜜罐分析系统
 
-传智小分队 · 比赛交付版 2.4 · 2026年10月30日
+比赛交付版 2.4 · 2026 年 10 月 30 日
 
 代码仓库：https://github.com/tangchunxia281-dotcom/honeypot-system
 
