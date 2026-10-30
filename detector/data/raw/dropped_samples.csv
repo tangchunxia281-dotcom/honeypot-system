@@ -1,0 +1,87 @@
+﻿text,label,source,reason
+text,label,source,重复表头脏行
+/1,sqli,sqldata.csv,碎片噪声-疑似base64分片: /1
+/0,sqli,sqldata.csv,碎片噪声-疑似base64分片: /0
+/1',sqli,sqldata.csv,碎片噪声-超短无语义片段: /1'
+/0',sqli,sqldata.csv,碎片噪声-超短无语义片段: /0'
+updatexml,sqli,sqldata.csv,碎片噪声-SQL关键字/函数名碎片: updatexml
+extractvalue,sqli,sqldata.csv,碎片噪声-SQL关键字/函数名碎片: extractvalue
+length,sqli,sqldata.csv,碎片噪声-SQL关键字/函数名碎片: length
+ord,sqli,sqldata.csv,碎片噪声-SQL关键字/函数名碎片: ord
+ascii,sqli,sqldata.csv,碎片噪声-SQL关键字/函数名碎片: ascii
+char,sqli,sqldata.csv,碎片噪声-SQL关键字/函数名碎片: char
+count,sqli,sqldata.csv,碎片噪声-SQL关键字/函数名碎片: count
+left,sqli,sqldata.csv,碎片噪声-SQL关键字/函数名碎片: left
+right,sqli,sqldata.csv,碎片噪声-SQL关键字/函数名碎片: right
+SLEEP,sqli,sqldata.csv,碎片噪声-SQL关键字/函数名碎片: SLEEP
+BENCHMARK,sqli,sqldata.csv,碎片噪声-SQL关键字/函数名碎片: BENCHMARK
+#,sqli,sqldata.csv,碎片噪声-单字符
+--,sqli,sqldata.csv,碎片噪声-纯符号短串: --
+a,sqli,sqli.csv,碎片噪声-单字符
+a',sqli,sqli.csv,碎片噪声-超短无语义片段: a'
+@,sqli,sqli.csv,碎片噪声-单字符
+?,sqli,sqli.csv,碎片噪声-单字符
+1,sqli,sqli.csv,碎片噪声-单字符
+1'1,sqli,sqli.csv,碎片噪声-超短无语义片段: 1'1
+1\'1,sqli,sqli.csv,碎片噪声-超短无语义片段: 1\'1
+||6,sqli,sqli.csv,碎片噪声-超短无语义片段: ||6
+' --,sqli,sqli.csv,碎片噪声-纯符号短串: ' --
+s,sqli,sqli.csv,碎片噪声-单字符
+&1c,sqli,sqli.csv,碎片噪声-超短无语义片段: &1c
+( s,sqli,sqli.csv,碎片噪声-超短无语义片段: ( s
+) s,sqli,sqli.csv,碎片噪声-超短无语义片段: ) s
+",s",sqli,sqli.csv,"碎片噪声-超短无语义片段: ,s"
+.s,sqli,sqli.csv,碎片噪声-超短无语义片段: .s
+1s,sqli,sqli.csv,碎片噪声-疑似base64分片: 1s
+;s,sqli,sqli.csv,碎片噪声-超短无语义片段: ;s
+?s,sqli,sqli.csv,碎片噪声-超短无语义片段: ?s
+UE1,sqli,sqli.csv,碎片噪声-疑似base64分片: UE1
+UEf,sqli,sqli.csv,碎片噪声-疑似base64分片: UEf
+UEs,sqli,sqli.csv,碎片噪声-疑似base64分片: UEs
+UEv,sqli,sqli.csv,碎片噪声-疑似base64分片: UEv
+c,sqli,sqli.csv,碎片噪声-单字符
+n,sqli,sqli.csv,碎片噪声-单字符
+ns,sqli,sqli.csv,碎片噪声-疑似base64分片: ns
+os,sqli,sqli.csv,碎片噪声-疑似base64分片: os
+v,sqli,sqli.csv,碎片噪声-单字符
+{s,sqli,sqli.csv,碎片噪声-超短无语义片段: {s
+'-',sqli,sqli.csv,碎片噪声-纯符号短串: '-'
+' ',sqli,sqli.csv,碎片噪声-纯符号短串: ' '
+'&',sqli,sqli.csv,碎片噪声-纯符号短串: '&'
+'^',sqli,sqli.csv,碎片噪声-纯符号短串: '^'
+'*',sqli,sqli.csv,碎片噪声-纯符号短串: '*'
+"""-""",sqli,sqli.csv,"碎片噪声-纯符号短串: ""-"""
+""" """,sqli,sqli.csv,"碎片噪声-纯符号短串: "" """
+"""&""",sqli,sqli.csv,"碎片噪声-纯符号短串: ""&"""
+"""^""",sqli,sqli.csv,"碎片噪声-纯符号短串: ""^"""
+"""*""",sqli,sqli.csv,"碎片噪声-纯符号短串: ""*"""
+0,sqli,sqli.csv,碎片噪声-单字符
+031003000270000,sqli,sqli.csv,碎片噪声-纯数字/符号串: 031003000270000
+',sqli,sqli.csv,碎片噪声-单字符
+select,sqli,sqli.csv,碎片噪声-SQL关键字/函数名碎片: select
+as,sqli,sqli.csv,碎片噪声-疑似base64分片: as
+or,sqli,sqli.csv,碎片噪声-SQL关键字/函数名碎片: or
+asc,sqli,sqli.csv,碎片噪声-疑似base64分片: asc
+desc,sqli,sqli.csv,碎片噪声-疑似base64分片: desc
+having,sqli,sqli.csv,碎片噪声-SQL关键字/函数名碎片: having
+like,sqli,sqli.csv,碎片噪声-疑似base64分片: like
+|,sqli,sqli.csv,碎片噪声-单字符
+*|,sqli,sqli.csv,碎片噪声-纯符号短串: *|
+(,sqli,sqli.csv,碎片噪声-单字符
+%28,sqli,sqli.csv,碎片噪声-纯数字/符号串: %28
+),sqli,sqli.csv,碎片噪声-单字符
+%29,sqli,sqli.csv,碎片噪声-纯数字/符号串: %29
+&,sqli,sqli.csv,碎片噪声-单字符
+%26,sqli,sqli.csv,碎片噪声-纯数字/符号串: %26
+!,sqli,sqli.csv,碎片噪声-单字符
+%21,sqli,sqli.csv,碎片噪声-纯数字/符号串: %21
+/,sqli,sqli.csv,碎片噪声-单字符
+//,sqli,sqli.csv,碎片噪声-纯符号短串: //
+//*,sqli,sqli.csv,碎片噪声-纯符号短串: //*
+*/*,sqli,sqli.csv,碎片噪声-纯符号短串: */*
+21 %,sqli,sqli.csv,碎片噪声-纯数字/符号串: 21 %
+26 %,sqli,sqli.csv,碎片噪声-纯数字/符号串: 26 %
+29 %,sqli,sqli.csv,碎片噪声-纯数字/符号串: 29 %
+||'6,sqli,sqli.csv,碎片噪声-超短无语义片段: ||'6
+28 %,sqli,sqli.csv,碎片噪声-纯数字/符号串: 28 %
+,sqli,sqli.csv,碎片噪声-空文本

