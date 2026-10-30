@@ -17,6 +17,9 @@
 
 ## 文档导航
 - [技术文档](docs/技术文档.md)：项目方案、需求、架构与实现说明
+- [API 文档](API.md)：管理端与蜜罐侧接口说明
+- [AI 接入说明](AI_SerVice.md)：检测服务接入与联调
+- [前端架构与接口文档](前端架构与接口文档.md)：页面结构与前端调用约定
 - [分类模型字段对接](docs/分类模型字段对接.md)：请求级检测服务的输入输出契约
 - [AI 部署说明](docs/AI部署说明.md)：本机模型与云端接口的配置方式
 - [测试与验证说明](测试与验证说明.md)：软件回归、协议、界面与接口验证口径
@@ -62,10 +65,10 @@ honeypot-system/
 ├─ utils/                     # 治理层与工具：限流封禁、日志、告警、AI 封装、分类适配
 ├─ detector/                  # 请求级检测服务与模型（src/、models/、data/）
 ├─ validation/                # 2.4 验收记录：回归、协议、界面、接口
-├─ docs/                      # 技术文档、AI 部署、分类模型对接、Git 说明
+├─ docs/                      # 设计文档 01–06、测试报告、运行截图、AI 部署与对接说明
 ├─ scripts/                   # 启动、演示、验收与评测脚本
 ├─ evaluation/                # 评测样本与脚本
-└─ database/                  # 建表 SQL（运行库 *.db 不入库）
+└─ database/                  # schema.sql / mysql_archive.sql（运行库 *.db 不入库）
 ```
 
 仓库约定：**只提交代码、模板与文档**；`honeypot.ini`、`ai.local.ini`、`.env`、`*.db`、`logs/` 等已在 `.gitignore` 中排除。
