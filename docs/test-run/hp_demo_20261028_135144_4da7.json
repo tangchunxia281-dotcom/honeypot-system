@@ -1,0 +1,395 @@
+{
+  "run_id": "hp_demo_20261028_135144_4da7",
+  "started": "2026-10-28T13:51:44",
+  "finished": true,
+  "interrupted": false,
+  "target": {
+    "host": "127.0.0.1",
+    "web_port": 5000,
+    "ssh_port": 2222
+  },
+  "records": [
+    {
+      "at": "2026-10-28T13:51:45",
+      "phase": "准备",
+      "label": "本机服务连通性",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/",
+      "params": {},
+      "sample_type": "",
+      "http_status": 200,
+      "response_preview": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>华盛科技集团 - 官方网站</title>\n    <meta name=\"keywords\" content=\"华盛科技,人工智能,大数据,云计算,解决方案\">\n    <meta name=\"description\" content=\"华盛科技集团官方网站，提供企业信息、产品介绍、解决方案与技术支持。\">\n    <link rel=\"stylesheet\" href=\"/static/css/honeypot.css\">\n    <style>\n        body { background: #f5f5f5; color: #333; }\n        .hero {\n            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);\n            color: #fff;\n            padding: 70px 0;\n        }\n        .hero .container {\n            max-width: 1200px;\n            margin: 0 auto;\n            padding: 0 20px;\n            display: grid;\n            grid-template-columns: 1.2fr 0.8fr;\n            gap: 40px;\n            align-items: center;\n        }\n        .hero h2 { font-size: 40px; font-weight: 300; margin-bottom: 12px; }\n        .hero p { opacity: 0.92; line-height: 1.8; font-size: 16px; }\n        .hero-actions { margin-top: 22px; display: flex; gap: 12px; flex-wrap: wrap; }\n        .btn {\n            display: inline-block;\n            padding: 10px 16px;\n            border-radius: 6px;\n      ",
+      "preview_truncated": true,
+      "elapsed_ms": 110
+    },
+    {
+      "at": "2026-10-28T13:51:46",
+      "phase": "正常访问",
+      "label": "正常搜索对照",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/search",
+      "params": {
+        "q": "python tutorial",
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "normal",
+      "http_status": 200,
+      "response_preview": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>搜索结果 - python tutorial - 华盛科技集团</title>\n    <meta name=\"keywords\" content=\"华盛科技,搜索,产品信息,新闻动态,解决方案\">\n    <meta name=\"description\" content=\"搜索华盛科技集团的产品信息、新闻动态与解决方案内容\">\n    <!-- 外部样式表 -->\n    <link rel=\"stylesheet\" href=\"/static/css/honeypot.css\">\n    <style>\n        .search-result {\n            background: white;\n            padding: 20px;\n            border-radius: 8px;\n            margin-bottom: 15px;\n            box-shadow: 0 2px 5px rgba(0,0,0,0.1);\n            transition: transform 0.2s;\n        }\n        .search-result:hover {\n            transform: translateY(-2px);\n            box-shadow: 0 4px 12px rgba(0,0,0,0.15);\n        }\n        .result-title {\n            font-size: 18px;\n            margin-bottom: 8px;\n        }\n        .result-title a {\n            color: #1e3c72;\n            text-decoration: none;\n        }\n        .result-title a:hover {\n            text-decoration: underline;\n        }\n        .result-url {\n            color: #0a58ca;\n            font-size: 14px;\n            margin-bottom: 8px;\n        }\n      ",
+      "preview_truncated": true,
+      "elapsed_ms": 1484
+    },
+    {
+      "at": "2026-10-28T13:51:47",
+      "phase": "入口探测",
+      "label": "管理入口",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/admin",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "recon",
+      "http_status": 200,
+      "response_preview": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>管理后台 - 登录</title>\n    <link href=\"/static/css/admin-login.css\" rel=\"stylesheet\">\n    <link href=\"/static/css/fontawesome.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"login-container\">\n        <h2><i class=\"fas fa-shield-alt\"></i> 华盛内容管理</h2>\n        <p style=\"text-align: center; color: rgba(0,0,0,0.45); font-size: 14px; margin-bottom: 20px;\">\n            管理员登录 | Admin Login\n        </p>\n\n        \n\n        <form method=\"post\" action=\"/admin\" id=\"adminLoginForm\">\n            <input type=\"hidden\" name=\"csrf_token\" value=\"2doj7iJo7LY8wf6i4uUG_ZDNvWWg3xO1LXbRZN553Dg\">\n            <div class=\"form-group\">\n                <label>账号</label>\n                <input type=\"text\" name=\"username\" placeholder=\"邮箱 / 用户名\" required>\n            </div>\n            <div class=\"form-group\">\n                <label>密码</label>\n                <input type=\"password\" name=\"password\" placeholder=\"请输入密码\" required>\n            </div>\n            <button type=\"submit\" id=\"adminLoginSubmit\">立即登录</button>\n        </form>\n\n        <div style=\"margin-top: 20px; text-align: center; font-size: 12px; color: #999;\">\n          ",
+      "preview_truncated": true,
+      "elapsed_ms": 141
+    },
+    {
+      "at": "2026-10-28T13:51:48",
+      "phase": "入口探测",
+      "label": "扫描工具特征",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/admin",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "scanner",
+      "http_status": 200,
+      "response_preview": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <title>管理后台 - 登录</title>\n    <link href=\"/static/css/admin-login.css\" rel=\"stylesheet\">\n    <link href=\"/static/css/fontawesome.min.css\" rel=\"stylesheet\">\n</head>\n<body>\n    <div class=\"login-container\">\n        <h2><i class=\"fas fa-shield-alt\"></i> 华盛内容管理</h2>\n        <p style=\"text-align: center; color: rgba(0,0,0,0.45); font-size: 14px; margin-bottom: 20px;\">\n            管理员登录 | Admin Login\n        </p>\n\n        \n\n        <form method=\"post\" action=\"/admin\" id=\"adminLoginForm\">\n            <input type=\"hidden\" name=\"csrf_token\" value=\"2doj7iJo7LY8wf6i4uUG_ZDNvWWg3xO1LXbRZN553Dg\">\n            <div class=\"form-group\">\n                <label>账号</label>\n                <input type=\"text\" name=\"username\" placeholder=\"邮箱 / 用户名\" required>\n            </div>\n            <div class=\"form-group\">\n                <label>密码</label>\n                <input type=\"password\" name=\"password\" placeholder=\"请输入密码\" required>\n            </div>\n            <button type=\"submit\" id=\"adminLoginSubmit\">立即登录</button>\n        </form>\n\n        <div style=\"margin-top: 20px; text-align: center; font-size: 12px; color: #999;\">\n          ",
+      "preview_truncated": true,
+      "elapsed_ms": 125
+    },
+    {
+      "at": "2026-10-28T13:51:49",
+      "phase": "输入探测",
+      "label": "XSS 脚本输入",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/search",
+      "params": {
+        "q": "<script>alert(\"honeypot-demo\")</script>",
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "xss",
+      "http_status": 200,
+      "response_preview": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>搜索结果 - &amp;lt;script&amp;gt;alert(&amp;quot;honeypot-demo&amp;quot;)&amp;lt;/script&amp;gt; - 华盛科技集团</title>\n    <meta name=\"keywords\" content=\"华盛科技,搜索,产品信息,新闻动态,解决方案\">\n    <meta name=\"description\" content=\"搜索华盛科技集团的产品信息、新闻动态与解决方案内容\">\n    <!-- 外部样式表 -->\n    <link rel=\"stylesheet\" href=\"/static/css/honeypot.css\">\n    <style>\n        .search-result {\n            background: white;\n            padding: 20px;\n            border-radius: 8px;\n            margin-bottom: 15px;\n            box-shadow: 0 2px 5px rgba(0,0,0,0.1);\n            transition: transform 0.2s;\n        }\n        .search-result:hover {\n            transform: translateY(-2px);\n            box-shadow: 0 4px 12px rgba(0,0,0,0.15);\n        }\n        .result-title {\n            font-size: 18px;\n            margin-bottom: 8px;\n        }\n        .result-title a {\n            color: #1e3c72;\n            text-decoration: none;\n        }\n        .result-title a:hover {\n            text-decoration: underline;\n        }\n        .result-url {\n            color: #0a58ca;\n       ",
+      "preview_truncated": true,
+      "elapsed_ms": 140
+    },
+    {
+      "at": "2026-10-28T13:51:51",
+      "phase": "输入探测",
+      "label": "SQL 联合查询输入",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/products",
+      "params": {
+        "id": "1 UNION SELECT username,password FROM users",
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "sqli",
+      "http_status": 200,
+      "response_preview": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>产品中心 - 华盛科技集团</title>\n    <meta name=\"keywords\" content=\"华盛科技,产品中心,AI平台,数据治理,安全审计\">\n    <meta name=\"description\" content=\"华盛科技集团产品中心：数据分析平台、云原生交付、日志审计与安全运营能力。\">\n    <link rel=\"stylesheet\" href=\"/static/css/honeypot.css\">\n    <style>\n        .wrap { max-width: 1200px; margin: 30px auto; padding: 0 20px; }\n        .hero { background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 22px; margin-bottom: 18px; }\n        .hero h2 { margin: 0 0 8px; color: #1e3c72; font-weight: 600; }\n        .hero p { margin: 0; color: #666; line-height: 1.8; }\n        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }\n        .card { background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 20px; }\n        .card h3 { margin: 0 0 10px; color: #1e3c72; font-size: 18px; }\n        .card p { margin: 0 0 12px; color: #666; line-height: 1.7; font-size: 14px; }\n        .card a { color: #1e3c72; text-decoration: none; font-size: 14px; }\n        .card a:hover { text-decoration:",
+      "preview_truncated": true,
+      "elapsed_ms": 141
+    },
+    {
+      "at": "2026-10-28T13:51:52",
+      "phase": "输入探测",
+      "label": "路径遍历输入",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/download",
+      "params": {
+        "file": "../../etc/passwd",
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "path_traversal",
+      "http_status": 404,
+      "response_preview": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>404 Not Found</title>\n    <style>\n        html, body { height: 100%; }\n        body {\n            margin: 0;\n            font-family: -apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Helvetica,Arial,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",sans-serif;\n            background: linear-gradient(180deg, #f6f8fa 0%, #eef2f6 100%);\n            color: #333;\n        }\n        .wrap { max-width: 880px; margin: 0 auto; padding: 44px 18px; }\n        .panel {\n            background: #fff;\n            border: 1px solid #e1e4e8;\n            box-shadow: 0 10px 30px rgba(0,0,0,.06);\n            border-radius: 10px;\n            overflow: hidden;\n        }\n        .hd {\n            padding: 18px 22px;\n            border-bottom: 1px solid #eee;\n            background: #fafafa;\n            display: flex;\n            align-items: center;\n            gap: 14px;\n            border-radius: 4px 4px 0 0;\n        }\n        .face {\n            width: 44px;\n            height: 44px;\n            border-radius: 10px;\n            background: #e9e9e9",
+      "preview_truncated": true,
+      "elapsed_ms": 140
+    },
+    {
+      "at": "2026-10-28T13:51:53",
+      "phase": "正常访问",
+      "label": "安全讨论关键词对照",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/search",
+      "params": {
+        "q": "为什么 script 标签需要转义，如何选择 SQL 教程",
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "normal",
+      "http_status": 200,
+      "response_preview": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>搜索结果 - 为什么 script 标签需要转义，如何选择 SQL 教程 - 华盛科技集团</title>\n    <meta name=\"keywords\" content=\"华盛科技,搜索,产品信息,新闻动态,解决方案\">\n    <meta name=\"description\" content=\"搜索华盛科技集团的产品信息、新闻动态与解决方案内容\">\n    <!-- 外部样式表 -->\n    <link rel=\"stylesheet\" href=\"/static/css/honeypot.css\">\n    <style>\n        .search-result {\n            background: white;\n            padding: 20px;\n            border-radius: 8px;\n            margin-bottom: 15px;\n            box-shadow: 0 2px 5px rgba(0,0,0,0.1);\n            transition: transform 0.2s;\n        }\n        .search-result:hover {\n            transform: translateY(-2px);\n            box-shadow: 0 4px 12px rgba(0,0,0,0.15);\n        }\n        .result-title {\n            font-size: 18px;\n            margin-bottom: 8px;\n        }\n        .result-title a {\n            color: #1e3c72;\n            text-decoration: none;\n        }\n        .result-title a:hover {\n            text-decoration: underline;\n        }\n        .result-url {\n            color: #0a58ca;\n            font-size: 14px;\n            margin-bottom: 8px;\n  ",
+      "preview_truncated": true,
+      "elapsed_ms": 157
+    },
+    {
+      "at": "2026-10-28T13:51:54",
+      "phase": "输入探测",
+      "label": "命令拼接输入",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/tools",
+      "params": {
+        "cmd": "whoami;cat /etc/passwd",
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "command_injection",
+      "http_status": 404,
+      "response_preview": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>404 Not Found</title>\n    <style>\n        html, body { height: 100%; }\n        body {\n            margin: 0;\n            font-family: -apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,Helvetica,Arial,\"PingFang SC\",\"Hiragino Sans GB\",\"Microsoft YaHei\",sans-serif;\n            background: linear-gradient(180deg, #f6f8fa 0%, #eef2f6 100%);\n            color: #333;\n        }\n        .wrap { max-width: 880px; margin: 0 auto; padding: 44px 18px; }\n        .panel {\n            background: #fff;\n            border: 1px solid #e1e4e8;\n            box-shadow: 0 10px 30px rgba(0,0,0,.06);\n            border-radius: 10px;\n            overflow: hidden;\n        }\n        .hd {\n            padding: 18px 22px;\n            border-bottom: 1px solid #eee;\n            background: #fafafa;\n            display: flex;\n            align-items: center;\n            gap: 14px;\n            border-radius: 4px 4px 0 0;\n        }\n        .face {\n            width: 44px;\n            height: 44px;\n            border-radius: 10px;\n            background: #e9e9e9",
+      "preview_truncated": true,
+      "elapsed_ms": 125
+    },
+    {
+      "at": "2026-10-28T13:51:55",
+      "phase": "输入探测",
+      "label": "模板表达式输入",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/search",
+      "params": {
+        "name": "{{7*7}}",
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "ssti",
+      "http_status": 200,
+      "response_preview": "<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>搜索结果 -  - 华盛科技集团</title>\n    <meta name=\"keywords\" content=\"华盛科技,搜索,产品信息,新闻动态,解决方案\">\n    <meta name=\"description\" content=\"搜索华盛科技集团的产品信息、新闻动态与解决方案内容\">\n    <!-- 外部样式表 -->\n    <link rel=\"stylesheet\" href=\"/static/css/honeypot.css\">\n    <style>\n        .search-result {\n            background: white;\n            padding: 20px;\n            border-radius: 8px;\n            margin-bottom: 15px;\n            box-shadow: 0 2px 5px rgba(0,0,0,0.1);\n            transition: transform 0.2s;\n        }\n        .search-result:hover {\n            transform: translateY(-2px);\n            box-shadow: 0 4px 12px rgba(0,0,0,0.15);\n        }\n        .result-title {\n            font-size: 18px;\n            margin-bottom: 8px;\n        }\n        .result-title a {\n            color: #1e3c72;\n            text-decoration: none;\n        }\n        .result-title a:hover {\n            text-decoration: underline;\n        }\n        .result-url {\n            color: #0a58ca;\n            font-size: 14px;\n            margin-bottom: 8px;\n        }\n        .result-snipp",
+      "preview_truncated": true,
+      "elapsed_ms": 156
+    },
+    {
+      "at": "2026-10-28T13:51:56",
+      "phase": "输入探测",
+      "label": "XML 外部实体声明",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "POST",
+      "path": "/api/preview",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "xxe",
+      "http_status": 400,
+      "response_preview": "{\n  \"error\": \"url_required\"\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 94
+    },
+    {
+      "at": "2026-10-28T13:51:59",
+      "phase": "输入探测",
+      "label": "内网目标预览输入",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/api/preview",
+      "params": {
+        "url": "http://169.254.169.254/latest/meta-data/",
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "ssrf",
+      "http_status": 202,
+      "response_preview": "{\n  \"job_id\": \"e9980e420f1cc06034f858e3\",\n  \"poll\": \"/api/preview/jobs/e9980e420f1cc06034f858e3\",\n  \"reply\": \"\\u9884\\u89c8\\u4efb\\u52a1\\u5df2\\u521b\\u5efa\\uff1ahttp://169.254.169.254/latest/meta-data/\\n\\u5f53\\u524d\\u72b6\\u6001\\uff1a\\u7b49\\u5f85\\u6e32\\u67d3\\n\\u9884\\u8ba1 1-2 \\u5206\\u949f\\u5b8c\\u6210\\uff08\\u6a21\\u62df\\u7ed3\\u679c\\uff0c\\u4e0d\\u4f1a\\u8bbf\\u95ee\\u76ee\\u6807\\u5730\\u5740\\uff09\\u3002\\n\",\n  \"source\": \"model\",\n  \"status\": \"ready\",\n  \"strategy\": \"preview_pending\"\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 1578
+    },
+    {
+      "at": "2026-10-28T13:52:00",
+      "phase": "受控交互",
+      "label": "查询同会话模拟任务",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/api/preview/jobs/e9980e420f1cc06034f858e3",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "job_lookup",
+      "http_status": 200,
+      "response_preview": "{\n  \"job_id\": \"e9980e420f1cc06034f858e3\",\n  \"reply\": \"\\u9884\\u89c8\\u4efb\\u52a1\\u5df2\\u521b\\u5efa\\uff1ahttp://169.254.169.254/latest/meta-data/\\n\\u5f53\\u524d\\u72b6\\u6001\\uff1a\\u7b49\\u5f85\\u6e32\\u67d3\\n\\u9884\\u8ba1 1-2 \\u5206\\u949f\\u5b8c\\u6210\\uff08\\u6a21\\u62df\\u7ed3\\u679c\\uff0c\\u4e0d\\u4f1a\\u8bbf\\u95ee\\u76ee\\u6807\\u5730\\u5740\\uff09\\u3002\\n\",\n  \"source\": \"model\",\n  \"status\": \"ready\",\n  \"strategy\": \"preview_pending\",\n  \"url\": \"http://169.254.169.254/latest/meta-data/\"\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 109
+    },
+    {
+      "at": "2026-10-28T13:52:04",
+      "phase": "受控交互",
+      "label": "外部示例目标的模拟预览",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/api/preview",
+      "params": {
+        "url": "https://example.test/demo",
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "preview",
+      "http_status": 202,
+      "response_preview": "{\n  \"job_id\": \"3e998fa6a5d05e5cfadb4fd7\",\n  \"poll\": \"/api/preview/jobs/3e998fa6a5d05e5cfadb4fd7\",\n  \"reply\": \"\\u9884\\u89c8\\u4efb\\u52a1\\u5df2\\u521b\\u5efa\\uff1ahttps://example.test/demo\\n\\u5f53\\u524d\\u72b6\\u6001\\uff1a\\u7b49\\u5f85\\u6e32\\u67d3\\n\\u9884\\u8ba1 1-2 \\u5206\\u949f\\u5b8c\\u6210\\uff08\\u6a21\\u62df\\u7ed3\\u679c\\uff0c\\u4e0d\\u4f1a\\u8bbf\\u95ee\\u76ee\\u6807\\u5730\\u5740\\uff09\\u3002\\n\",\n  \"source\": \"model\",\n  \"status\": \"ready\",\n  \"strategy\": \"preview_pending\"\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 2985
+    },
+    {
+      "at": "2026-10-28T13:52:05",
+      "phase": "受控交互",
+      "label": "查询同会话模拟任务",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/api/preview/jobs/3e998fa6a5d05e5cfadb4fd7",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "job_lookup",
+      "http_status": 200,
+      "response_preview": "{\n  \"job_id\": \"3e998fa6a5d05e5cfadb4fd7\",\n  \"reply\": \"\\u9884\\u89c8\\u4efb\\u52a1\\u5df2\\u521b\\u5efa\\uff1ahttps://example.test/demo\\n\\u5f53\\u524d\\u72b6\\u6001\\uff1a\\u7b49\\u5f85\\u6e32\\u67d3\\n\\u9884\\u8ba1 1-2 \\u5206\\u949f\\u5b8c\\u6210\\uff08\\u6a21\\u62df\\u7ed3\\u679c\\uff0c\\u4e0d\\u4f1a\\u8bbf\\u95ee\\u76ee\\u6807\\u5730\\u5740\\uff09\\u3002\\n\",\n  \"source\": \"model\",\n  \"status\": \"ready\",\n  \"strategy\": \"preview_pending\",\n  \"url\": \"https://example.test/demo\"\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 93
+    },
+    {
+      "at": "2026-10-28T13:52:06",
+      "phase": "业务交互",
+      "label": "业务状态",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/api/erp/status",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "erp",
+      "http_status": 200,
+      "response_preview": "{\n  \"hostname\": \"erp-app-85d2\",\n  \"role\": \"ERP application server\",\n  \"services\": {\n    \"erp-api\": \"running\",\n    \"nginx\": \"running\",\n    \"postgresql\": \"stopped\"\n  }\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 157
+    },
+    {
+      "at": "2026-10-28T13:52:07",
+      "phase": "业务交互",
+      "label": "业务目录",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/api/erp/catalog",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "erp",
+      "http_status": 200,
+      "response_preview": "{\n  \"items\": [\n    {\n      \"name\": \"Office printer\",\n      \"sku\": \"DEMO-1001\",\n      \"stock\": 18\n    },\n    {\n      \"name\": \"Managed switch\",\n      \"sku\": \"DEMO-1002\",\n      \"stock\": 7\n    }\n  ],\n  \"source\": \"cached\"\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 93
+    },
+    {
+      "at": "2026-10-28T13:52:08",
+      "phase": "业务交互",
+      "label": "订单认证前对照",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/api/erp/orders",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "erp",
+      "http_status": 401,
+      "response_preview": "{\n  \"error\": \"Authentication required\"\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 141
+    },
+    {
+      "at": "2026-10-28T13:52:10",
+      "phase": "业务交互",
+      "label": "虚拟业务登录",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "POST",
+      "path": "/api/erp/login",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "erp",
+      "http_status": 200,
+      "response_preview": "{\n  \"status\": \"signed_in\",\n  \"user\": \"guest-operator\"\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 109
+    },
+    {
+      "at": "2026-10-28T13:52:11",
+      "phase": "业务交互",
+      "label": "订单读取",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/api/erp/orders",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "erp",
+      "http_status": 200,
+      "response_preview": "{\n  \"orders\": [\n    {\n      \"order_id\": \"ORD-DEMO-001\",\n      \"status\": \"processing\",\n      \"total\": 1200\n    }\n  ]\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 141
+    },
+    {
+      "at": "2026-10-28T13:52:12",
+      "phase": "业务交互",
+      "label": "创建虚拟导出",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "POST",
+      "path": "/api/erp/export",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "erp",
+      "http_status": 202,
+      "response_preview": "{\n  \"job_id\": \"90755a7deb42a9095631e168\",\n  \"poll\": \"/api/erp/jobs/90755a7deb42a9095631e168\",\n  \"status\": \"queued\"\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 187
+    },
+    {
+      "at": "2026-10-28T13:52:13",
+      "phase": "业务交互",
+      "label": "读取同会话导出任务",
+      "protocol": "web",
+      "status": "response_received",
+      "method": "GET",
+      "path": "/api/erp/jobs/90755a7deb42a9095631e168",
+      "params": {
+        "demo_run": "hp_demo_20261028_135144_4da7"
+      },
+      "sample_type": "",
+      "http_status": 200,
+      "response_preview": "{\n  \"job_id\": \"90755a7deb42a9095631e168\",\n  \"records\": 1,\n  \"status\": \"ready\"\n}\n",
+      "preview_truncated": false,
+      "elapsed_ms": 110
+    }
+  ],
+  "scope": "Synthetic requests and virtual SSH commands against a fixed loopback target. HTTP status and SSH login are not proof of exploitation or AI participation."
+}

@@ -1,0 +1,67 @@
+{
+  "generated_at": "2026-11-07 22:58:38",
+  "report": [
+    {
+      "name": "Dashboard(:5001)",
+      "ok": true,
+      "detail": "HTTP 状态码=200 (服务存活)"
+    },
+    {
+      "name": "AI 网关(:5000)",
+      "ok": true,
+      "detail": "HTTP 状态码=200 (服务存活)"
+    },
+    {
+      "name": "SSH 暴力破解捕获",
+      "ok": true,
+      "detail": "发起 6 次错误认证(预期被记为 login_failed 事件)"
+    },
+    {
+      "name": "FTP 登录尝试捕获",
+      "ok": true,
+      "detail": "已发送 USER/PASS，banner=b'220 (vsFTPd 3.0.5)\\r\\n'"
+    },
+    {
+      "name": "Telnet 登录尝试捕获",
+      "ok": true,
+      "detail": "已发送 admin/admin 凭据"
+    },
+    {
+      "name": "MySQL 握手/认证捕获",
+      "ok": true,
+      "detail": "已发送伪造认证包"
+    },
+    {
+      "name": "Redis 命令捕获",
+      "ok": true,
+      "detail": "已建立连接并发送 AUTH/PING（首条命令触发 redis_unauthorized 记录）"
+    },
+    {
+      "name": "Web 攻击流量(8类)",
+      "ok": true,
+      "detail": "已发送 8 类攻击请求(XSS/SQLi/遍历/CVE/SSTI/敏感路径)"
+    },
+    {
+      "name": "大模型 xss-detector 可达",
+      "ok": true,
+      "detail": "model/info.version=v2 | detect: attack_type=sqli is_attack=True ai_points=25"
+    }
+  ],
+  "db_before": {
+    "event_log": 155,
+    "raw_request": 95,
+    "session_track": 20,
+    "geo_ip": 8,
+    "risk_mark": 0,
+    "risk_target": 8
+  },
+  "db_after": {
+    "event_log": 187,
+    "raw_request": 123,
+    "session_track": 23,
+    "geo_ip": 8,
+    "risk_mark": 0,
+    "risk_target": 8
+  },
+  "ai_ok": true
+}

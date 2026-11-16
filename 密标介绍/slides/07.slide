@@ -1,0 +1,48 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '44px 64px', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 88, flexDirection: 'column', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#111827' }}>HTTP 接口与前端接入</Text>
+        <Text style={{ fontSize: 15, color: '#6B7280', marginTop: 6 }}>前缀 /api/risk_mark · 5 个 GET + 3 个 POST · 与既有 Dashboard 接口同构</Text>
+    </Box>
+    <Box style={{ width: '100%', height: 2, background: '#1D4ED8' }} />
+    <Box style={{ flex: 1, flexDirection: 'column', gap: 12, paddingTop: 22 }}>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>鉴权 · </span>全部接口需要 Dashboard 登录态；POST 接口额外要求请求头 X-CSRF-Token，/api/ 前缀同时触发同源校验。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>查询类 GET 五个 · </span>GET /meta 枚举元数据；GET /summary 总数与密级分布；GET /list 分页列表（target_type / level / status / q / limit / offset）；GET /check 单查或 targets=ip:1.1.1.1,ip:2.2.2.2 批量查；GET /detectors 识别器清单。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>POST /create · </span>新增或覆盖密标，参数 target_type、target_value、level、reason、ttl_days、mark_code、created_by；参数非法时把 ValueError 转成明确提示返回，不写脏数据。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>POST /remove 与 /scan · </span>/remove 按 id 或按（target_type + target_value）移除，未命中返回明确提示；/scan 运行识别器，参数 hours、limit、apply，不传 apply 时只返回建议。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>响应格式 · </span>统一为 code / msg / data 三段式：code 为 0 表示成功，msg 为 success，data 里放返回数据。与既有 Dashboard 接口完全一致，前端可直接复用同一套请求封装。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>前端接入 · </span>dashboard.html 只引入 risk_mark.css 与 risk_mark.js 两个标签；window.RiskMark 暴露 open / refresh / isMarked(ip) / fetchMarks([ip])；静态资源走 /api/risk_mark/static/，不占用全局 static 目录。
+            </Text>
+        </Box>
+    </Box>
+    <Box style={{ height: 34, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <Text style={{ fontSize: 13, color: '#9CA3AF' }}>07 / 08</Text>
+    </Box>
+</Slide>

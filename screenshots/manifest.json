@@ -1,0 +1,120 @@
+{
+  "generated_at": "2026-11-07 23:13:00",
+  "count": 19,
+  "shots": [
+    {
+      "file": "01_web_home.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 309131
+    },
+    {
+      "file": "02_web_admin_login.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 396794
+    },
+    {
+      "file": "03_web_admin_dashboard.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 52704
+    },
+    {
+      "file": "04_dashboard_login.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 584311
+    },
+    {
+      "file": "05_dashboard.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 604279
+    },
+    {
+      "file": "06_dashboard_full.png",
+      "width": 1600,
+      "height": 1071,
+      "bytes": 605090
+    },
+    {
+      "file": "07_ai_monitor.png",
+      "width": 1600,
+      "height": 3331,
+      "bytes": 666326
+    },
+    {
+      "file": "08_ai_analysis_list.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 342729
+    },
+    {
+      "file": "09_ai_analysis_detail.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 191050
+    },
+    {
+      "file": "09b_ai_analysis_detail_full.png",
+      "width": 1600,
+      "height": 3278,
+      "bytes": 642117
+    },
+    {
+      "file": "10_ai_detection.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 221318
+    },
+    {
+      "file": "10b_ai_detection_full.png",
+      "width": 1600,
+      "height": 2107,
+      "bytes": 317919
+    },
+    {
+      "file": "10c_ai_detection_detail.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 115020
+    },
+    {
+      "file": "11_ai_interactions.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 304586
+    },
+    {
+      "file": "11b_ai_interactions_full.png",
+      "width": 1600,
+      "height": 7033,
+      "bytes": 1196937
+    },
+    {
+      "file": "12_ai_investigations.png",
+      "width": 1600,
+      "height": 1666,
+      "bytes": 291516
+    },
+    {
+      "file": "13_ai_team.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 218531
+    },
+    {
+      "file": "14_model_validation.png",
+      "width": 1600,
+      "height": 1000,
+      "bytes": 134290
+    },
+    {
+      "file": "16_test_summary.png",
+      "width": 1600,
+      "height": 1824,
+      "bytes": 230951
+    }
+  ]
+}

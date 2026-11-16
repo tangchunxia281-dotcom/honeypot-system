@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d</ProjectGuid>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <InterpreterId>Global|VisualStudio|Scripts</InterpreterId>
+    <Name>honeypot-system</Name>
+    <RootNamespace>honeypot-system</RootNamespace>
+    <IsWindowsApplication>false</IsWindowsApplication>
+    <StartupFile>main.py</StartupFile>
+    <WorkingDirectory>.</WorkingDirectory>
+    <SuppressPackageInstallationPrompt>True</SuppressPackageInstallationPrompt>
+    <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>bin\Release</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="main.py" />
+    <Compile Include="app_config.py" />
+    <Compile Include="env_utils.py" />
+    <Compile Include="db\__init__.py" />
+    <Compile Include="db\connection.py" />
+    <Compile Include="db\event_logs.py" />
+    <Compile Include="db\event_activity.py" />
+    <Compile Include="db\http_requests.py" />
+    <Compile Include="db\archive.py" />
+    <Compile Include="db\geo.py" />
+    <Compile Include="db\demo_data.py" />
+    <Compile Include="ssh_honeypot\server.py" />
+    <Compile Include="ssh_honeypot\commands.py" />
+    <Compile Include="ssh_honeypot\vfs.py" />
+    <Compile Include="ssh_honeypot\session.py" />
+    <Compile Include="ssh_honeypot\ssh_config.py" />
+    <Compile Include="ssh_honeypot\auth_utils.py" />
+    <Compile Include="web_honeypot\server.py" />
+    <Compile Include="web_honeypot\routes_public.py" />
+    <Compile Include="web_honeypot\routes_traps.py" />
+    <Compile Include="web_honeypot\admin_views.py" />
+    <Compile Include="web_honeypot\admin_api.py" />
+    <Compile Include="web_honeypot\errors.py" />
+    <Compile Include="dashboard\server.py" />
+    <Compile Include="dashboard\system_info.py" />
+    <Compile Include="utils\logger.py" />
+    <Compile Include="utils\alerting.py" />
+    <Compile Include="utils\ip_location.py" />
+    <Compile Include="utils\http_fingerprint.py" />
+    <Compile Include="utils\net.py" />
+    <Compile Include="utils\__init__.py" />
+    <Compile Include="scripts\demo\defense_demo.py" />
+    <Compile Include="scripts\system_test\__init__.py" />
+    <Compile Include="scripts\system_test\common_utils.py" />
+    <Compile Include="scripts\system_test\full_test.py" />
+    <Compile Include="risk_mark\__init__.py" />
+    <Compile Include="risk_mark\constants.py" />
+    <Compile Include="risk_mark\config.py" />
+    <Compile Include="risk_mark\log.py" />
+    <Compile Include="risk_mark\models.py" />
+    <Compile Include="risk_mark\store.py" />
+    <Compile Include="risk_mark\detectors.py" />
+    <Compile Include="risk_mark\service.py" />
+    <Compile Include="risk_mark\dashboard_api.py" />
+    <Compile Include="risk_mark\selftest.py" />
+    <Compile Include="tests\conftest.py" />
+    <Compile Include="tests\test_event_logs.py" />
+    <Compile Include="tests\test_alerting.py" />
+    <Compile Include="tests\test_risk_mark_hook.py" />
+    <Compile Include="tests\test_main_ports.py" />
+    <Compile Include="tests\test_threat_intel.py" />
+    <Compile Include="tests\test_cred_analysis.py" />
+    <Compile Include="tests\test_ioc_export.py" />
+    <Compile Include="tests\test_protocol_honeypots.py" />
+    <Compile Include="tests\test_session_recorder.py" />
+    <Compile Include="tests\test_web_lures.py" />
+    <Compile Include="threat_intel\__init__.py" />
+    <Compile Include="threat_intel\config.py" />
+    <Compile Include="threat_intel\log.py" />
+    <Compile Include="threat_intel\store.py" />
+    <Compile Include="threat_intel\providers.py" />
+    <Compile Include="threat_intel\service.py" />
+    <Compile Include="threat_intel\dashboard_api.py" />
+    <Compile Include="threat_intel\selftest.py" />
+    <Compile Include="cred_analysis\__init__.py" />
+    <Compile Include="cred_analysis\config.py" />
+    <Compile Include="cred_analysis\log.py" />
+    <Compile Include="cred_analysis\wordlist.py" />
+    <Compile Include="cred_analysis\service.py" />
+    <Compile Include="cred_analysis\dashboard_api.py" />
+    <Compile Include="cred_analysis\selftest.py" />
+    <Compile Include="ioc_export\__init__.py" />
+    <Compile Include="ioc_export\config.py" />
+    <Compile Include="ioc_export\log.py" />
+    <Compile Include="ioc_export\service.py" />
+    <Compile Include="ioc_export\scheduler.py" />
+    <Compile Include="ioc_export\dashboard_api.py" />
+    <Compile Include="ioc_export\selftest.py" />
+    <Compile Include="protocol_honeypots\__init__.py" />
+    <Compile Include="protocol_honeypots\config.py" />
+    <Compile Include="protocol_honeypots\log.py" />
+    <Compile Include="protocol_honeypots\listeners.py" />
+    <Compile Include="protocol_honeypots\service.py" />
+    <Compile Include="protocol_honeypots\launcher.py" />
+    <Compile Include="protocol_honeypots\selftest.py" />
+    <Compile Include="session_recorder\__init__.py" />
+    <Compile Include="session_recorder\config.py" />
+    <Compile Include="session_recorder\log.py" />
+    <Compile Include="session_recorder\recorder.py" />
+    <Compile Include="session_recorder\store.py" />
+    <Compile Include="session_recorder\service.py" />
+    <Compile Include="session_recorder\dashboard_api.py" />
+    <Compile Include="session_recorder\selftest.py" />
+    <Compile Include="honeytoken\__init__.py" />
+    <Compile Include="honeytoken\config.py" />
+    <Compile Include="honeytoken\tokens.py" />
+    <Compile Include="honeytoken\service.py" />
+    <Compile Include="honeytoken\routes.py" />
+    <Compile Include="honeytoken\selftest.py" />
+    <Compile Include="api_honeypot\__init__.py" />
+    <Compile Include="api_honeypot\config.py" />
+    <Compile Include="api_honeypot\service.py" />
+    <Compile Include="api_honeypot\routes.py" />
+    <Compile Include="api_honeypot\selftest.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="dashboard\" />
+    <Folder Include="db\" />
+    <Folder Include="scripts" />
+    <Folder Include="scripts\demo" />
+    <Folder Include="scripts\system_test" />
+    <Folder Include="database" />
+    <Folder Include="logs" />
+    <Folder Include="ssh_honeypot\" />
+    <Folder Include="utils\" />
+    <Folder Include="web_honeypot\" />
+    <Folder Include="risk_mark\" />
+    <Folder Include="risk_mark\static\" />
+    <Folder Include="tests\" />
+    <Folder Include="threat_intel\" />
+    <Folder Include="cred_analysis\" />
+    <Folder Include="ioc_export\" />
+    <Folder Include="protocol_honeypots\" />
+    <Folder Include="session_recorder\" />
+    <Folder Include="honeytoken\" />
+    <Folder Include="api_honeypot\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="requirements.txt" />
+    <Content Include="honeypot.ini" />
+    <Content Include="Dockerfile" />
+    <Content Include="docker-compose.yml" />
+    <Content Include=".dockerignore" />
+    <Content Include="pytest.ini" />
+    <Content Include="risk_mark\README.md" />
+    <Content Include="threat_intel\README.md" />
+    <Content Include="cred_analysis\README.md" />
+    <Content Include="ioc_export\README.md" />
+    <Content Include="protocol_honeypots\README.md" />
+    <Content Include="session_recorder\README.md" />
+    <Content Include="honeytoken\README.md" />
+    <Content Include="api_honeypot\README.md" />
+    <Content Include="risk_mark\static\risk_mark.css" />
+    <Content Include="risk_mark\static\risk_mark.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|VisualStudio|Scripts" />
+  </ItemGroup>
+</Project>

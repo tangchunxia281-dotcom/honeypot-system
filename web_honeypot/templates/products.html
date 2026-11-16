@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品中心 - 华盛科技集团</title>
+    <meta name="keywords" content="华盛科技,产品中心,AI平台,数据治理,安全审计">
+    <meta name="description" content="华盛科技集团产品中心：数据分析平台、云原生交付、日志审计与安全运营能力。">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/honeypot.css') }}">
+    <style>
+        .wrap { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .hero { background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 22px; margin-bottom: 18px; }
+        .hero h2 { margin: 0 0 8px; color: #1e3c72; font-weight: 600; }
+        .hero p { margin: 0; color: #666; line-height: 1.8; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .card { background: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); padding: 20px; }
+        .card h3 { margin: 0 0 10px; color: #1e3c72; font-size: 18px; }
+        .card p { margin: 0 0 12px; color: #666; line-height: 1.7; font-size: 14px; }
+        .card a { color: #1e3c72; text-decoration: none; font-size: 14px; }
+        .card a:hover { text-decoration: underline; }
+        .meta { margin-top: 10px; color: #999; font-size: 12px; line-height: 1.6; }
+        @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body class="content-page">
+    <div class="header">
+        <div class="container">
+            <h1>华盛科技集团</h1>
+            <nav class="nav">
+                <a href="/">首页</a>
+                <a href="/news">新闻中心</a>
+                <a href="/products">产品中心</a>
+                <a href="/solutions">解决方案</a>
+                <a href="/about">关于我们</a>
+                <a href="/contact">联系我们</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="wrap">
+        <div class="hero">
+            <h2>产品中心</h2>
+            <p>以数据为核心的企业级产品组合，覆盖采集治理、实时分析、审计合规与可视化态势。支持按行业与规模进行模块化交付。</p>
+            <div class="meta">如需试用与报价，请前往 <a href="/contact" style="color:#1e3c72; text-decoration:none;">联系我们</a> 提交需求。</div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>AI 数据分析平台</h3>
+                <p>面向实时风控与经营分析，支持任务编排、指标体系与可视化大屏，适配分布式数据源。</p>
+                <a href="/products/ai-platform">查看详情</a>
+            </div>
+            <div class="card">
+                <h3>数据治理与资产管理</h3>
+                <p>覆盖元数据管理、数据血缘、质量规则与分级脱敏，提升数据可用性与一致性。</p>
+                <a href="/products/data-governance">查看详情</a>
+            </div>
+            <div class="card">
+                <h3>日志审计与安全运营</h3>
+                <p>支持多源日志采集、检索分析与告警联动，结合审计报表提升追溯效率。</p>
+                <a href="/products/audit-siem">查看详情</a>
+            </div>
+            <div class="card">
+                <h3>云原生交付体系</h3>
+                <p>提供容器化改造、灰度发布与全链路监控，提升交付效率与系统韧性。</p>
+                <a href="/products/cloud-delivery">查看详情</a>
+            </div>
+            <div class="card">
+                <h3>接口网关与认证</h3>
+                <p>支持统一认证、权限模型与访问控制，为内部系统提供可控的接口治理能力。</p>
+                <a href="/products/api-gateway">查看详情</a>
+            </div>
+            <div class="card">
+                <h3>态势感知可视化</h3>
+                <p>面向安全运营与业务监控，提供多维指标看板与告警中心，支持大屏展示。</p>
+                <a href="/products/visual-dashboard">查看详情</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

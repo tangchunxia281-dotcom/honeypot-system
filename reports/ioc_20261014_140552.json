@@ -1,0 +1,153 @@
+{
+  "iocs": {
+    "enabled": true,
+    "hours": 24,
+    "generated_at": "2026-10-14 14:05:52",
+    "ips": [
+      {
+        "ip": "1.2.3.4",
+        "count": 2,
+        "severity": "high",
+        "sources": [
+          "web"
+        ],
+        "event_types": [
+          "api_probe"
+        ],
+        "first_seen": "2026-10-14 14:02:32",
+        "last_seen": "2026-10-14 14:02:32"
+      }
+    ],
+    "hashes": [
+      {
+        "sha": "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592",
+        "length": 64,
+        "count": 2
+      }
+    ],
+    "paths": [
+      {
+        "path": "/api/v1/users",
+        "count": 2
+      },
+      {
+        "path": "/var/spool/cron/",
+        "count": 2
+      },
+      {
+        "path": "/api/v1/user",
+        "count": 2
+      }
+    ],
+    "totals": {
+      "events": 214,
+      "source_ips": 1,
+      "hashes": 1,
+      "paths": 3
+    }
+  },
+  "report": {
+    "hours": 24,
+    "generated_at": "2026-10-14 14:05:52",
+    "totals": {
+      "events": 214,
+      "source_ips": 1
+    },
+    "severity_distribution": {
+      "high": 11,
+      "medium": 199,
+      "critical": 4
+    },
+    "source_distribution": {
+      "ssh": 194,
+      "web": 8,
+      "system": 12
+    },
+    "top_event_types": [
+      {
+        "event_type": "ssh_login_failed",
+        "count": 188
+      },
+      {
+        "event_type": "ssh_login_success",
+        "count": 4
+      },
+      {
+        "event_type": "api_probe",
+        "count": 4
+      },
+      {
+        "event_type": "redis_command",
+        "count": 4
+      },
+      {
+        "event_type": "honeytoken_hit",
+        "count": 2
+      },
+      {
+        "event_type": "telnet_login_failed",
+        "count": 2
+      },
+      {
+        "event_type": "ftp_login_failed",
+        "count": 2
+      },
+      {
+        "event_type": "mysql_login_failed",
+        "count": 2
+      },
+      {
+        "event_type": "redis_danger_cmd",
+        "count": 2
+      },
+      {
+        "event_type": "scp_upload",
+        "count": 2
+      }
+    ],
+    "top_source_ips": [
+      {
+        "ip": "1.2.3.4",
+        "count": 2,
+        "severity": "high"
+      }
+    ],
+    "credential_analysis": {
+      "total_events": 192,
+      "success_count": 4,
+      "dictionary_hit_rate": 0.5,
+      "top_passwords": [
+        {
+          "password": "p*****rd",
+          "count": 48
+        },
+        {
+          "password": "1*****",
+          "count": 48
+        },
+        {
+          "password": "P******d!",
+          "count": 4
+        },
+        {
+          "password": "p****",
+          "count": 4
+        },
+        {
+          "password": "p****",
+          "count": 4
+        }
+      ],
+      "spray_total": 1,
+      "brute_total": 2
+    },
+    "threat_intel": {
+      "enabled": true,
+      "auto_check_enabled": false,
+      "cache": {
+        "ip_cached": 0,
+        "hash_cached": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,68 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8">
+<title>请求级 AI 模型验证</title>
+<style>
+*{box-sizing:border-box} body{margin:0;padding:34px 42px;background:#0b1220;color:#e6edf3;
+font-family:"Microsoft YaHei","Segoe UI",sans-serif}
+h1{font-size:28px;margin:0 0 6px} .sub{color:#8b98a9;font-size:13px;margin-bottom:22px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+.kpi{background:#111a2e;border:1px solid #243049;border-radius:12px;padding:14px 16px}
+.kpi span{display:block;color:#8b98a9;font-size:12px;margin-bottom:6px}
+.kpi strong{font-size:24px;color:#7fd1ff} .kpi strong.g{color:#3fb950} .kpi strong.o{color:#f0a44a}
+section{background:#101a2e;border:1px solid #243049;border-radius:14px;padding:18px 20px;margin-bottom:18px}
+h2{font-size:16px;color:#7fd1ff;margin:0 0 12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{color:#8b98a9;text-align:left;padding:8px 10px;border-bottom:1px solid #243049}
+td{padding:8px 10px;border-bottom:1px solid #1b2740;vertical-align:top}
+code{background:#0b1220;color:#a5d6ff;padding:2px 6px;border-radius:5px;font-size:12px}
+.reason{color:#8b98a9;font-size:12px} .ok{color:#3fb950} .warn{color:#f0a44a}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.note{color:#8b98a9;font-size:12px;line-height:1.8;margin-top:10px}
+</style></head><body>
+<h1>请求级 AI 攻击检测模型 · 运行验证</h1>
+<div class="sub">服务地址 http://127.0.0.1:8000 ｜ 生成时间 2026-11-07 23:09:28 ｜
+模型镜像 xss-detector:2.0.0 ｜ 测试流量仅来自本机</div>
+
+<div class="kpis">
+  <div class="kpi"><span>健康检查</span><strong class="g">在线</strong></div>
+  <div class="kpi"><span>模型版本</span><strong>v2</strong></div>
+  <div class="kpi"><span>真实载荷召回</span><strong class="g">27/34</strong></div>
+  <div class="kpi"><span>正常误报</span><strong class="g">0/6</strong></div>
+  <div class="kpi"><span>平均延迟</span><strong>39 ms</strong></div>
+</div>
+
+<div class="grid2">
+<section><h2>模型元数据</h2>
+<table><tbody>
+<tr><th>健康状态</th><td>ok / loaded=True</td></tr>
+<tr><th>版本</th><td>v2</td></tr>
+<tr><th>训练时间</th><td>2026-10-22 18:49:38</td></tr>
+<tr><th>支持类别</th><td>xss / sqli / path_traversal / sensitive_path / normal</td></tr>
+<tr><th>模型文件</th><td><code>D:\honeypot\ai_model\app\models\attack_model.pkl</code></td></tr>
+<tr><th>训练集/测试集</th><td>104327 / 4083</td></tr>
+<tr><th>自报测试指标</th><td>accuracy 0.9936 · macro-F1 0.9898</td></tr>
+</tbody></table>
+<div class="note">自报指标来自训练侧留出集；下方为本次用真实攻击载荷独立实测的结果。</div>
+</section>
+<section><h2>本次实测范围</h2>
+<table><tbody>
+<tr><th>攻击载荷</th><td>34 条（XSS/SQLi/穿越/敏感路径/扫描器/命令注入/SSTI/SSRF/XXE）</td></tr>
+<tr><th>正常对照</th><td>6 条</td></tr>
+<tr><th>攻击检出率</th><td class="ok">79.4%</td></tr>
+<tr><th>正常误报率</th><td class="ok">0.0%</td></tr>
+<tr><th>P95 延迟</th><td>63 ms</td></tr>
+<tr><th>项目 fixtures 压测</th><td class="warn">二分类准确率 61.5%，编码混淆是短板</td></tr>
+</tbody></table>
+<div class="note">模型五分类之外的 SSTI / 命令注入由蜜罐规则层兜底；端到端 34 条攻击中 31 条形成事件。</div>
+</section>
+</div>
+
+<section><h2>实时调用样例（POST /api/v1/detect）</h2>
+<table><thead><tr><th>类型</th><th>请求</th><th>判定</th><th>is_attack</th><th>attack_prob</th>
+<th>ai_points</th><th>模型理由</th></tr></thead><tbody><tr><td>XSS</td><td><code>/search?q=&lt;script&gt;alert(document.cookie)&lt;/script&gt;</code></td><td style='color:#3fb950;font-weight:700'>xss</td><td>True</td><td>1.00</td><td>+25</td><td class='reason'>[query.q] 规则命中 xss(+22): 检测到 &lt;script&gt; 标签内联脚本；模型判定: xss(1.00)</td></tr><tr><td>SQL 注入</td><td><code>/products?id=1 UNION SELECT username,password FROM users</code></td><td style='color:#3fb950;font-weight:700'>sqli</td><td>True</td><td>0.99</td><td>+25</td><td class='reason'>[query.id] 规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT；模型判定: sqli(0.99)</td></tr><tr><td>目录穿越</td><td><code>/page?file=../../../../etc/passwd</code></td><td style='color:#3fb950;font-weight:700'>path_traversal</td><td>True</td><td>1.00</td><td>+25</td><td class='reason'>[query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd</td></tr><tr><td>敏感路径</td><td><code>/.env</code></td><td style='color:#3fb950;font-weight:700'>sensitive_path</td><td>True</td><td>1.00</td><td>+25</td><td class='reason'>[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: .env；模型判定: sensitive_path(0.99)</td></tr><tr><td>正常搜索</td><td><code>/search?q=python+tutorial</code></td><td style='color:#8b98a9;font-weight:700'>normal</td><td>False</td><td>0.16</td><td>+4</td><td class='reason'>未命中</td></tr></tbody></table>
+<div class="note">normal 行的 ai_points 是概率映射的原始建议值；蜜罐融合时对 normal 按 0 计分，不会把正常请求推过可疑阈值。</div>
+</section>
+
+<footer style="color:#5b6677;font-size:12px;text-align:center">
+模型只做分类与加分，不执行命令、不生成自由文本；服务不可达时蜜罐自动回退纯规则。
+</footer>
+</body></html>

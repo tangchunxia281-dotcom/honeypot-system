@@ -1,0 +1,52 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8">
+<style>
+* { box-sizing: border-box; }
+body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+       margin:0; background:#0f1626; color:#e6edf3; padding:28px; }
+h1 { font-size:24px; margin:0 0 4px; }
+.sub { color:#8b98a9; font-size:13px; margin-bottom:20px; }
+.card { background:#16203a; border:1px solid #243049; border-radius:12px;
+        padding:18px 20px; margin-bottom:18px; }
+.card h2 { font-size:16px; margin:0 0 12px; color:#7fd1ff; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th,td { text-align:left; padding:7px 10px; border-bottom:1px solid #243049; }
+th { color:#8b98a9; font-weight:600; }
+tr.pass td:first-child { color:#3fb950; }
+tr.fail td:first-child { color:#f85149; }
+.grid { display:flex; gap:18px; flex-wrap:wrap; }
+.grid .card { flex:1; min-width:240px; }
+.big { font-size:30px; font-weight:700; }
+.kpi { color:#7fd1ff; }
+.ok { color:#3fb950; } .warn { color:#f0a44a; }
+footer { color:#5b6677; font-size:12px; margin-top:10px; }
+</style></head><body>
+<h1>Honeypot 功能测试与攻击数据验证报告</h1>
+<div class="sub">生成时间：2026-11-07 22:58:38 ｜ 数据来源：D:/honeypot 实时运行实例</div>
+
+<div class="grid">
+  <div class="card"><h2>事件总量</h2><div class="big kpi">305</div>
+    <div class="sub">raw_request 172 ｜ 攻击链 23</div></div>
+  <div class="card"><h2>测试通过</h2><div class="big ok">9</div>
+    <div class="sub">/ 共 9 项检查</div></div>
+  <div class="card"><h2>大模型链路</h2><div class="big ok">已验证</div>
+    <div class="sub">xss-detector 可达并参与检测</div></div>
+</div>
+
+<div class="card"><h2>① 全功能测试结果</h2>
+<table><thead><tr><th></th><th>检查项</th><th>说明</th></tr></thead>
+<tbody><tr class="pass"><td>✔</td><td>Dashboard(:5001)</td><td>HTTP 状态码=200 (服务存活)</td></tr><tr class="pass"><td>✔</td><td>AI 网关(:5000)</td><td>HTTP 状态码=200 (服务存活)</td></tr><tr class="pass"><td>✔</td><td>SSH 暴力破解捕获</td><td>发起 6 次错误认证(预期被记为 login_failed 事件)</td></tr><tr class="pass"><td>✔</td><td>FTP 登录尝试捕获</td><td>已发送 USER/PASS，banner=b'220 (vsFTPd 3.0.5)\r\n'</td></tr><tr class="pass"><td>✔</td><td>Telnet 登录尝试捕获</td><td>已发送 admin/admin 凭据</td></tr><tr class="pass"><td>✔</td><td>MySQL 握手/认证捕获</td><td>已发送伪造认证包</td></tr><tr class="pass"><td>✔</td><td>Redis 命令捕获</td><td>已建立连接并发送 AUTH/PING（首条命令触发 redis_unauthorized 记录）</td></tr><tr class="pass"><td>✔</td><td>Web 攻击流量(8类)</td><td>已发送 8 类攻击请求(XSS/SQLi/遍历/CVE/SSTI/敏感路径)</td></tr><tr class="pass"><td>✔</td><td>大模型 xss-detector 可达</td><td>model/info.version=v2 | detect: attack_type=sqli is_attack=True ai_points=25</td></tr></tbody></table></div>
+
+<div class="grid">
+  <div class="card"><h2>② 攻击数据 · 按来源</h2>
+    <table><thead><tr><th>来源</th><th>事件数</th></tr></thead>
+    <tbody><tr><td>ssh</td><td>142</td></tr><tr><td>web</td><td>132</td></tr><tr><td>ftp</td><td>9</td></tr><tr><td>telnet</td><td>9</td></tr><tr><td>mysql</td><td>7</td></tr><tr><td>redis</td><td>6</td></tr></tbody></table></div>
+  <div class="card"><h2>③ 攻击数据 · 按严重程度</h2>
+    <table><thead><tr><th>等级</th><th>事件数</th></tr></thead>
+    <tbody><tr><td>medium</td><td>217</td></tr><tr><td>low</td><td>46</td></tr><tr><td>high</td><td>29</td></tr><tr><td>critical</td><td>13</td></tr></tbody></table></div>
+</div>
+
+<div class="card"><h2>④ 时间窗</h2>
+  <div class="sub">最早 2026-11-06 23:45:41 → 最晚 2026-11-07 23:00:21</div></div>
+
+<footer>本报告由自动化测试脚本生成，覆盖 SSH/FTP/Telnet/MySQL/Redis/Web/Dashboard/AI网关/大模型 全链路。</footer>
+</body></html>

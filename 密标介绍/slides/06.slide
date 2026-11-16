@@ -1,0 +1,42 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '44px 64px', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 88, flexDirection: 'column', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#111827' }}>扩展：写一个新识别器只要三步</Text>
+        <Text style={{ fontSize: 15, color: '#6B7280', marginTop: 6 }}>BaseDetector + detect() + register_detector() · 注册即生效</Text>
+    </Box>
+    <Box style={{ width: '100%', height: 2, background: '#1D4ED8' }} />
+    <Box style={{ flex: 1, flexDirection: 'column', gap: 14, paddingTop: 22 }}>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>三步接入 · </span>① 继承 BaseDetector 并设 name 与 description；② 实现 detect(self, context)，命中则返回 MarkProposal，否则返回 None；③ 调用 register_detector(实例) 注册，注册即生效，无需改动主流程。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>上下文 · </span>DetectionContext 提供 source / event_type / src_ip / session_id / severity / payload / extra / now 八个字段，识别器据此判断要不要给建议；MarkProposal 里带上 target_type、target_value、level、reason、detector。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>内置识别器 · </span>severity——事件严重度达阈值即建议标注；repeat_offender——默认 24 小时窗口内重复高危行为达到 5 次即建议标注，窗口与阈值都可配置。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>健壮性 · </span>run_detectors 内部对单个识别器做异常隔离，一个识别器抛错不会影响其他识别器，也不会打断主流程；同名识别器默认不覆盖，需要覆盖时传 override=True；unregister_detector(name) 可摘除。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>接入主流程（可选）· </span>在 main.py 的事件写入处加一行 service.on_event(source='web', event_type='sql_injection', src_ip=ip, severity='critical', payload=payload)，即可实现事件落库后即时识别打标；是否真落标由 auto_detect_apply 控制。
+            </Text>
+        </Box>
+    </Box>
+    <Box style={{ height: 34, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <Text style={{ fontSize: 13, color: '#9CA3AF' }}>06 / 08</Text>
+    </Box>
+</Slide>

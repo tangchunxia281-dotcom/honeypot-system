@@ -1,0 +1,42 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '44px 64px', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 88, flexDirection: 'column', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#111827' }}>两条写入路径，汇入同一张表</Text>
+        <Text style={{ fontSize: 15, color: '#6B7280', marginTop: 6 }}>人工 mark() 与自动 run_detectors() · 靠 source 字段区分来源</Text>
+    </Box>
+    <Box style={{ width: '100%', height: 2, background: '#1D4ED8' }} />
+    <Box style={{ flex: 1, flexDirection: 'column', gap: 14, paddingTop: 22 }}>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>路径 A · 人工标注 · </span>管理员在 Dashboard 抽屉面板填写对象类型 / 密级 / 原因 / 有效期 → POST /api/risk_mark/create → service.mark() 落库，source = manual，标注人写入 created_by。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>路径 B · 自动识别 · </span>事件写入或手动触发 /scan → run_detectors() 遍历已注册识别器 → 产出 MarkProposal 建议 → apply_proposals() 落库，source = detector:&lt;name&gt;。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>汇流点 · </span>两条路径最终都经 apply_upserts 写入同一张 risk_mark 表。写入前统一走 models.py 规范化与校验，非法输入抛 ValueError 并转成明确提示，不会写脏数据。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>默认策略 · </span>自动识别默认只返回建议、不落标（auto_detect_apply = false），需要人工确认或显式 apply 才写入。这样默认零开销，也杜绝误标。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>实时链路（可选）· </span>在事件落库处加一行 service.on_event(source=..., event_type=..., src_ip=..., severity=..., payload=...)，即可让事件写入后即时识别；on_event 异常安全，任何异常都降级为空结果，不影响蜜罐主流程。
+            </Text>
+        </Box>
+    </Box>
+    <Box style={{ height: 34, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <Text style={{ fontSize: 13, color: '#9CA3AF' }}>03 / 08</Text>
+    </Box>
+</Slide>

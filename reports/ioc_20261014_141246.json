@@ -1,0 +1,104 @@
+{
+  "iocs": {
+    "enabled": true,
+    "hours": 24,
+    "generated_at": "2026-10-14 14:12:46",
+    "ips": [],
+    "hashes": [
+      {
+        "sha": "d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592",
+        "length": 64,
+        "count": 4
+      }
+    ],
+    "paths": [],
+    "totals": {
+      "events": 38,
+      "source_ips": 0,
+      "hashes": 1,
+      "paths": 0
+    }
+  },
+  "report": {
+    "hours": 24,
+    "generated_at": "2026-10-14 14:12:46",
+    "totals": {
+      "events": 38,
+      "source_ips": 0
+    },
+    "severity_distribution": {
+      "high": 10,
+      "low": 1,
+      "medium": 27
+    },
+    "source_distribution": {
+      "ssh": 35,
+      "system": 1,
+      "web": 2
+    },
+    "top_event_types": [
+      {
+        "event_type": "ssh_login_failed",
+        "count": 27
+      },
+      {
+        "event_type": "scp_upload",
+        "count": 5
+      },
+      {
+        "event_type": "ssh_login_success",
+        "count": 3
+      },
+      {
+        "event_type": "unknown",
+        "count": 1
+      },
+      {
+        "event_type": "sql_injection",
+        "count": 1
+      },
+      {
+        "event_type": "path_probe",
+        "count": 1
+      }
+    ],
+    "top_source_ips": [],
+    "credential_analysis": {
+      "total_events": 30,
+      "success_count": 3,
+      "dictionary_hit_rate": 0.7,
+      "top_passwords": [
+        {
+          "password": "1*****",
+          "count": 13
+        },
+        {
+          "password": "p**",
+          "count": 8
+        },
+        {
+          "password": "P******d!",
+          "count": 3
+        },
+        {
+          "password": "**",
+          "count": 1
+        },
+        {
+          "password": "**",
+          "count": 1
+        }
+      ],
+      "spray_total": 0,
+      "brute_total": 0
+    },
+    "threat_intel": {
+      "enabled": true,
+      "auto_check_enabled": false,
+      "cache": {
+        "ip_cached": 0,
+        "hash_cached": 0
+      }
+    }
+  }
+}

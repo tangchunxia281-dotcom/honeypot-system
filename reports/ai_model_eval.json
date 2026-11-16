@@ -1,0 +1,837 @@
+{
+  "generated_at": "2026-11-07 22:55:53",
+  "endpoint": "http://127.0.0.1:8000/api/v1/detect",
+  "dataset": "D:\\honeypot\\evaluation\\fixtures.jsonl",
+  "split": "test",
+  "metrics": {
+    "samples": 45,
+    "binary_samples": 39,
+    "accuracy": 0.6154,
+    "attack_total": 24,
+    "attack_detected": 9,
+    "recall": 0.375,
+    "benign_total": 15,
+    "false_positive": 0,
+    "false_positive_rate": 0.0,
+    "avg_latency_ms": 42.64,
+    "max_latency_ms": 74.41,
+    "family": {
+      "command_injection": {
+        "total": 3,
+        "detected": 0,
+        "rate": 0.0
+      },
+      "path_traversal": {
+        "total": 3,
+        "detected": 1,
+        "rate": 0.3333
+      },
+      "scanner": {
+        "total": 3,
+        "detected": 3,
+        "rate": 1.0
+      },
+      "sqli": {
+        "total": 3,
+        "detected": 1,
+        "rate": 0.3333
+      },
+      "ssrf": {
+        "total": 3,
+        "detected": 0,
+        "rate": 0.0
+      },
+      "ssti": {
+        "total": 3,
+        "detected": 0,
+        "rate": 0.0
+      },
+      "xss": {
+        "total": 3,
+        "detected": 1,
+        "rate": 0.3333
+      },
+      "xxe": {
+        "total": 3,
+        "detected": 3,
+        "rate": 1.0
+      }
+    }
+  },
+  "confusion": [
+    {
+      "truth": "command_injection",
+      "predicted": "normal",
+      "count": 3
+    },
+    {
+      "truth": "normal",
+      "predicted": "normal",
+      "count": 15
+    },
+    {
+      "truth": "path_traversal",
+      "predicted": "normal",
+      "count": 2
+    },
+    {
+      "truth": "path_traversal",
+      "predicted": "path_traversal",
+      "count": 1
+    },
+    {
+      "truth": "scanner",
+      "predicted": "sensitive_path",
+      "count": 3
+    },
+    {
+      "truth": "sqli",
+      "predicted": "normal",
+      "count": 2
+    },
+    {
+      "truth": "sqli",
+      "predicted": "sqli",
+      "count": 1
+    },
+    {
+      "truth": "ssrf",
+      "predicted": "normal",
+      "count": 3
+    },
+    {
+      "truth": "ssti",
+      "predicted": "normal",
+      "count": 3
+    },
+    {
+      "truth": "uncertain",
+      "predicted": "normal",
+      "count": 4
+    },
+    {
+      "truth": "uncertain",
+      "predicted": "sqli",
+      "count": 1
+    },
+    {
+      "truth": "uncertain",
+      "predicted": "xss",
+      "count": 1
+    },
+    {
+      "truth": "xss",
+      "predicted": "normal",
+      "count": 2
+    },
+    {
+      "truth": "xss",
+      "predicted": "xss",
+      "count": 1
+    },
+    {
+      "truth": "xxe",
+      "predicted": "xss",
+      "count": 3
+    }
+  ],
+  "records": [
+    {
+      "id": "10488a143b02c3a6420a60f4",
+      "group": "xss-family-1",
+      "truth_label": "attack",
+      "truth_type": "xss",
+      "predicted_type": "xss",
+      "is_attack": true,
+      "hit": true,
+      "attack_prob": 1.0,
+      "ai_points": 25,
+      "confidence": 0.99,
+      "latency_ms": 46.36,
+      "reasons": [
+        "[query.q] 规则命中 xss(+22): 检测到 alert() 弹窗函数；模型判定: xss(1.00)"
+      ],
+      "model_label": "xss"
+    },
+    {
+      "id": "0fd18196d2caf792347fc49a",
+      "group": "xss-family-1",
+      "truth_label": "attack",
+      "truth_type": "xss",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 56.35,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "ad037541352985b2a5b5392e",
+      "group": "xss-family-1",
+      "truth_label": "attack",
+      "truth_type": "xss",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 33.05,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "226a01accb60addd80ecd783",
+      "group": "sqli-family-1",
+      "truth_label": "attack",
+      "truth_type": "sqli",
+      "predicted_type": "sqli",
+      "is_attack": true,
+      "hit": true,
+      "attack_prob": 0.999,
+      "ai_points": 25,
+      "confidence": 0.99,
+      "latency_ms": 35.32,
+      "reasons": [
+        "[query.id] 规则命中 sqli(+25): 检测到 SQL 注入的恒真条件；模型判定: sqli(1.00)"
+      ],
+      "model_label": "sqli"
+    },
+    {
+      "id": "fb87ae6f2834096f5f4e7be3",
+      "group": "sqli-family-1",
+      "truth_label": "attack",
+      "truth_type": "sqli",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 42.64,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "51ed9618e8e82b0b54fbafd3",
+      "group": "sqli-family-1",
+      "truth_label": "attack",
+      "truth_type": "sqli",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 50.85,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "be192a87352176eec21c7673",
+      "group": "path_traversal-family-1",
+      "truth_label": "attack",
+      "truth_type": "path_traversal",
+      "predicted_type": "path_traversal",
+      "is_attack": true,
+      "hit": true,
+      "attack_prob": 0.9998,
+      "ai_points": 25,
+      "confidence": 0.99,
+      "latency_ms": 31.57,
+      "reasons": [
+        "[query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ..\\；模型判定: path_traversal(1.00)"
+      ],
+      "model_label": "path_traversal"
+    },
+    {
+      "id": "6da0c1db331800b51105e405",
+      "group": "path_traversal-family-1",
+      "truth_label": "attack",
+      "truth_type": "path_traversal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 41.84,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "08abe4470ad8f72ffd71c9ff",
+      "group": "path_traversal-family-1",
+      "truth_label": "attack",
+      "truth_type": "path_traversal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 32.07,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "09f0ec6b4520facb2b732807",
+      "group": "command_injection-family-1",
+      "truth_label": "attack",
+      "truth_type": "command_injection",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.5312,
+      "ai_points": 13,
+      "confidence": 0.4688,
+      "latency_ms": 42.99,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "0678f55cace1716f9cfc29b2",
+      "group": "command_injection-family-1",
+      "truth_label": "attack",
+      "truth_type": "command_injection",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 49.54,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "a3c741331967aca99f9de44b",
+      "group": "command_injection-family-1",
+      "truth_label": "attack",
+      "truth_type": "command_injection",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 46.18,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "ab9ec86be5f2b4a1fc07dde9",
+      "group": "ssrf-family-1",
+      "truth_label": "attack",
+      "truth_type": "ssrf",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.4689,
+      "ai_points": 12,
+      "confidence": 0.5311,
+      "latency_ms": 44.6,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "d25c7e71273f5a188b486437",
+      "group": "ssrf-family-1",
+      "truth_label": "attack",
+      "truth_type": "ssrf",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 50.13,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "41f73f4f5d46f954a432cb77",
+      "group": "ssrf-family-1",
+      "truth_label": "attack",
+      "truth_type": "ssrf",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 32.39,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "51a57ae128c93e3c92570fd0",
+      "group": "ssti-family-1",
+      "truth_label": "attack",
+      "truth_type": "ssti",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.2888,
+      "ai_points": 7,
+      "confidence": 0.7112,
+      "latency_ms": 60.64,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "8d1f642c85b1dd65b5974883",
+      "group": "ssti-family-1",
+      "truth_label": "attack",
+      "truth_type": "ssti",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 32.08,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "f5f799d3f579c1fab1dee02d",
+      "group": "ssti-family-1",
+      "truth_label": "attack",
+      "truth_type": "ssti",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": false,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 44.45,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "a68d939d85a39d8065a0791f",
+      "group": "xxe-family-1",
+      "truth_label": "attack",
+      "truth_type": "xxe",
+      "predicted_type": "xss",
+      "is_attack": true,
+      "hit": true,
+      "attack_prob": 0.7819,
+      "ai_points": 20,
+      "confidence": 0.99,
+      "latency_ms": 20.96,
+      "reasons": [
+        "[body] 模型判断"
+      ],
+      "model_label": "xss"
+    },
+    {
+      "id": "a88d6c784d904123c9a1fcb8",
+      "group": "xxe-family-1",
+      "truth_label": "attack",
+      "truth_type": "xxe",
+      "predicted_type": "xss",
+      "is_attack": true,
+      "hit": true,
+      "attack_prob": 0.7819,
+      "ai_points": 20,
+      "confidence": 0.99,
+      "latency_ms": 20.99,
+      "reasons": [
+        "[body] 模型判断"
+      ],
+      "model_label": "xss"
+    },
+    {
+      "id": "9d6e2e8045a63efb39d22b0e",
+      "group": "xxe-family-1",
+      "truth_label": "attack",
+      "truth_type": "xxe",
+      "predicted_type": "xss",
+      "is_attack": true,
+      "hit": true,
+      "attack_prob": 0.7819,
+      "ai_points": 20,
+      "confidence": 0.99,
+      "latency_ms": 42.6,
+      "reasons": [
+        "[body] 模型判断"
+      ],
+      "model_label": "xss"
+    },
+    {
+      "id": "e703635d5e32082066a89e82",
+      "group": "scanner-family-1",
+      "truth_label": "attack",
+      "truth_type": "scanner",
+      "predicted_type": "sensitive_path",
+      "is_attack": true,
+      "hit": true,
+      "attack_prob": 0.9979,
+      "ai_points": 25,
+      "confidence": 0.99,
+      "latency_ms": 14.6,
+      "reasons": [
+        "[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: actuator；模型判定: sensitive_path(1.00)"
+      ],
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": "aff06a95d4f4f8cea3c53885",
+      "group": "scanner-family-1",
+      "truth_label": "attack",
+      "truth_type": "scanner",
+      "predicted_type": "sensitive_path",
+      "is_attack": true,
+      "hit": true,
+      "attack_prob": 0.9979,
+      "ai_points": 25,
+      "confidence": 0.99,
+      "latency_ms": 26.52,
+      "reasons": [
+        "[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: actuator；模型判定: sensitive_path(1.00)"
+      ],
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": "275ba97ecf9a44b398570dbc",
+      "group": "scanner-family-1",
+      "truth_label": "attack",
+      "truth_type": "scanner",
+      "predicted_type": "sensitive_path",
+      "is_attack": true,
+      "hit": true,
+      "attack_prob": 0.9979,
+      "ai_points": 25,
+      "confidence": 0.99,
+      "latency_ms": 32.57,
+      "reasons": [
+        "[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: actuator；模型判定: sensitive_path(1.00)"
+      ],
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": "a0dffe4f342ae720cceafb2f",
+      "group": "benign-family-1",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.4204,
+      "ai_points": 11,
+      "confidence": 0.5796,
+      "latency_ms": 74.41,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "35becc7f2ace69aa9ec5883a",
+      "group": "benign-family-1",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 32.77,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "69a3e125ed5df0159c5e0413",
+      "group": "benign-family-1",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 52.58,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "6de96a8c71de19719b6d74cc",
+      "group": "benign-family-3",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 46.24,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "81ecae4c8f2e0ffc1db22a41",
+      "group": "benign-family-3",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 33.1,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "82add0ae8c8a92f5cae6a26e",
+      "group": "benign-family-3",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 33.28,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "6a9552fcb3f251b8f106423a",
+      "group": "benign-family-5",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 44.27,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "1bf72b9bd02a34f085f011e1",
+      "group": "benign-family-5",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 46.07,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "4134d75a9555885b37a6cbd1",
+      "group": "benign-family-5",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 48.23,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "1d7c3525522c431a9c591a71",
+      "group": "benign-family-7",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.7042,
+      "ai_points": 18,
+      "confidence": 0.2958,
+      "latency_ms": 58.42,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "a4ae0919f71dd7dca918903a",
+      "group": "benign-family-7",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.7042,
+      "ai_points": 18,
+      "confidence": 0.2958,
+      "latency_ms": 62.61,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "5b49c883dacbff2fb9b6fb3a",
+      "group": "benign-family-7",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.7042,
+      "ai_points": 18,
+      "confidence": 0.2958,
+      "latency_ms": 62.04,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "4d4b654d158a9788fc8c9e87",
+      "group": "benign-family-9",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 44.18,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "ce723a59266743fe01ee1e49",
+      "group": "benign-family-9",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 52.16,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "3665290ba162ced2190deb68",
+      "group": "benign-family-9",
+      "truth_label": "benign",
+      "truth_type": "normal",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": true,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 46.61,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "ab16412ea846c5c1f2339466",
+      "group": "ambiguous-family-0",
+      "truth_label": "uncertain",
+      "truth_type": "",
+      "predicted_type": "xss",
+      "is_attack": true,
+      "hit": null,
+      "attack_prob": 0.9994,
+      "ai_points": 25,
+      "confidence": 0.99,
+      "latency_ms": 34.17,
+      "reasons": [
+        "[query.text] 规则命中 xss(+22): 检测到 <script> 标签内联脚本；模型判定: xss(1.00)"
+      ],
+      "model_label": "xss"
+    },
+    {
+      "id": "b8ba2a9bb8f908b106de4d31",
+      "group": "ambiguous-family-0",
+      "truth_label": "uncertain",
+      "truth_type": "",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": null,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 43.01,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "3f1c4eae527644c24af87f75",
+      "group": "ambiguous-family-0",
+      "truth_label": "uncertain",
+      "truth_type": "",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": null,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 47.26,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "f7329b8f4698f6d9de156e2c",
+      "group": "ambiguous-family-1",
+      "truth_label": "uncertain",
+      "truth_type": "",
+      "predicted_type": "sqli",
+      "is_attack": true,
+      "hit": null,
+      "attack_prob": 0.1553,
+      "ai_points": 3,
+      "confidence": 0.99,
+      "latency_ms": 21.48,
+      "reasons": [
+        "[query.text] 规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT"
+      ],
+      "model_label": "sqli"
+    },
+    {
+      "id": "75a31628664474a739bc2022",
+      "group": "ambiguous-family-1",
+      "truth_label": "uncertain",
+      "truth_type": "",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": null,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 55.51,
+      "reasons": [],
+      "model_label": "normal"
+    },
+    {
+      "id": "82a6e10920323df9f235526a",
+      "group": "ambiguous-family-1",
+      "truth_label": "uncertain",
+      "truth_type": "",
+      "predicted_type": "normal",
+      "is_attack": false,
+      "hit": null,
+      "attack_prob": 0.1637,
+      "ai_points": 4,
+      "confidence": 0.8363,
+      "latency_ms": 49.01,
+      "reasons": [],
+      "model_label": "normal"
+    }
+  ]
+}

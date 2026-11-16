@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索结果 - {{ keyword|default('') }} - 华盛科技集团</title>
+    <meta name="keywords" content="华盛科技,搜索,产品信息,新闻动态,解决方案">
+    <meta name="description" content="搜索华盛科技集团的产品信息、新闻动态与解决方案内容">
+    <!-- 外部样式表 -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/honeypot.css') }}">
+    <style>
+        .search-result {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        .search-result:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .result-title {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .result-title a {
+            color: #1e3c72;
+            text-decoration: none;
+        }
+        .result-title a:hover {
+            text-decoration: underline;
+        }
+        .result-url {
+            color: #0a58ca;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .result-snippet {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        .result-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #999;
+        }
+        .highlight {
+            background: #fff3cd;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+        }
+        .pagination a:hover {
+            background: #1e3c72;
+            color: white;
+            border-color: #1e3c72;
+        }
+        .pagination .current {
+            background: #1e3c72;
+            color: white;
+            border-color: #1e3c72;
+        }
+        .search-suggestions {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .search-suggestions h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .suggestion-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .suggestion-tag {
+            background: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            color: #1e3c72;
+            border: 1px solid #1e3c72;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .suggestion-tag:hover {
+            background: #1e3c72;
+            color: white;
+        }
+        .advanced-search {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .advanced-search h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .advanced-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .advanced-form .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .advanced-form label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        .advanced-form input, .advanced-form select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .search-stats {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .search-stats strong {
+            color: #1e3c72;
+        }
+    </style>
+</head>
+<body class="search-page">
+    <div class="header">
+        <div class="container">
+            <h1>华盛科技集团</h1>
+            <nav class="nav">
+                <a href="/">首页</a>
+                <a href="/news">新闻中心</a>
+                <a href="/products">产品中心</a>
+                <a href="/solutions">解决方案</a>
+                <a href="/about">关于我们</a>
+                <a href="/contact">联系我们</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="search-header">
+        <div class="container">
+            <form action="/search" method="GET" class="search-box">
+                <input type="text" name="q" value="{{ keyword|default('') }}" placeholder="搜索产品、方案、新闻..." style="flex: 1;">
+                <button type="submit">搜索</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="search-main">
+        <div class="container">
+            {% if keyword %}
+            <div class="search-stats">
+                找到约 <strong>{{ total_results|default(0) }}</strong> 条结果 (用时 {{ search_time|default('0.00') }} 秒)
+            </div>
+            {% endif %}
+
+            {% if keyword %}
+            <div class="search-results">
+                {% if results and results|length > 0 %}
+                    {% for item in results %}
+                    <div class="search-result">
+                        <div class="result-title">
+                            <a href="{{ item.url }}">{{ item.title }}</a>
+                        </div>
+                        <div class="result-url">{{ item.url }}</div>
+                        <div class="result-snippet">{{ item.snippet }}</div>
+                        <div class="result-meta">
+                            <span>{{ item.date }}</span>
+                            <span>浏览：{{ item.views }}</span>
+                            <span>分类：{{ item.category }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="no-result">
+                        <h2>未找到相关内容</h2>
+                        <p>请尝试更换关键词或调整筛选条件。</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- 分页 -->
+            {% if total_pages and total_pages > 1 %}
+            <div class="pagination">
+                {% if page and page > 1 %}
+                <a href="/search?q={{ keyword|urlencode }}&page={{ page - 1 }}{% if search_type %}&type={{ search_type }}{% endif %}">&lsaquo; 上一页</a>
+                {% endif %}
+                <span class="current">{{ page|default(1) }}</span>
+                {% if page and total_pages and page < total_pages %}
+                <a href="/search?q={{ keyword|urlencode }}&page={{ page + 1 }}{% if search_type %}&type={{ search_type }}{% endif %}">下一页 &rsaquo;</a>
+                {% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+
+            <div class="no-result">
+                <h2>请输入搜索关键词</h2>
+                <p>可在上方输入关键词进行检索，或点击下方热门搜索快速进入。</p>
+            </div>
+            {% endif %}
+
+            <!-- 搜索建议 -->
+            <div class="search-suggestions">
+                <h4>热门搜索</h4>
+                <div class="suggestion-tags">
+                    <a href="/search?q=人工智能" class="suggestion-tag">人工智能</a>
+                    <a href="/search?q=大数据分析" class="suggestion-tag">大数据分析</a>
+                    <a href="/search?q=云计算" class="suggestion-tag">云计算</a>
+                    <a href="/search?q=风控" class="suggestion-tag">风控</a>
+                    <a href="/search?q=数据治理" class="suggestion-tag">数据治理</a>
+                    <a href="/search?q=指标体系" class="suggestion-tag">指标体系</a>
+                    <a href="/search?q=ISO27001" class="suggestion-tag">ISO27001</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

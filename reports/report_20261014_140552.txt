@@ -1,0 +1,13 @@
+蜜罐安全报告（近 24 小时）
+生成时间: 2026-10-14 14:05:52
+
+事件总数: 214 | 攻击源 IP: 1
+风险分布: high=11, medium=199, critical=4
+来源分布: ssh=194, web=8, system=12
+
+TOP 攻击源:
+- 1.2.3.4 (high) x2
+
+凭证分析: 认证事件 192 次，成功 4 次，弱口令命中率 0.5，喷射 1 例，爆破 2 例
+
+TOP 事件类型: ssh_login_failed(188), ssh_login_success(4), api_probe(4), redis_command(4), honeytoken_hit(2)

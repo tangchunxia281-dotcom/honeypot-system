@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>蜜罐 AI 双层原则 · 边界为基 · 大模型为用</title>
+<style>
+  :root{
+    --bg:#0a0e17;
+    --bg2:#0d1422;
+    --card:#111a2b;
+    --line:rgba(120,160,220,.14);
+    --txt:#e8eef8;
+    --sub:#8aa0c0;
+    --amber:#f5b942;
+    --teal:#2dd4bf;
+    --blue:#38bdf8;
+    --purple:#a78bfa;
+    --red:#fb7185;
+    --grid:rgba(120,160,220,.05);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1200px 600px at 80% -10%, rgba(56,189,248,.07), transparent 60%),
+      radial-gradient(900px 500px at 0% 110%, rgba(167,139,250,.07), transparent 60%),
+      var(--bg);
+    color:var(--txt);
+    font-family:"PingFang SC","Microsoft YaHei","Segoe UI",system-ui,sans-serif;
+    min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    padding:34px 22px;
+  }
+  .frame{
+    position:relative;
+    width:min(1180px,100%);
+    background:linear-gradient(180deg,var(--bg2),#0a0f1a);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:34px 38px 30px;
+    box-shadow:0 0 0 1px rgba(56,189,248,.06),0 30px 80px rgba(0,0,0,.55);
+    overflow:hidden;
+  }
+  .frame::before{
+    content:"";position:absolute;inset:0;
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+                     linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:34px 34px;
+    pointer-events:none;
+  }
+  .corner{position:absolute;font:600 10px/1 ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:2px;color:rgba(138,160,192,.5);}
+  .corner.tl{top:12px;left:14px}
+  .corner.tr{top:12px;right:14px}
+  .corner.bl{bottom:10px;left:14px}
+  .corner.br{bottom:10px;right:14px}
+
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
+    border-bottom:1px solid var(--line);padding-bottom:22px;position:relative;z-index:2}
+  .htag{font:600 11px/1 ui-monospace,monospace;letter-spacing:3px;color:var(--blue);
+    text-transform:uppercase;margin-bottom:12px}
+  .htitle{font-size:42px;font-weight:800;letter-spacing:3px;
+    text-shadow:0 0 24px rgba(56,189,248,.35)}
+  .htitle .accent{color:var(--purple)}
+  .hsub{margin-top:12px;color:var(--sub);font-size:14px;letter-spacing:1px}
+  .flow{display:flex;align-items:center;gap:8px;flex-shrink:0}
+  .node{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .box{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+    font-size:20px;font-weight:700;border:1px solid;}
+  .b-ai{border-color:var(--purple);color:var(--purple);background:rgba(167,139,250,.08)}
+  .b-log{border-color:var(--teal);color:var(--teal);background:rgba(45,212,191,.08)}
+  .b-rule{border-color:var(--amber);color:var(--amber);background:rgba(245,185,66,.08)}
+  .b-dec{border-color:var(--blue);color:var(--blue);background:rgba(56,189,248,.08)}
+  .node small{font:600 9px/1 ui-monospace,monospace;letter-spacing:1px;color:var(--sub)}
+  .arrow{color:rgba(138,160,192,.55);font-size:18px}
+  .flowlabel{font:600 10px/1.4 ui-monospace,monospace;letter-spacing:1px;color:var(--sub);
+    text-align:right;max-width:130px;margin-top:2px}
+
+  /* layer header */
+  .layer{position:relative;z-index:2;margin-top:22px}
+  .lhead{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .lnum{font:800 13px/1 ui-monospace,monospace;letter-spacing:2px;padding:6px 12px;border-radius:8px}
+  .l2 .lnum{background:rgba(167,139,250,.12);color:var(--purple);border:1px solid rgba(167,139,250,.4)}
+  .l1 .lnum{background:rgba(56,189,248,.1);color:var(--blue);border:1px solid rgba(56,189,248,.4)}
+  .lhead .lt{font-size:20px;font-weight:800;letter-spacing:1px}
+  .lhead .le{font:600 10px/1 ui-monospace,monospace;letter-spacing:2px;color:var(--sub);margin-left:auto}
+
+  /* function grid (L2) */
+  .funcs{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .func{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 14px;
+    border-top:3px solid var(--purple)}
+  .func .fi{font-size:22px;font-weight:800;color:var(--purple);margin-bottom:8px}
+  .func h4{font-size:16px;font-weight:800;margin-bottom:6px}
+  .func p{color:var(--sub);font-size:12.5px;line-height:1.65}
+  .func .en{font:600 9px/1 ui-monospace,monospace;letter-spacing:1.5px;color:var(--sub);margin-top:8px}
+
+  /* guardrail */
+  .guard{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  .gcard{background:linear-gradient(90deg,rgba(167,139,250,.1),rgba(167,139,250,.02));
+    border:1px solid rgba(167,139,250,.35);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+  .gcard .gk{font-size:13px;font-weight:800;color:var(--purple);white-space:nowrap;flex-shrink:0}
+  .gcard .gv{color:var(--sub);font-size:13px;line-height:1.6}
+  .gcard .gv b{color:#c9b6ff;font-weight:700}
+
+  /* degrade connector */
+  .conn{display:flex;align-items:center;justify-content:center;gap:12px;margin:18px 0 4px;position:relative;z-index:2}
+  .conn .line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+  .conn .tag{font:600 11px/1 ui-monospace,monospace;letter-spacing:1.5px;color:var(--sub);
+    border:1px dashed var(--line);padding:7px 14px;border-radius:999px;background:var(--bg2)}
+
+  /* L1 condition banner */
+  .banner{display:flex;align-items:center;gap:16px;margin:16px 0 6px;position:relative;z-index:2}
+  .badge{background:rgba(251,113,133,.1);border:1px solid var(--red);color:var(--red);
+    padding:9px 16px;border-radius:999px;font-weight:700;font-size:14px;letter-spacing:1px;
+    display:flex;align-items:center;gap:8px;white-space:nowrap}
+  .badge .dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 10px var(--red)}
+  .banner .lead{color:var(--sub);font-size:13px}
+
+  /* three cards */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:16px 0;position:relative;z-index:2}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 18px 16px;
+    position:relative;overflow:hidden}
+  .card::before{content:"";position:absolute;left:0;top:0;width:100%;height:3px}
+  .card.c1::before{background:var(--teal)} .card.c2::before{background:var(--amber)} .card.c3::before{background:var(--blue)}
+  .card .step{font:600 10px/1 ui-monospace,monospace;letter-spacing:2px;color:var(--sub)}
+  .card .icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+    font-size:20px;font-weight:800;margin:11px 0 10px}
+  .c1 .icon{background:rgba(45,212,191,.12);color:var(--teal);border:1px solid rgba(45,212,191,.4)}
+  .c2 .icon{background:rgba(245,185,66,.12);color:var(--amber);border:1px solid rgba(245,185,66,.4)}
+  .c3 .icon{background:rgba(56,189,248,.12);color:var(--blue);border:1px solid rgba(56,189,248,.4)}
+  .card h3{font-size:18px;font-weight:800;margin-bottom:8px}
+  .card p{color:var(--sub);font-size:13px;line-height:1.7}
+  .card .mock{margin-top:12px;background:#0a1120;border:1px solid var(--line);border-radius:8px;
+    padding:9px 10px;font:500 11px/1.6 ui-monospace,monospace;color:#7dd3c0;letter-spacing:.3px}
+  .card.c2 .mock{color:#f3c969} .card.c3 .mock{color:#7cc7f5}
+
+  /* AI judge bar */
+  .aibar{display:flex;align-items:center;gap:16px;background:linear-gradient(90deg,rgba(167,139,250,.1),rgba(167,139,250,.02));
+    border:1px solid rgba(167,139,250,.35);border-radius:12px;padding:16px 20px;margin:6px 0;position:relative;z-index:2}
+  .aibar .k{font-size:24px;font-weight:800;color:var(--purple);white-space:nowrap}
+  .aibar .v{color:var(--sub);font-size:13.5px;line-height:1.6}
+  .aibar .v b{color:#c9b6ff;font-weight:700}
+
+  /* value contrasts */
+  .value{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px;position:relative;z-index:2}
+  .vcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .vrow{display:flex;align-items:center;gap:12px;margin:6px 0}
+  .vneg{flex:1;color:#6b7d99;font-size:14px;text-decoration:line-through;text-decoration-color:rgba(251,113,133,.6)}
+  .vpos{flex:1.15;color:var(--txt);font-size:15px;font-weight:700}
+  .vpos .hl{color:var(--teal)}
+  .arrow2{color:var(--amber);font-size:18px;font-weight:800}
+  .vhead{font:600 10px/1 ui-monospace,monospace;letter-spacing:2px;color:var(--sub);margin-bottom:10px}
+
+  footer{display:flex;justify-content:space-between;margin-top:24px;padding-top:16px;
+    border-top:1px solid var(--line);position:relative;z-index:2;color:var(--sub);font-size:12px}
+  footer .col{display:flex;align-items:center;gap:8px}
+  footer .dot{width:7px;height:7px;border-radius:50%}
+  footer .d1{background:var(--blue);box-shadow:0 0 8px var(--blue)}
+  footer .d2{background:var(--teal);box-shadow:0 0 8px var(--teal)}
+
+  @media(max-width:760px){
+    header{flex-direction:column;align-items:flex-start}
+    .flow{align-self:flex-end}
+    .funcs,.cards,.value,.guard{grid-template-columns:1fr}
+    .htitle{font-size:32px}
+  }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <span class="corner tl">CONCEPT DIAGRAM</span>
+    <span class="corner tr">HONEYPOT AI · 2-LAYER</span>
+    <span class="corner bl">GENERAL LLM + BOUNDARY</span>
+    <span class="corner br">EVIDENCE &amp; TIME</span>
+
+    <header>
+      <div>
+        <div class="htag">Two-Layer Principle / 双层原则</div>
+        <div class="htitle">边界为基 · <span class="accent">大模型为用</span></div>
+        <div class="hsub">第二层是通用大模型，第一层是永不掉线的边界基座</div>
+      </div>
+      <div class="flow">
+        <div class="node"><div class="box b-ai">AI</div><small>辅助</small></div>
+        <div class="arrow">›</div>
+        <div class="node"><div class="box b-log">记</div><small>LOG</small></div>
+        <div class="arrow">›</div>
+        <div class="node"><div class="box b-rule">规</div><small>RULE</small></div>
+        <div class="arrow">›</div>
+        <div class="node"><div class="box b-dec">饵</div><small>DECOY</small></div>
+        <div class="flowlabel">AI 只做辅助<br>裁判权始终在规则</div>
+      </div>
+    </header>
+
+    <!-- ============ LAYER 2 ============ -->
+    <section class="layer l2">
+      <div class="lhead">
+        <span class="lnum">L2</span>
+        <span class="lt">通用大模型</span>
+        <span class="le">GENERAL LLM · 分析 / 问答 / 互动 / 复核</span>
+      </div>
+
+      <div class="funcs">
+        <div class="func">
+          <div class="fi">分</div>
+          <h4>分析</h4>
+          <p>对采集到的攻击行为做归纳、聚类与归因，提炼威胁态势与攻击者画像。</p>
+          <div class="en">ANALYZE</div>
+        </div>
+        <div class="func">
+          <div class="fi">问</div>
+          <h4>问答</h4>
+          <p>以自然语言回答值守人员关于事件、规则、证据链的查询，降低研判门槛。</p>
+          <div class="en">Q&amp;A</div>
+        </div>
+        <div class="func">
+          <div class="fi">互</div>
+          <h4>互动</h4>
+          <p>在诱捕场景中参与对话式交互，延长攻击者停留、诱导更多信息暴露。</p>
+          <div class="en">INTERACT</div>
+        </div>
+        <div class="func">
+          <div class="fi">核</div>
+          <h4>复核</h4>
+          <p>对告警与处置结论做二次校验，发现误报漏报，给出可信度与建议。</p>
+          <div class="en">REVIEW</div>
+        </div>
+      </div>
+
+      <div class="guard">
+        <div class="gcard">
+          <span class="gk">防注入</span>
+          <span class="gv">日志里的内容<b>只当数据，不当指令</b>——攻击者写入的 prompt 一律按 payload 处理，绝不进入系统提示。</span>
+        </div>
+        <div class="gcard">
+          <span class="gk">强校验</span>
+          <span class="gv">模型输出必须过<b>格式与证据校验</b>，不合格就<b>重试或降级</b>到规则 / 人工，不允许裸奔出境。</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ DEGRADE CONNECTOR ============ -->
+    <div class="conn">
+      <span class="line"></span>
+      <span class="tag">依赖 · 但可降级 ↓</span>
+      <span class="line"></span>
+    </div>
+
+    <!-- ============ LAYER 1 ============ -->
+    <section class="layer l1">
+      <div class="lhead">
+        <span class="lnum">L1</span>
+        <span class="lt">边界基座</span>
+        <span class="le">BOUNDARY BASE · 模型不可用也照常</span>
+      </div>
+
+      <div class="banner">
+        <div class="badge"><span class="dot"></span>模型不可用</div>
+        <div class="lead">即使大模型离线、误判或拒绝响应，底线依然成立 ——</div>
+      </div>
+
+      <div class="cards">
+        <div class="card c1">
+          <div class="step">STEP 01 / LOG</div>
+          <div class="icon">记</div>
+          <h3>记录照常</h3>
+          <p>每一次连接、每一条命令、每一个 payload，都照常落盘。证据链不依赖模型判断而存在。</p>
+          <div class="mock">&gt; log_event(src, cmd, ts)<br>&gt; write to evidence.db ✓</div>
+        </div>
+        <div class="card c2">
+          <div class="step">STEP 02 / RULE</div>
+          <div class="icon">规</div>
+          <h3>规则照常</h3>
+          <p>静态规则与特征匹配继续生效，拦截、隔离、限速不因为模型缺失而停摆。</p>
+          <div class="mock">IF probe == known THEN<br>isolate() ✓</div>
+        </div>
+        <div class="card c3">
+          <div class="step">STEP 03 / DECOY</div>
+          <div class="icon">饵</div>
+          <h3>诱饵照常</h3>
+          <p>仿真服务与诱饵资产照常暴露，攻击者看到的入口毫无变化，探测照常进行。</p>
+          <div class="mock">serve fake_ssh:2222<br>response ok ✓</div>
+        </div>
+      </div>
+
+      <div class="aibar">
+        <div class="k">AI 只做辅助，不做裁判</div>
+        <div class="v">模型是<b>放大器</b>而非<b>守门人</b>。它可提速研判、补全上下文，但<b>是否告警、是否隔离、是否取证</b>由既定规则与人工兜底决定。模型缺席时，系统降级为「纯规则蜜罐」，能力收敛而非崩溃。</div>
+      </div>
+
+      <div class="value">
+        <div class="vcard">
+          <div class="vhead">VALUE / 价值一</div>
+          <div class="vrow">
+            <div class="vneg">抓住每个攻击者</div>
+            <div class="arrow2">→</div>
+            <div class="vpos">让每次探测都<span class="hl">留下证据</span></div>
+          </div>
+          <div class="vrow">
+            <div class="vneg">追求 100% 命中</div>
+            <div class="arrow2">→</div>
+            <div class="vpos">沉淀可溯源的<span class="hl">攻击画像</span></div>
+          </div>
+        </div>
+        <div class="vcard">
+          <div class="vhead">VALUE / 价值二</div>
+          <div class="vrow">
+            <div class="vneg">替代现有防护</div>
+            <div class="arrow2">→</div>
+            <div class="vpos">为真实防护<span class="hl">争取时间</span></div>
+          </div>
+          <div class="vrow">
+            <div class="vneg">充当主力防线</div>
+            <div class="arrow2">→</div>
+            <div class="vpos">暴露威胁、<span class="hl">换取响应窗口</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="col"><span class="dot d1"></span>攻击者看到的：照常的诱饵入口</div>
+      <div class="col"><span class="dot d2"></span>防守方得到的：证据链 + 时间的窗口</div>
+    </footer>
+  </div>
+</body>
+</html>
