@@ -1,0 +1,54 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '44px 64px', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 88, flexDirection: 'column', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#111827' }}>配置、自检与卸载</Text>
+        <Text style={{ fontSize: 15, color: '#6B7280', marginTop: 6 }}>5 项配置默认全关 · 一条命令自检 10 项 · 删目录即整体停用</Text>
+    </Box>
+    <Box style={{ width: '100%', height: 2, background: '#1D4ED8' }} />
+    <Box style={{ flex: 1, flexDirection: 'column', gap: 12, paddingTop: 22 }}>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>配置分组 · </span>全部写在 honeypot.ini 的 [risk_mark] 段，模块自带读取逻辑，不需要改动 app_config.py 的映射表；删目录即连同配置一起移除。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>两个总开关（默认全关）· </span>auto_detect_enabled = false（自动识别总开关）、auto_detect_apply = false（识别结果是否自动落标）。两者都关 = 默认零开销，什么都没配也不会有额外消耗。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>阈值与有效期 · </span>repeat_window_hours = 24（重复行为统计窗口）、repeat_threshold = 5（触发阈值）、default_ttl_days = 0（手工密标默认有效期，0 = 长期有效）。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>优先级与环境变量 · </span>环境变量 &gt; honeypot.ini &gt; 代码默认值；对应 RISK_MARK_AUTO_DETECT_ENABLED、RISK_MARK_AUTO_DETECT_APPLY、RISK_MARK_REPEAT_WINDOW_HOURS、RISK_MARK_REPEAT_THRESHOLD、RISK_MARK_DEFAULT_TTL_DAYS 五个变量。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>自检 · </span>python -m risk_mark.selftest 依次验证 10 项：写入 / 查询 / 列表去重 / 密级统计 / 批量查询 / 识别器评估 / 识别器注册表 / 识别结果落标 / 移除 / 清理确认。测试 IP 取 RFC 5737 文档专用网段，跑完自动清除，不污染真实数据。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>卸载 · </span>git rm -r risk_mark，再还原 2 处带 [risk-mark] 标记的接入点（可用 git revert 回退接入提交）；可选 DROP TABLE risk_mark。即使只删目录不还原接入点，Dashboard 也只记一条 info 日志，不会启动失败。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 8 }} />
+            <Text style={{ flex: 1, fontSize: 16, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>设计约束 · </span>不修改既有表结构与接口签名；不引入新的第三方依赖；所有 SQL 使用参数化占位符；所有入参先经 models.py 规范化与校验；前端动态内容全量 HTML 转义防 XSS。
+            </Text>
+        </Box>
+    </Box>
+    <Box style={{ height: 34, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <Text style={{ fontSize: 13, color: '#9CA3AF' }}>08 / 08</Text>
+    </Box>
+</Slide>

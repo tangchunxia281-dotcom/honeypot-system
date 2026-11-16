@@ -1,0 +1,267 @@
+{
+  "generated_at": "2026-11-07 23:04:11",
+  "passed": 29,
+  "total": 29,
+  "results": [
+    {
+      "name": "events",
+      "path": "/api/get_event_logs?limit=5&hours=24",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 60.8,
+      "summary": "list"
+    },
+    {
+      "name": "stats",
+      "path": "/api/get_event_stats?hours=24",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 60.9,
+      "summary": "total=255, unique_ips=9"
+    },
+    {
+      "name": "geo",
+      "path": "/api/get_geo_data?hours=24",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 51.7,
+      "summary": "list"
+    },
+    {
+      "name": "realtime",
+      "path": "/api/realtime",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 97.8,
+      "summary": "list"
+    },
+    {
+      "name": "server_info",
+      "path": "/api/server_info",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 554.6,
+      "summary": "ok"
+    },
+    {
+      "name": "system_status",
+      "path": "/api/system_status",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 571.2,
+      "summary": "ok"
+    },
+    {
+      "name": "suspicious",
+      "path": "/api/suspicious_requests?hours=24&limit=10",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 75.0,
+      "summary": "list"
+    },
+    {
+      "name": "sessions",
+      "path": "/api/session_analysis?hours=24",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 61.0,
+      "summary": "list"
+    },
+    {
+      "name": "login_audit",
+      "path": "/api/login_audit",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 58.2,
+      "summary": "ok"
+    },
+    {
+      "name": "risk_targets",
+      "path": "/api/risk_targets",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 113.2,
+      "summary": "list"
+    },
+    {
+      "name": "ai_status",
+      "path": "/api/ai/status",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 187.4,
+      "summary": "counts={'fallback': 23, 'success': 213}"
+    },
+    {
+      "name": "ai_analysis",
+      "path": "/api/ai/analysis?limit=5",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 87.3,
+      "summary": "assigned=354, indexed=354, reports=5"
+    },
+    {
+      "name": "ai_detections",
+      "path": "/api/ai/detections?limit=5",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 56.8,
+      "summary": "records=5, counts={'completed': 90, 'skipped': 15}"
+    },
+    {
+      "name": "ai_interactions",
+      "path": "/api/ai/interactions?limit=5",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 57.5,
+      "summary": "records=5, counts={'model': 15, 'program': 21}"
+    },
+    {
+      "name": "ai_investigations",
+      "path": "/api/ai/investigations",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 58.9,
+      "summary": "total=1, items=1"
+    },
+    {
+      "name": "ai_archives",
+      "path": "/api/ai/archives",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 102.5,
+      "summary": "list"
+    },
+    {
+      "name": "ai_chat_history",
+      "path": "/api/ai/chat/history?conversation=0123456789abcdef0123456789abcdef",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 75.2,
+      "summary": "list"
+    },
+    {
+      "name": "team_graph",
+      "path": "/api/team/graph",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 111.6,
+      "summary": "reports=3"
+    },
+    {
+      "name": "team_periods",
+      "path": "/api/team/periods",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 86.9,
+      "summary": "reports=3"
+    },
+    {
+      "name": "team_noise",
+      "path": "/api/team/noise",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 73.5,
+      "summary": "ok"
+    },
+    {
+      "name": "team_evaluations",
+      "path": "/api/team/evaluations",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 78.8,
+      "summary": "list"
+    },
+    {
+      "name": "team_decoys",
+      "path": "/api/team/decoys",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 78.6,
+      "summary": "ok"
+    },
+    {
+      "name": "team_disagreements",
+      "path": "/api/team/disagreements",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 69.5,
+      "summary": "total=10, records=10"
+    },
+    {
+      "name": "team_review_samples",
+      "path": "/api/team/review-samples",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 87.7,
+      "summary": "ndjson 1 bytes"
+    },
+    {
+      "name": "risk_mark_meta",
+      "path": "/api/risk_mark/meta",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 60.1,
+      "summary": "ok"
+    },
+    {
+      "name": "risk_mark_summary",
+      "path": "/api/risk_mark/summary",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 64.8,
+      "summary": "total=0"
+    },
+    {
+      "name": "risk_mark_list",
+      "path": "/api/risk_mark/list?limit=5",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 70.8,
+      "summary": "total=0, items=0"
+    },
+    {
+      "name": "risk_mark_detectors",
+      "path": "/api/risk_mark/detectors",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "latency_ms": 48.1,
+      "summary": "ok"
+    },
+    {
+      "name": "ai_probe",
+      "path": "/api/ai/probe",
+      "http": 200,
+      "code": 0,
+      "ok": true,
+      "summary": "status=success"
+    }
+  ]
+}

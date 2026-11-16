@@ -1,0 +1,48 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '44px 64px', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 88, flexDirection: 'column', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#111827' }}>数据模型：一个对象只有一条</Text>
+        <Text style={{ fontSize: 15, color: '#6B7280', marginTop: 6 }}>独立表 risk_mark · 首次使用时自动创建 · SQLite / MySQL 双适配</Text>
+    </Box>
+    <Box style={{ width: '100%', height: 2, background: '#1D4ED8' }} />
+    <Box style={{ flex: 1, flexDirection: 'column', gap: 14, paddingTop: 22 }}>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>独立建表 · </span>表名 risk_mark，首次使用时自动创建，不需要手工执行迁移脚本；同一套代码同时适配 SQLite 与 MySQL，占位符自动切换 ? 与 %s。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>唯一约束 · </span>UNIQUE (target_type, target_value)。重复标注不是插入而是覆盖：id 不变、updated_at 变化、旧原因被新原因替换——这正是「一个对象一条」的落点。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>主字段 · </span>id / target_type（对象类型）/ target_value（对象值）/ level（密级）/ mark_code（密标编号，可选）/ reason（标注原因）。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>溯源字段 · </span>source（manual 或 detector:&lt;name&gt;）/ status（active 或 expired）/ created_by（标注人）/ created_at / updated_at，任何一条密标都能查到是谁在什么时候标的。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>时间与扩展 · </span>expires_at 为空表示长期有效，也可按天设置；extra 存扩展 JSON（上限 2000 字符），用于后续挂自定义字段而不改表。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>不碰既有库 · </span>只新建这一张表，不 ALTER 任何既有表、不改任何既有接口签名，因此既有统计口径完全不受影响。
+            </Text>
+        </Box>
+    </Box>
+    <Box style={{ height: 34, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <Text style={{ fontSize: 13, color: '#9CA3AF' }}>02 / 08</Text>
+    </Box>
+</Slide>

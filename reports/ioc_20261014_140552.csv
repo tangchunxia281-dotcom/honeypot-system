@@ -1,0 +1,6 @@
+﻿type,value,count,severity,detail,last_seen
+ip,1.2.3.4,2,high,api_probe,2026-10-14 14:02:32
+hash,d7a8fbb307d7809469ca9abcb0082e4f8d5651e46d3cdb762d02d0bf37c9e592,2,,len=64,
+path,/api/v1/users,2,,,
+path,/var/spool/cron/,2,,,
+path,/api/v1/user,2,,,

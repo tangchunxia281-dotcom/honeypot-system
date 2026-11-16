@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="160" viewBox="0 0 240 160">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2a5298"/>
+      <stop offset="1" stop-color="#1e3c72"/>
+    </linearGradient>
+  </defs>
+  <rect width="240" height="160" rx="14" fill="url(#g)"/>
+  <rect x="18" y="18" width="204" height="124" rx="12" fill="#ffffff" fill-opacity="0.10"/>
+  <text x="24" y="46" font-family="-apple-system,Segoe UI,Microsoft YaHei,Arial" font-size="14" fill="#ffffff" fill-opacity="0.85">合作进展</text>
+  <text x="120" y="98" text-anchor="middle" font-family="-apple-system,Segoe UI,Microsoft YaHei,Arial" font-size="34" font-weight="700" fill="#ffffff">合作</text>
+  <text x="120" y="122" text-anchor="middle" font-family="-apple-system,Segoe UI,Microsoft YaHei,Arial" font-size="12" fill="#ffffff" fill-opacity="0.85">Partnership</text>
+</svg>

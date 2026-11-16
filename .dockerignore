@@ -1,0 +1,30 @@
+# 版本控制与 IDE
+.git
+.gitignore
+.vs
+.vscode
+.idea
+*.pyproj
+*.pyproj.user
+*.sln
+
+# Python 缓存与本地环境
+__pycache__
+*.pyc
+*.pyo
+.venv
+venv
+
+# 运行时状态与敏感文件（绝不进镜像）
+logs
+database
+*.db
+*.sqlite
+.secret_key
+honeypot.ini
+
+# 项目辅助
+.workbuddy
+tests
+密标介绍
+*.pdf

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>华盛内容管理 - 导入配置</title>
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/fontawesome.min.css') }}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-5" style="max-width: 600px;">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">导入站点配置</h5>
+            </div>
+            <div class="card-body">
+                {% if alert_msg %}
+                <div class="alert alert-{{ alert_type|default('warning', true) }}" role="alert">
+                    {{ alert_msg }}
+                </div>
+                {% endif %}
+                <div class="alert alert-warning" role="alert">
+                    <small><i class="fas fa-info-circle"></i> 警告：导入新配置将覆盖当前系统设置。仅支持 .json 或 .yaml 格式的备份文件。</small>
+                </div>
+                <form method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="csrf_token" value="{{ admin_csrf_token|default('', true) }}">
+                    <div class="mb-4">
+                        <label class="form-label">选择配置文件</label>
+                        <input type="file" class="form-control" name="file" required>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="/admin/dashboard" class="btn btn-light">取消</a>
+                        <button type="submit" class="btn btn-primary">确认导入</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

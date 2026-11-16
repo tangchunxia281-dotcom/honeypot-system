@@ -1,0 +1,48 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '44px 64px', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 88, flexDirection: 'column', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#111827' }}>怎么用：Python 门面与前端入口</Text>
+        <Text style={{ fontSize: 15, color: '#6B7280', marginTop: 6 }}>from risk_mark import service · 12 个对外函数覆盖人工与自动两条链路</Text>
+    </Box>
+    <Box style={{ width: '100%', height: 2, background: '#1D4ED8' }} />
+    <Box style={{ flex: 1, flexDirection: 'column', gap: 14, paddingTop: 22 }}>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>标注 · </span>service.mark('ip', '203.0.113.10', 'high', '持续暴力破解 SSH', created_by='admin', ttl_days=7)；同对象重复调用即覆盖，不会新增第二条。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>查询 · </span>service.get_mark('ip', '203.0.113.10') 单查一条；service.marks_for_ips(['1.1.1.1', '2.2.2.2']) 批量查，一次给事件列表打标用，上限 500 个。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>列表与统计 · </span>service.list_marks(level='high', keyword='暴破', limit=200) 支持对象类型 / 密级 / 状态 / 关键词筛选与分页；service.summary() 返回总数与密级分布；service.meta() 返回枚举元数据。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>取消 · </span>service.unmark(target_type='ip', target_value='203.0.113.10') 按对象移除，也可按 mark_id 移除，返回受影响行数。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>自动链路 · </span>service.evaluate_event(src_ip=..., severity='critical', ...) 只评估不落库；service.auto_scan(hours=24, apply=True) 扫描近期事件并可选落标；service.on_event(...) 接在事件写入处做实时识别。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>前端入口 · </span>window.RiskMark 暴露 open / refresh / isMarked(ip) / fetchMarks([ip])，供 dashboard.js 与事件列表直接复用；静态资源走 /api/risk_mark/static/，不占用全局 static 目录。
+            </Text>
+        </Box>
+    </Box>
+    <Box style={{ height: 34, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <Text style={{ fontSize: 13, color: '#9CA3AF' }}>05 / 08</Text>
+    </Box>
+</Slide>

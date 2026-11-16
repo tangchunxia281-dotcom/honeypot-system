@@ -1,0 +1,628 @@
+{
+  "event_by_source": {
+    "ssh": 74,
+    "web": 39,
+    "telnet": 7,
+    "ftp": 6,
+    "mysql": 5,
+    "redis": 4
+  },
+  "event_by_type": {
+    "ssh_cmd_audit": 26,
+    "shell_cmd": 21,
+    "ssh_login_failed": 12,
+    "sensitive_path_ai_detected": 9,
+    "ssh_exec": 8,
+    "admin_probe": 4,
+    "file_probe": 4,
+    "path_traversal_ai_detected": 4,
+    "ssh_cmd_suspicious": 4,
+    "telnet_login_attempt": 4,
+    "scanner_ai_detected": 3,
+    "sqli_ai_detected": 3,
+    "sqli_probe": 3,
+    "ssh_login_success": 3,
+    "ssti_probe": 3,
+    "xss_ai_detected": 3,
+    "xss_probe": 3,
+    "db_auth_attempt": 2,
+    "ftp_login_attempt": 2,
+    "ftp_login_success": 2,
+    "redis_command": 2,
+    "redis_unauthorized": 2,
+    "db_auth_success": 1,
+    "db_port_scan": 1,
+    "db_query": 1,
+    "ftp_bruteforce_ban": 1,
+    "ftp_directory_list": 1,
+    "telnet_command": 1,
+    "telnet_login_success": 1,
+    "telnet_sensitive_access": 1
+  },
+  "event_total": 135,
+  "raw_request": {
+    "total": 78,
+    "suspicious": 39,
+    "max_score": 67
+  },
+  "session_track": {
+    "total": 9,
+    "attackers": 7
+  },
+  "risk_targets": [],
+  "ai_events": [
+    {
+      "id": 164,
+      "event_type": "scanner_ai_detected",
+      "rule_score": 37,
+      "ai_points": 13,
+      "ai_service_points": 13,
+      "final_source": "rule+ai",
+      "ai_type": "scanner",
+      "is_attack": true,
+      "high_risk": false,
+      "model_label": "scanner"
+    },
+    {
+      "id": 163,
+      "event_type": "ssti_probe",
+      "rule_score": 20,
+      "ai_points": 0,
+      "ai_service_points": 8,
+      "final_source": "rule+ai",
+      "ai_type": "normal",
+      "is_attack": false,
+      "high_risk": false,
+      "model_label": "normal"
+    },
+    {
+      "id": 162,
+      "event_type": "sensitive_path_ai_detected",
+      "rule_score": 43,
+      "ai_points": 24,
+      "ai_service_points": 24,
+      "final_source": "rule+ai",
+      "ai_type": "sensitive_path",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": 161,
+      "event_type": "sensitive_path_ai_detected",
+      "rule_score": 15,
+      "ai_points": 25,
+      "ai_service_points": 25,
+      "final_source": "rule+ai",
+      "ai_type": "sensitive_path",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": 160,
+      "event_type": "sensitive_path_ai_detected",
+      "rule_score": 30,
+      "ai_points": 25,
+      "ai_service_points": 25,
+      "final_source": "rule+ai",
+      "ai_type": "sensitive_path",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": 159,
+      "event_type": "path_traversal_ai_detected",
+      "rule_score": 22,
+      "ai_points": 25,
+      "ai_service_points": 25,
+      "final_source": "rule+ai",
+      "ai_type": "path_traversal",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "path_traversal"
+    },
+    {
+      "id": 158,
+      "event_type": "sqli_ai_detected",
+      "rule_score": 25,
+      "ai_points": 25,
+      "ai_service_points": 25,
+      "final_source": "rule+ai",
+      "ai_type": "sqli",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sqli"
+    },
+    {
+      "id": 157,
+      "event_type": "scanner_ai_detected",
+      "rule_score": 37,
+      "ai_points": 13,
+      "ai_service_points": 13,
+      "final_source": "rule+ai",
+      "ai_type": "scanner",
+      "is_attack": true,
+      "high_risk": false,
+      "model_label": "scanner"
+    },
+    {
+      "id": 156,
+      "event_type": "ssti_probe",
+      "rule_score": 20,
+      "ai_points": 0,
+      "ai_service_points": 8,
+      "final_source": "rule+ai",
+      "ai_type": "normal",
+      "is_attack": false,
+      "high_risk": false,
+      "model_label": "normal"
+    },
+    {
+      "id": 155,
+      "event_type": "sensitive_path_ai_detected",
+      "rule_score": 43,
+      "ai_points": 24,
+      "ai_service_points": 24,
+      "final_source": "rule+ai",
+      "ai_type": "sensitive_path",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": 154,
+      "event_type": "sensitive_path_ai_detected",
+      "rule_score": 15,
+      "ai_points": 25,
+      "ai_service_points": 25,
+      "final_source": "rule+ai",
+      "ai_type": "sensitive_path",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": 153,
+      "event_type": "sensitive_path_ai_detected",
+      "rule_score": 30,
+      "ai_points": 25,
+      "ai_service_points": 25,
+      "final_source": "rule+ai",
+      "ai_type": "sensitive_path",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": 152,
+      "event_type": "path_traversal_ai_detected",
+      "rule_score": 22,
+      "ai_points": 25,
+      "ai_service_points": 25,
+      "final_source": "rule+ai",
+      "ai_type": "path_traversal",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "path_traversal"
+    },
+    {
+      "id": 151,
+      "event_type": "sqli_ai_detected",
+      "rule_score": 25,
+      "ai_points": 25,
+      "ai_service_points": 25,
+      "final_source": "rule+ai",
+      "ai_type": "sqli",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sqli"
+    },
+    {
+      "id": 150,
+      "event_type": "xss_ai_detected",
+      "rule_score": 22,
+      "ai_points": 25,
+      "ai_service_points": 25,
+      "final_source": "rule+ai",
+      "ai_type": "xss",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "xss"
+    },
+    {
+      "id": 149,
+      "event_type": "admin_probe",
+      "rule_score": 15,
+      "ai_points": 9,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "normal",
+      "is_attack": false,
+      "high_risk": false,
+      "model_label": "normal"
+    },
+    {
+      "id": 148,
+      "event_type": "admin_probe",
+      "rule_score": 15,
+      "ai_points": 9,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "normal",
+      "is_attack": false,
+      "high_risk": false,
+      "model_label": "normal"
+    },
+    {
+      "id": 105,
+      "event_type": "sensitive_path_ai_detected",
+      "rule_score": 30,
+      "ai_points": 24,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "sensitive_path",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": 104,
+      "event_type": "path_traversal_ai_detected",
+      "rule_score": 24,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "path_traversal",
+      "is_attack": true,
+      "high_risk": false,
+      "model_label": "path_traversal"
+    },
+    {
+      "id": 103,
+      "event_type": "ssti_probe",
+      "rule_score": 20,
+      "ai_points": 12,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "normal",
+      "is_attack": false,
+      "high_risk": false,
+      "model_label": "normal"
+    },
+    {
+      "id": 102,
+      "event_type": "sensitive_path_ai_detected",
+      "rule_score": 28,
+      "ai_points": 24,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "sensitive_path",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": 101,
+      "event_type": "path_traversal_ai_detected",
+      "rule_score": 22,
+      "ai_points": 25,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "path_traversal",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "path_traversal"
+    },
+    {
+      "id": 100,
+      "event_type": "sqli_ai_detected",
+      "rule_score": 25,
+      "ai_points": 25,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "sqli",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sqli"
+    },
+    {
+      "id": 99,
+      "event_type": "xss_ai_detected",
+      "rule_score": 34,
+      "ai_points": 25,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "xss",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "xss"
+    },
+    {
+      "id": 98,
+      "event_type": "scanner_ai_detected",
+      "rule_score": 37,
+      "ai_points": 13,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "scanner",
+      "is_attack": true,
+      "high_risk": false,
+      "model_label": "scanner"
+    },
+    {
+      "id": 97,
+      "event_type": "admin_probe",
+      "rule_score": 15,
+      "ai_points": 12,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "normal",
+      "is_attack": false,
+      "high_risk": false,
+      "model_label": "normal"
+    },
+    {
+      "id": 96,
+      "event_type": "sensitive_path_ai_detected",
+      "rule_score": 15,
+      "ai_points": 25,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "sensitive_path",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "sensitive_path"
+    },
+    {
+      "id": 95,
+      "event_type": "xss_ai_detected",
+      "rule_score": 22,
+      "ai_points": 25,
+      "ai_service_points": null,
+      "final_source": "rule+ai",
+      "ai_type": "xss",
+      "is_attack": true,
+      "high_risk": true,
+      "model_label": "xss"
+    },
+    {
+      "id": 69,
+      "event_type": "sqli_probe",
+      "rule_score": 43,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule",
+      "ai_type": null,
+      "is_attack": null,
+      "high_risk": null,
+      "model_label": null
+    },
+    {
+      "id": 68,
+      "event_type": "xss_probe",
+      "rule_score": 22,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule",
+      "ai_type": null,
+      "is_attack": null,
+      "high_risk": null,
+      "model_label": null
+    },
+    {
+      "id": 38,
+      "event_type": "admin_probe",
+      "rule_score": 35,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule",
+      "ai_type": null,
+      "is_attack": null,
+      "high_risk": null,
+      "model_label": null
+    },
+    {
+      "id": 37,
+      "event_type": "file_probe",
+      "rule_score": 35,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule",
+      "ai_type": null,
+      "is_attack": null,
+      "high_risk": null,
+      "model_label": null
+    },
+    {
+      "id": 36,
+      "event_type": "file_probe",
+      "rule_score": 50,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule",
+      "ai_type": null,
+      "is_attack": null,
+      "high_risk": null,
+      "model_label": null
+    },
+    {
+      "id": 35,
+      "event_type": "file_probe",
+      "rule_score": 35,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule",
+      "ai_type": null,
+      "is_attack": null,
+      "high_risk": null,
+      "model_label": null
+    },
+    {
+      "id": 34,
+      "event_type": "xss_probe",
+      "rule_score": 34,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule",
+      "ai_type": null,
+      "is_attack": null,
+      "high_risk": null,
+      "model_label": null
+    },
+    {
+      "id": 33,
+      "event_type": "sqli_probe",
+      "rule_score": 43,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule",
+      "ai_type": null,
+      "is_attack": null,
+      "high_risk": null,
+      "model_label": null
+    },
+    {
+      "id": 32,
+      "event_type": "file_probe",
+      "rule_score": 30,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule",
+      "ai_type": null,
+      "is_attack": null,
+      "high_risk": null,
+      "model_label": null
+    },
+    {
+      "id": 31,
+      "event_type": "xss_probe",
+      "rule_score": 34,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule",
+      "ai_type": null,
+      "is_attack": null,
+      "high_risk": null,
+      "model_label": null
+    },
+    {
+      "id": 30,
+      "event_type": "sqli_probe",
+      "rule_score": 43,
+      "ai_points": 0,
+      "ai_service_points": null,
+      "final_source": "rule",
+      "ai_type": null,
+      "is_attack": null,
+      "high_risk": null,
+      "model_label": null
+    }
+  ],
+  "ai_events_total": 39,
+  "ai_events_by_type": {
+    "scanner": 3,
+    "normal": 6,
+    "sensitive_path": 9,
+    "path_traversal": 4,
+    "sqli": 3,
+    "xss": 3
+  },
+  "ai_final_source": {
+    "rule+ai": 28,
+    "rule": 11
+  },
+  "analyst_reports": {
+    "total": 81,
+    "completed": 81
+  },
+  "ai_detections": {
+    "total": 37,
+    "completed": 20,
+    "skipped": 17
+  },
+  "ai_interactions": {
+    "total": 10,
+    "model": 5,
+    "program": 5
+  },
+  "ai_calls": {
+    "total": 110,
+    "success": 108
+  },
+  "ai_calls_by_task": {
+    "log_report/success": 81,
+    "web_detect/success": 20,
+    "ssh_reply/success": 3,
+    "probe/fallback": 2,
+    "probe/success": 2,
+    "web_reply/success": 2
+  },
+  "latest_report": {
+    "id": "5c271d28b42b69b62fe50102",
+    "call_id": "6fb5fb4fc05f10aa4020c4bb",
+    "title": "sqlmap探测/admin，疑似SQL注入侦察",
+    "risk": "medium",
+    "summary": "单条Web日志显示使用sqlmap/1.8访问/admin，参数为空，未观察到注入载荷或成功响应。该行为更符合自动化漏洞扫描与信息收集，尚不足以证明命令注入或系统失陷。",
+    "evidence": [
+      {
+        "id": "0a5f8dd0ae8633dd204be503",
+        "quote": "GET /admin query= body= User-Agent=sqlmap/1.8"
+      }
+    ]
+  },
+  "protocol.json": {
+    "mysql": {
+      "connected": 1,
+      "query_sent": 1,
+      "auth_rejected": 1
+    },
+    "redis": {
+      "response_received": 5
+    },
+    "ftp": {
+      "virtual_login_accepted": 2,
+      "listing_received": 2,
+      "file_denied": 2
+    },
+    "telnet": {
+      "banner_received": 1,
+      "response_received": 6
+    },
+    "ssh": {
+      "auth_failed": 2,
+      "virtual_login_accepted": 1,
+      "response_received": 8
+    }
+  },
+  "telnet.json": {
+    "telnet": {
+      "banner_received": 1,
+      "response_received": 6
+    }
+  },
+  "web_demo": {
+    "file": "hp_demo_20261028_135144_4da7.json",
+    "run_id": "hp_demo_20261028_135144_4da7",
+    "records": 22,
+    "by_status": {
+      "response_received": 22
+    },
+    "by_phase": {
+      "准备": 1,
+      "正常访问": 2,
+      "入口探测": 2,
+      "输入探测": 7,
+      "受控交互": 3,
+      "业务交互": 7
+    },
+    "http_codes": {
+      "200": 15,
+      "404": 2,
+      "400": 1,
+      "202": 3,
+      "401": 1
+    }
+  }
+}

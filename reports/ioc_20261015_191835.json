@@ -1,0 +1,44 @@
+{
+  "iocs": {
+    "enabled": true,
+    "hours": 24,
+    "generated_at": "2026-10-15 19:18:35",
+    "ips": [],
+    "hashes": [],
+    "paths": [],
+    "totals": {
+      "events": 0,
+      "source_ips": 0,
+      "hashes": 0,
+      "paths": 0
+    }
+  },
+  "report": {
+    "hours": 24,
+    "generated_at": "2026-10-15 19:18:35",
+    "totals": {
+      "events": 0,
+      "source_ips": 0
+    },
+    "severity_distribution": {},
+    "source_distribution": {},
+    "top_event_types": [],
+    "top_source_ips": [],
+    "credential_analysis": {
+      "total_events": 0,
+      "success_count": 0,
+      "dictionary_hit_rate": 0.0,
+      "top_passwords": [],
+      "spray_total": 0,
+      "brute_total": 0
+    },
+    "threat_intel": {
+      "enabled": true,
+      "auto_check_enabled": false,
+      "cache": {
+        "ip_cached": 0,
+        "hash_cached": 0
+      }
+    }
+  }
+}

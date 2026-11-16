@@ -1,0 +1,57 @@
+{
+  "version": "v2",
+  "trained_at": "2026-10-22 18:49:38",
+  "labels": [
+    "xss",
+    "sqli",
+    "path_traversal",
+    "sensitive_path",
+    "normal"
+  ],
+  "train_samples": 104327,
+  "test_samples": 4083,
+  "train_data": "D:\\HuaweiMoveData\\Users\\20683\\Desktop\\xss_detector\\data\\augmented\\augmented.csv",
+  "calibrated": false,
+  "calibration": {
+    "brier_mean": 0.0025909100270136653,
+    "bins": [
+      [
+        0.4,
+        0.6,
+        19,
+        0.47368421052631576,
+        0.5363514568191782
+      ],
+      [
+        0.6,
+        0.8,
+        27,
+        0.8148148148148148,
+        0.7201724048932837
+      ],
+      [
+        0.8,
+        0.9,
+        40,
+        0.925,
+        0.8554428084193489
+      ],
+      [
+        0.9,
+        0.95,
+        60,
+        0.95,
+        0.9318547810959162
+      ],
+      [
+        0.95,
+        1.01,
+        3937,
+        0.9972059944119889,
+        0.9965714918904882
+      ]
+    ]
+  },
+  "test_accuracy": 0.9936321332353661,
+  "test_macro_f1": 0.9898464284812146
+}

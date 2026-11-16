@@ -1,0 +1,48 @@
+<Slide style={{ width: 1280, height: 720, background: '#FFFFFF', padding: '44px 64px', fontFamily: 'Microsoft YaHei' }}>
+    <Box style={{ height: 88, flexDirection: 'column', justifyContent: 'center' }}>
+        <Text style={{ fontSize: 32, fontWeight: 'bold', color: '#111827' }}>密标是什么</Text>
+        <Text style={{ fontSize: 15, color: '#6B7280', marginTop: 6 }}>给风险对象打上一条持久的「密级 + 原因 + 有效期」标记</Text>
+    </Box>
+    <Box style={{ width: '100%', height: 2, background: '#1D4ED8' }} />
+    <Box style={{ flex: 1, flexDirection: 'column', gap: 14, paddingTop: 22 }}>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>定义 · </span>密标 = 给风险对象（来源 IP / 会话 / 账号）打上一条持久的「密级 + 原因 + 有效期」标记，用途是在态势大屏和事件列表中快速锁定重点关注目标。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>三要素 · </span>密级（low / medium / high / critical 四档，与 event_log.severity 同口径）、原因（reason，最长 500 字符）、有效期（expires_at，留空即长期有效）。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>三类对象 · </span>ip / session / account，由 constants.py 的 TARGET_TYPES 定义；扩展新类型只改这一个元组，模型与表结构都不用动。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>状态与来源 · </span>status 只有 active / expired 两态，到期转 expired 但不删记录；source 区分 manual（人工）与 detector:&lt;name&gt;（识别器），标注人记在 created_by。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>与事件日志的分工 · </span>事件日志是「流水」——只增不改、按时间窗口滚动归档，用来统计与溯源；密标是「结论」——一个对象一条、长期有效，用来重点盯防与运营交接。
+            </Text>
+        </Box>
+        <Box style={{ flexDirection: 'row', gap: 12, alignItems: 'flex-start' }}>
+            <Box style={{ width: 6, height: 6, borderRadius: 3, background: '#1D4ED8', marginTop: 9 }} />
+            <Text style={{ flex: 1, fontSize: 18, color: '#1F2937', lineHeight: 1.6 }}>
+                <span style={{ fontWeight: 'bold', color: '#111827' }}>一句话 · </span>日志回答「发生了什么」，密标回答「这个对象值不值得盯」——两者不是替代关系，而是叠加关系。
+            </Text>
+        </Box>
+    </Box>
+    <Box style={{ height: 34, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <Text style={{ fontSize: 13, color: '#9CA3AF' }}>01 / 08</Text>
+    </Box>
+</Slide>

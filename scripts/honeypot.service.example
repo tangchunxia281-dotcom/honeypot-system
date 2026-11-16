@@ -1,0 +1,23 @@
+[Unit]
+Description=Honeypot Threat Capture System
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=__APP_DIR__
+Environment=HONEYPOT_CONFIG=__APP_DIR__/honeypot.ini
+Environment=PYTHONUNBUFFERED=1
+Environment=SYSTEMD_SERVICE_NAME=__SERVICE_NAME__
+ExecStart=/bin/bash -lc 'cd "__APP_DIR__" && exec ./.venv/bin/python -u main.py'
+Restart=always
+RestartSec=3
+KillSignal=SIGINT
+TimeoutStopSec=20
+StandardOutput=journal
+StandardError=journal
+User=__RUN_USER__
+Group=__RUN_GROUP__
+
+[Install]
+WantedBy=multi-user.target

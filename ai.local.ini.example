@@ -1,0 +1,54 @@
+[ai]
+# AI 检测、受控交互、攻击研判和日志分析。
+# 默认使用 DeepSeek API（OpenAI 兼容协议）；provider 可选 local / gateway / deepseek。
+enabled = true
+ssh_enabled = false
+provider = deepseek
+
+# DeepSeek 接入配置（provider = deepseek 时必填 api_key）
+api_key = sk-your-key-here
+deepseek_base_url = https://api.deepseek.com
+deepseek_model = deepseek-chat
+# model 留空时自动使用 deepseek_model
+model =
+
+# 本地 Ollama 接入（provider = local 时使用）
+# base_url = http://127.0.0.1:11434
+# model = maternion/mimo-v2.6:9b
+
+# 共享推理网关（provider = gateway 时使用）
+gateway_url = http://127.0.0.1:11500
+client_token =
+allow_insecure_lan = false
+
+timeout = 30
+concurrency = 1
+max_calls_per_session = 10
+min_interval = 2
+think = false
+context_length = 4096
+max_output_tokens = 256
+runtime_db = database/ai_runtime.db
+
+detection_enabled = true
+detection_queue_max = 32
+detection_per_ip_hour = 20
+normal_sample_every = 10
+
+web_interaction_enabled = false
+interaction_ttl = 1800
+interaction_sessions = 128
+interaction_steps = 100
+interaction_per_ip_hour = 40
+
+analysis_enabled = true
+analysis_timeout = 20
+interactive_wait = 2
+detection_delay = 3
+
+analysis_batch = 24
+analysis_samples = 6
+analysis_flush = 60
+analyst_retention_days = 30
+
+periodic_enabled = true

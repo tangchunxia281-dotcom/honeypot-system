@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>管理后台 - 登录</title>
+    <link href="{{ url_for('static', filename='css/admin-login.css') }}" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/fontawesome.min.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="login-container">
+        <h2><i class="fas fa-shield-alt"></i> 华盛内容管理</h2>
+        <p style="text-align: center; color: rgba(0,0,0,0.45); font-size: 14px; margin-bottom: 20px;">
+            管理员登录 | Admin Login
+        </p>
+
+        {% if error %}
+            <div class="error" style="color: white; background: #e74c3c; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: center;">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="post" action="{{ login_action or url_for('admin_login') }}" id="adminLoginForm">
+            <input type="hidden" name="csrf_token" value="{{ login_csrf_token|default('', true) }}">
+            <div class="form-group">
+                <label>账号</label>
+                <input type="text" name="username" placeholder="邮箱 / 用户名" required>
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" name="password" placeholder="请输入密码" required>
+            </div>
+            <button type="submit" id="adminLoginSubmit">立即登录</button>
+        </form>
+
+        <div style="margin-top: 20px; text-align: center; font-size: 12px; color: #999;">
+            <a href="/" style="color:#999; text-decoration:none;">返回官网</a>
+            <span style="margin: 0 6px;">|</span>
+            &copy; 2026 华盛科技集团
+        </div>
+    </div>
+    <script>
+        (function () {
+            const form = document.getElementById("adminLoginForm");
+            const submitBtn = document.getElementById("adminLoginSubmit");
+            if (!form || !submitBtn) return;
+
+            form.addEventListener("submit", function (ev) {
+                if (submitBtn.dataset.submitting === "1") {
+                    ev.preventDefault();
+                    return;
+                }
+                submitBtn.dataset.submitting = "1";
+                submitBtn.disabled = true;
+                submitBtn.textContent = "验证中...";
+                submitBtn.setAttribute("aria-busy", "true");
+            });
+        })();
+    </script>
+</body>
+</html>

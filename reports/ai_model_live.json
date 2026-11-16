@@ -1,0 +1,686 @@
+{
+  "generated_at": "2026-11-07 23:01:22",
+  "endpoint": "http://127.0.0.1:8000/api/v1/detect",
+  "metrics": {
+    "attack_total": 34,
+    "attack_detected": 27,
+    "recall": 0.7941,
+    "benign_total": 6,
+    "benign_false_positive": 0,
+    "false_positive_rate": 0.0,
+    "avg_latency_ms": 39.25,
+    "p95_latency_ms": 63.17,
+    "family": {
+      "xss": {
+        "total": 5,
+        "detected": 5,
+        "type_ok": 5,
+        "rate": 1.0
+      },
+      "sqli": {
+        "total": 5,
+        "detected": 5,
+        "type_ok": 5,
+        "rate": 1.0
+      },
+      "path_traversal": {
+        "total": 4,
+        "detected": 4,
+        "type_ok": 4,
+        "rate": 1.0
+      },
+      "sensitive_path": {
+        "total": 5,
+        "detected": 4,
+        "type_ok": 4,
+        "rate": 0.8
+      },
+      "scanner": {
+        "total": 3,
+        "detected": 3,
+        "type_ok": 3,
+        "rate": 1.0
+      },
+      "command_injection": {
+        "total": 3,
+        "detected": 1,
+        "type_ok": 0,
+        "rate": 0.3333
+      },
+      "ssti": {
+        "total": 3,
+        "detected": 0,
+        "type_ok": 0,
+        "rate": 0.0
+      },
+      "ssrf": {
+        "total": 3,
+        "detected": 2,
+        "type_ok": 0,
+        "rate": 0.6667
+      },
+      "xxe": {
+        "total": 3,
+        "detected": 3,
+        "type_ok": 0,
+        "rate": 1.0
+      }
+    }
+  },
+  "records": [
+    {
+      "family": "xss",
+      "label": "script 标签",
+      "path": "/search",
+      "query": "q=<script>alert(document.cookie)</script>",
+      "expected_attack": true,
+      "predicted_type": "xss",
+      "is_attack": true,
+      "attack_prob": 1.0,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 27.2,
+      "reasons": [
+        "[query.q] 规则命中 xss(+22): 检测到 <script> 标签内联脚本；模型判定: xss(1.00)"
+      ]
+    },
+    {
+      "family": "xss",
+      "label": "img onerror",
+      "path": "/search",
+      "query": "q=<img src=x onerror=alert(1)>",
+      "expected_attack": true,
+      "predicted_type": "xss",
+      "is_attack": true,
+      "attack_prob": 1.0,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 30.1,
+      "reasons": [
+        "[query.q] 规则命中 xss(+22): 检测到 alert() 弹窗函数；模型判定: xss(1.00)"
+      ]
+    },
+    {
+      "family": "xss",
+      "label": "svg onload",
+      "path": "/search",
+      "query": "q=<svg/onload=alert(1)>",
+      "expected_attack": true,
+      "predicted_type": "xss",
+      "is_attack": true,
+      "attack_prob": 0.9999,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 19.8,
+      "reasons": [
+        "[query.q] 规则命中 xss(+22): 检测到 alert() 弹窗函数；模型判定: xss(1.00)"
+      ]
+    },
+    {
+      "family": "xss",
+      "label": "URL 编码",
+      "path": "/search",
+      "query": "q=%3Cscript%3Ealert%281%29%3C%2Fscript%3E",
+      "expected_attack": true,
+      "predicted_type": "xss",
+      "is_attack": true,
+      "attack_prob": 1.0,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 44.3,
+      "reasons": [
+        "[query.q] 规则命中 xss(+22): 检测到 <script> 标签内联脚本；模型判定: xss(1.00)"
+      ]
+    },
+    {
+      "family": "xss",
+      "label": "javascript 伪协议",
+      "path": "/search",
+      "query": "q=javascript:alert(1)//",
+      "expected_attack": true,
+      "predicted_type": "xss",
+      "is_attack": true,
+      "attack_prob": 1.0,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 30.2,
+      "reasons": [
+        "[query.q] 规则命中 xss(+22): 检测到 javascript: 伪协议；模型判定: xss(1.00)"
+      ]
+    },
+    {
+      "family": "sqli",
+      "label": "UNION 查询",
+      "path": "/products",
+      "query": "id=1 UNION SELECT username,password FROM users",
+      "expected_attack": true,
+      "predicted_type": "sqli",
+      "is_attack": true,
+      "attack_prob": 0.9915,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 33.7,
+      "reasons": [
+        "[query.id] 规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT；模型判定: sqli(0.99)"
+      ]
+    },
+    {
+      "family": "sqli",
+      "label": "or 1=1",
+      "path": "/products",
+      "query": "id=1' OR '1'='1",
+      "expected_attack": true,
+      "predicted_type": "sqli",
+      "is_attack": true,
+      "attack_prob": 0.9943,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 46.7,
+      "reasons": [
+        "[query.id] 规则命中 sqli(+25): 检测到 SQL 注入的字符串恒等式；模型判定: sqli(0.99)"
+      ]
+    },
+    {
+      "family": "sqli",
+      "label": "注释截断",
+      "path": "/products",
+      "query": "id=admin'--",
+      "expected_attack": true,
+      "predicted_type": "sqli",
+      "is_attack": true,
+      "attack_prob": 0.9457,
+      "ai_points": 23,
+      "type_ok": true,
+      "latency_ms": 46.5,
+      "reasons": [
+        "[query.id] 规则命中 sqli(+25): 命中SQL 注入特征: ' [sx00]*；模型判定: sqli(0.90)"
+      ]
+    },
+    {
+      "family": "sqli",
+      "label": "时间盲注",
+      "path": "/products",
+      "query": "id=1 AND SLEEP(5)",
+      "expected_attack": true,
+      "predicted_type": "sqli",
+      "is_attack": true,
+      "attack_prob": 0.9993,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 30.6,
+      "reasons": [
+        "[query.id] 规则命中 sqli(+25): 检测到 SQL 时间盲注函数 sleep()；模型判定: sqli(1.00)"
+      ]
+    },
+    {
+      "family": "sqli",
+      "label": "URL 编码",
+      "path": "/products",
+      "query": "id=1%27%20UNION%20SELECT%20username%2Cpassword%20FROM%20users",
+      "expected_attack": true,
+      "predicted_type": "sqli",
+      "is_attack": true,
+      "attack_prob": 0.9967,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 21.0,
+      "reasons": [
+        "[query.id] 规则命中 sqli(+25): 检测到 SQL 注入的 UNION SELECT；模型判定: sqli(0.99)"
+      ]
+    },
+    {
+      "family": "path_traversal",
+      "label": "etc/passwd",
+      "path": "/page",
+      "query": "file=../../../../etc/passwd",
+      "expected_attack": true,
+      "predicted_type": "path_traversal",
+      "is_attack": true,
+      "attack_prob": 1.0,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 40.5,
+      "reasons": [
+        "[query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)"
+      ]
+    },
+    {
+      "family": "path_traversal",
+      "label": "URL 编码",
+      "path": "/page",
+      "query": "file=..%2F..%2F..%2Fetc%2Fpasswd",
+      "expected_attack": true,
+      "predicted_type": "path_traversal",
+      "is_attack": true,
+      "attack_prob": 1.0,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 30.6,
+      "reasons": [
+        "[query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)"
+      ]
+    },
+    {
+      "family": "path_traversal",
+      "label": "Windows 路径",
+      "path": "/page",
+      "query": "file=..\\..\\..\\windows\\win.ini",
+      "expected_attack": true,
+      "predicted_type": "path_traversal",
+      "is_attack": true,
+      "attack_prob": 1.0,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 21.2,
+      "reasons": [
+        "[query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ..\\；模型判定: path_traversal(1.00)"
+      ]
+    },
+    {
+      "family": "path_traversal",
+      "label": "绕过写法",
+      "path": "/page",
+      "query": "file=....//....//etc/passwd",
+      "expected_attack": true,
+      "predicted_type": "path_traversal",
+      "is_attack": true,
+      "attack_prob": 1.0,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 44.1,
+      "reasons": [
+        "[query.file] 规则命中 path_traversal(+22): 检测到路径遍历攻击 ../；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: path_traversal(1.00)"
+      ]
+    },
+    {
+      "family": "sensitive_path",
+      "label": ".env",
+      "path": "/.env",
+      "query": "",
+      "expected_attack": true,
+      "predicted_type": "sensitive_path",
+      "is_attack": true,
+      "attack_prob": 0.9951,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 37.5,
+      "reasons": [
+        "[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: .env；模型判定: sensitive_path(0.99)"
+      ]
+    },
+    {
+      "family": "sensitive_path",
+      "label": ".git/config",
+      "path": "/.git/config",
+      "query": "",
+      "expected_attack": true,
+      "predicted_type": "sensitive_path",
+      "is_attack": true,
+      "attack_prob": 0.9993,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 15.0,
+      "reasons": [
+        "[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: .git/；模型判定: sensitive_path(1.00)"
+      ]
+    },
+    {
+      "family": "sensitive_path",
+      "label": "dump.sql",
+      "path": "/dump.sql",
+      "query": "",
+      "expected_attack": true,
+      "predicted_type": "sensitive_path",
+      "is_attack": true,
+      "attack_prob": 0.996,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 31.0,
+      "reasons": [
+        "[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: dump.sql；模型判定: sensitive_path(0.99)"
+      ]
+    },
+    {
+      "family": "sensitive_path",
+      "label": "备份包",
+      "path": "/backup.zip",
+      "query": "",
+      "expected_attack": true,
+      "predicted_type": "sensitive_path",
+      "is_attack": true,
+      "attack_prob": 0.9981,
+      "ai_points": 25,
+      "type_ok": true,
+      "latency_ms": 32.2,
+      "reasons": [
+        "[path] 规则命中 sensitive_path(+20): 命中敏感路径探测特征: backup；模型判定: sensitive_path(1.00)"
+      ]
+    },
+    {
+      "family": "sensitive_path",
+      "label": "旧后台",
+      "path": "/admin_v2/login",
+      "query": "",
+      "expected_attack": true,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.4491,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 52.2,
+      "reasons": []
+    },
+    {
+      "family": "scanner",
+      "label": "sqlmap UA",
+      "path": "/",
+      "query": "",
+      "expected_attack": true,
+      "predicted_type": "scanner",
+      "is_attack": true,
+      "attack_prob": 0.4314,
+      "ai_points": 11,
+      "type_ok": true,
+      "latency_ms": 28.0,
+      "reasons": [
+        "[user_agent] 规则命中 scanner(+22): 命中scanner特征: sqlmap"
+      ]
+    },
+    {
+      "family": "scanner",
+      "label": "Nikto UA",
+      "path": "/",
+      "query": "",
+      "expected_attack": true,
+      "predicted_type": "scanner",
+      "is_attack": true,
+      "attack_prob": 0.2199,
+      "ai_points": 5,
+      "type_ok": true,
+      "latency_ms": 15.1,
+      "reasons": [
+        "[user_agent] 规则命中 scanner(+22): 命中scanner特征: nikto"
+      ]
+    },
+    {
+      "family": "scanner",
+      "label": "Nmap UA",
+      "path": "/",
+      "query": "",
+      "expected_attack": true,
+      "predicted_type": "scanner",
+      "is_attack": true,
+      "attack_prob": 0.1021,
+      "ai_points": 3,
+      "type_ok": true,
+      "latency_ms": 32.3,
+      "reasons": [
+        "[user_agent] 规则命中 scanner(+22): 命中scanner特征: nmap|nmaplowercheck"
+      ]
+    },
+    {
+      "family": "command_injection",
+      "label": "分号拼接",
+      "path": "/tools",
+      "query": "cmd=127.0.0.1;cat /etc/passwd",
+      "expected_attack": true,
+      "predicted_type": "sensitive_path",
+      "is_attack": true,
+      "attack_prob": 0.9362,
+      "ai_points": 23,
+      "type_ok": false,
+      "latency_ms": 36.3,
+      "reasons": [
+        "[query.cmd] 规则命中 sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: sensitive_path(0.92)"
+      ]
+    },
+    {
+      "family": "command_injection",
+      "label": "$() 执行",
+      "path": "/tools",
+      "query": "cmd=$(whoami)",
+      "expected_attack": true,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.442,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 55.8,
+      "reasons": []
+    },
+    {
+      "family": "command_injection",
+      "label": "管道",
+      "path": "/tools",
+      "query": "cmd=127.0.0.1|id",
+      "expected_attack": true,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.442,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 47.4,
+      "reasons": []
+    },
+    {
+      "family": "ssti",
+      "label": "双花括号",
+      "path": "/search",
+      "query": "name={{7*7}}",
+      "expected_attack": true,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.442,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 46.5,
+      "reasons": []
+    },
+    {
+      "family": "ssti",
+      "label": "美元表达式",
+      "path": "/search",
+      "query": "name=${7*7}",
+      "expected_attack": true,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.442,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 63.2,
+      "reasons": []
+    },
+    {
+      "family": "ssti",
+      "label": "JSP 表达式",
+      "path": "/search",
+      "query": "name=<%= 7*7 %>",
+      "expected_attack": true,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.5335,
+      "ai_points": 13,
+      "type_ok": false,
+      "latency_ms": 47.0,
+      "reasons": []
+    },
+    {
+      "family": "ssrf",
+      "label": "云元数据",
+      "path": "/api/preview",
+      "query": "url=http://169.254.169.254/latest/meta-data/",
+      "expected_attack": true,
+      "predicted_type": "sensitive_path",
+      "is_attack": true,
+      "attack_prob": 0.9788,
+      "ai_points": 24,
+      "type_ok": false,
+      "latency_ms": 37.6,
+      "reasons": [
+        "[query.url] 规则命中 sensitive_path(+20): 试图访问云元数据服务 169.254.169.254；模型判定: sensitive_path(0.97)"
+      ]
+    },
+    {
+      "family": "ssrf",
+      "label": "file 协议",
+      "path": "/api/preview",
+      "query": "url=file:///etc/passwd",
+      "expected_attack": true,
+      "predicted_type": "path_traversal",
+      "is_attack": true,
+      "attack_prob": 0.9997,
+      "ai_points": 0,
+      "type_ok": false,
+      "latency_ms": 31.6,
+      "reasons": [
+        "[query.url] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: sensitive_path(1.00)"
+      ]
+    },
+    {
+      "family": "ssrf",
+      "label": "内网管理端",
+      "path": "/api/preview",
+      "query": "url=http://127.0.0.1:5001/",
+      "expected_attack": true,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.442,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 71.7,
+      "reasons": []
+    },
+    {
+      "family": "xxe",
+      "label": "外部实体读取",
+      "path": "/api/preview",
+      "query": "",
+      "expected_attack": true,
+      "predicted_type": "path_traversal",
+      "is_attack": true,
+      "attack_prob": 0.8503,
+      "ai_points": 0,
+      "type_ok": false,
+      "latency_ms": 37.8,
+      "reasons": [
+        "[body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)"
+      ]
+    },
+    {
+      "family": "xxe",
+      "label": "参数实体",
+      "path": "/api/preview",
+      "query": "",
+      "expected_attack": true,
+      "predicted_type": "path_traversal",
+      "is_attack": true,
+      "attack_prob": 0.8503,
+      "ai_points": 0,
+      "type_ok": false,
+      "latency_ms": 47.7,
+      "reasons": [
+        "[body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)"
+      ]
+    },
+    {
+      "family": "xxe",
+      "label": "SYSTEM 关键字",
+      "path": "/api/preview",
+      "query": "",
+      "expected_attack": true,
+      "predicted_type": "path_traversal",
+      "is_attack": true,
+      "attack_prob": 0.8503,
+      "ai_points": 0,
+      "type_ok": false,
+      "latency_ms": 48.1,
+      "reasons": [
+        "[body] 规则命中 path_traversal(+22): 检测到 file:// 本地文件读取；sensitive_path(+20): 试图读取系统敏感文件 /etc/passwd；模型判定: xss(0.49)"
+      ]
+    },
+    {
+      "family": "benign",
+      "label": "首页",
+      "path": "/",
+      "query": "",
+      "expected_attack": false,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.442,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 57.2,
+      "reasons": []
+    },
+    {
+      "family": "benign",
+      "label": "关于页",
+      "path": "/about",
+      "query": "",
+      "expected_attack": false,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.442,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 33.9,
+      "reasons": []
+    },
+    {
+      "family": "benign",
+      "label": "产品列表",
+      "path": "/products",
+      "query": "",
+      "expected_attack": false,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.442,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 34.8,
+      "reasons": []
+    },
+    {
+      "family": "benign",
+      "label": "新闻详情",
+      "path": "/news",
+      "query": "id=1",
+      "expected_attack": false,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.442,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 46.5,
+      "reasons": []
+    },
+    {
+      "family": "benign",
+      "label": "正常搜索",
+      "path": "/search",
+      "query": "q=python+tutorial",
+      "expected_attack": false,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.442,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 68.5,
+      "reasons": []
+    },
+    {
+      "family": "benign",
+      "label": "方案页",
+      "path": "/solutions",
+      "query": "",
+      "expected_attack": false,
+      "predicted_type": "normal",
+      "is_attack": false,
+      "attack_prob": 0.442,
+      "ai_points": 11,
+      "type_ok": false,
+      "latency_ms": 48.8,
+      "reasons": []
+    }
+  ]
+}
